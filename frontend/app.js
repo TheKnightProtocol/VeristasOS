@@ -1,11 +1,11 @@
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = (typeof window !== "undefined" && window.location.origin && window.location.origin.startsWith("http")) ? window.location.origin : "http://127.0.0.1:8000";
 
 const textInput = document.getElementById("textInput");
 const analyzeButton = document.getElementById("analyzeButton");
 const results = document.getElementById("results");
 
-
-analyzeButton.addEventListener("click", async () => {
+if (analyzeButton) {
+    analyzeButton.addEventListener("click", async () => {
     const text = textInput.value.trim();
 
     if (!text) {
@@ -53,6 +53,7 @@ analyzeButton.addEventListener("click", async () => {
         analyzeButton.textContent = "Analyze Content →";
     }
 });
+}
 
 
 function displayResults(data) {

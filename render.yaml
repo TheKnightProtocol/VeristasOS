@@ -8,5 +8,7 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.5
-      - key: VERISTAS_AI_URL
-        value: http://127.0.0.1:8080
+      - key: ENVIRONMENT
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: "*"

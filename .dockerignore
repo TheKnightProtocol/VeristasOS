@@ -4,14 +4,8 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .env
-.env.*
-!.env.example
-models/
-*.gguf
-*.bin
+.git/
+.github/
 uploads/
 *.log
-.vscode/
-.idea/
-.tmp/
 scratch/

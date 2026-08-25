@@ -1,3 +1,5 @@
+import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, Optional
 
@@ -26,6 +28,39 @@ FRONTEND_INDEX = PROJECT_ROOT / "frontend" / "index.html"
 
 
 # ============================================================
+# LIFESPAN MANAGEMENT
+# ============================================================
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print()
+    print("=" * 60)
+    print("VERISTASOS — TRUTH INTELLIGENCE OPERATING ENVIRONMENT")
+    print("=" * 60)
+    print(f"Version : {APP_VERSION}")
+    print("Backend : ONLINE")
+
+    if FRONTEND_INDEX.exists():
+        print("Frontend: AVAILABLE")
+    else:
+        print("Frontend: NOT FOUND")
+
+    try:
+        from app.ai.router import LocalAIRouter
+        router = LocalAIRouter()
+        if router.is_available():
+            print("Local AI: CONNECTED (Qwen2.5-3B llama.cpp)")
+        else:
+            print("Local AI: OFFLINE (http://127.0.0.1:8080 unreachable)")
+    except Exception:
+        print("Local AI: OFFLINE")
+
+    print("=" * 60)
+    print()
+    yield
+
+
+# ============================================================
 # FASTAPI APPLICATION
 # ============================================================
 
@@ -36,6 +71,7 @@ app = FastAPI(
         "VeristasOS — Truth Intelligence Operating Environment. "
         "AI-assisted misinformation analysis, provenance, and explanation."
     ),
+    lifespan=lifespan,
 )
 
 
@@ -43,9 +79,12 @@ app = FastAPI(
 # CORS
 # ============================================================
 
+raw_origins = os.getenv("ALLOWED_ORIGINS", "*")
+allowed_origins = [o.strip() for o in raw_origins.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins if allowed_origins else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -157,6 +196,16 @@ def health():
     }
 
 
+@app.get("/api/version")
+def api_version():
+    """Return application version information."""
+    return {
+        "service": APP_NAME,
+        "version": APP_VERSION,
+        "status": "healthy",
+    }
+
+
 @app.get("/api")
 def api_info():
     """API description and capability summary."""
@@ -179,6 +228,7 @@ def api_info():
         "endpoints": {
             "root": "/",
             "health": "/health",
+            "api_version": "/api/version",
             "api_info": "/api",
             "api_status": "/api/status",
             "ai_status": "/api/ai/status",
@@ -290,24 +340,58 @@ def api_analyze(request: UnifiedAnalyzeRequest):
     return analyze(request)
 
 
+ALLOWED_IMAGE_MIMES = {
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/bmp",
+    "image/tiff",
+    "application/octet-stream",
+}
+
+ALLOWED_IMAGE_EXTENSIONS = {
+    ".jpeg", ".jpg", ".png", ".webp", ".gif", ".bmp", ".tiff"
+}
+
+
 @app.post("/api/analyze-image")
 async def analyze_image(
     file: UploadFile = File(...),
     article_text: Optional[str] = Form(None),
 ):
     """
-    Image and media analysis endpoint.
+    Image and media analysis endpoint with security validation.
     Performs metadata extraction, hashing, OCR text extraction (if available),
     and image-text consistency scoring.
     """
     try:
+        safe_filename = Path(file.filename or "uploaded_image.png").name
+        ext = Path(safe_filename).suffix.lower()
+
+        if ext and ext not in ALLOWED_IMAGE_EXTENSIONS:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unsupported file extension '{ext}'. Allowed extensions: {', '.join(sorted(ALLOWED_IMAGE_EXTENSIONS))}",
+            )
+
+        if file.content_type and file.content_type.lower() not in ALLOWED_IMAGE_MIMES:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unsupported MIME type '{file.content_type}'. Upload a valid image file.",
+            )
+
         contents = await file.read()
         if len(contents) > 20 * 1024 * 1024:
             raise HTTPException(status_code=400, detail="Image size exceeds 20MB limit.")
 
+        if len(contents) == 0:
+            raise HTTPException(status_code=400, detail="Empty image file submitted.")
+
         result = analyze_image_bytes(
             file_bytes=contents,
-            filename=file.filename or "uploaded_image.png",
+            filename=safe_filename,
             content_type=file.content_type,
         )
 
@@ -331,35 +415,3 @@ async def analyze_image(
             status_code=500,
             detail=f"Image analysis failed: {exc}",
         )
-
-
-# ============================================================
-# STARTUP NOTIFICATION
-# ============================================================
-
-@app.on_event("startup")
-async def startup_event():
-    print()
-    print("=" * 60)
-    print("VERISTASOS — TRUTH INTELLIGENCE OPERATING ENVIRONMENT")
-    print("=" * 60)
-    print(f"Version : {APP_VERSION}")
-    print("Backend : ONLINE")
-
-    if FRONTEND_INDEX.exists():
-        print("Frontend: AVAILABLE")
-    else:
-        print("Frontend: NOT FOUND")
-
-    try:
-        from app.ai.router import LocalAIRouter
-        router = LocalAIRouter()
-        if router.is_available():
-            print("Local AI: CONNECTED (Qwen2.5-3B llama.cpp)")
-        else:
-            print("Local AI: OFFLINE (http://127.0.0.1:8080 unreachable)")
-    except Exception:
-        print("Local AI: OFFLINE")
-
-    print("=" * 60)
-    print()

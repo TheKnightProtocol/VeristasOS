@@ -100,3 +100,42 @@ def test_analyze_image_endpoint():
     assert data["image_analysis"]["filename"] == "test.png"
     assert "sha256" in data["image_analysis"]
     assert "perceptual_hash" in data["image_analysis"]
+
+
+def test_api_version_endpoint():
+    response = client.get("/api/version")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert data["service"] == "VeristasOS"
+    assert "version" in data
+
+
+def test_ai_analyze_endpoint():
+    response = client.post(
+        "/api/ai/analyze",
+        json={"text": "Breaking news regarding global financial markets."},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert "verdict" in data
+    assert "confidence" in data
+    assert "reasoning" in data
+
+
+def test_analyze_image_invalid_extension():
+    response = client.post(
+        "/api/analyze-image",
+        files={"file": ("malicious.exe", b"binary content", "application/x-msdownload")},
+    )
+    assert response.status_code == 400
+    assert "Unsupported" in response.json()["detail"]
+
+
+def test_analyze_image_empty_file():
+    response = client.post(
+        "/api/analyze-image",
+        files={"file": ("empty.png", b"", "image/png")},
+    )
+    assert response.status_code == 400
+    assert "Empty" in response.json()["detail"]
