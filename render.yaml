@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: veristasos
+    env: python
+    region: oregon
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.5
+      - key: VERISTAS_AI_URL
+        value: http://127.0.0.1:8080
