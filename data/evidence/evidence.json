@@ -1,0 +1,57 @@
+[
+  {
+    "id": "EV-101",
+    "title": "Municipal Public Transit Infrastructure Budget Review 2026",
+    "text": "The city municipal council approved a budget allocation increase of 4.2 percent for public transit infrastructure during the open session on Tuesday. Official records indicate the decision followed a thorough three-month review of commuter transit data.",
+    "source": "Municipal Gazette",
+    "source_url": "https://cityjournal.org/transit-update-2026",
+    "publication_date": "2026-02-10",
+    "category": "infrastructure",
+    "reliability_score": 95.0,
+    "evidence_type": "DEMO EVIDENCE"
+  },
+  {
+    "id": "EV-102",
+    "title": "Clinical Trial Meta-Analysis on Universal Therapeutics Claims",
+    "text": "Peer-reviewed medical trials published in leading oncology journals confirm that no universal instant single-day cure exists for all human cancers. Standard targeted immunotherapies require months of protocol treatment and individual genetic profiling.",
+    "source": "Global Medical Journal",
+    "source_url": "https://medicaljournal.org/trials/oncology-2026",
+    "publication_date": "2026-01-20",
+    "category": "health",
+    "reliability_score": 98.0,
+    "evidence_type": "DEMO EVIDENCE"
+  },
+  {
+    "id": "EV-103",
+    "title": "Global Renewable Energy Storage Breakthrough Technical Assessment",
+    "text": "Independent energy scientists discovered and published performance benchmarks for high-density solid-state lithium-sulfur battery cells, demonstrating a 35 percent increase in storage efficiency over standard lithium-ion batteries.",
+    "source": "Institute of Electrical & Applied Physics",
+    "source_url": "https://energyinstitute.org/reports/battery-tech-2026",
+    "publication_date": "2026-02-01",
+    "category": "technology",
+    "reliability_score": 92.0,
+    "evidence_type": "DEMO EVIDENCE"
+  },
+  {
+    "id": "EV-104",
+    "title": "Central Bank Financial Policy Audit & Interest Rate Declaration",
+    "text": "The central monetary committee announced a quarter-point adjustment in overnight lending benchmark rates, citing steady inflation metrics and sustained employment statistics across major industrial sectors.",
+    "source": "Financial Regulatory Authority",
+    "source_url": "https://centralbank.gov/news/rates-2026",
+    "publication_date": "2026-02-14",
+    "category": "finance",
+    "reliability_score": 96.0,
+    "evidence_type": "DEMO EVIDENCE"
+  },
+  {
+    "id": "EV-105",
+    "title": "Fact Check: Debunking Viral Miracle Cure Reports",
+    "text": "Health department officials explicitly warned the public against viral online claims promoting unverified miracle health products. Health authorities reiterated that medical treatments must undergo clinical safety trials.",
+    "source": "Public Health Oversight Board",
+    "source_url": "https://healthfactcheck.gov/alerts/miracle-claims",
+    "publication_date": "2026-02-18",
+    "category": "health",
+    "reliability_score": 97.0,
+    "evidence_type": "DEMO EVIDENCE"
+  }
+]

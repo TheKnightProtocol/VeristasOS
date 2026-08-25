@@ -14,6 +14,14 @@ from app.services.claim_analyzer import extract_claims
 from app.services.provenance import analyze_provenance
 from app.services.risk_engine import calculate_risk
 from app.services.image_analyzer import analyze_image_bytes, analyze_text_image_consistency
+from app.models.schemas import (
+    UnifiedAnalyzeRequest,
+    SimpleTextRequest,
+    SemanticSearchRequest,
+    InvestigationRequest,
+)
+from app.services.semantic_search import search_engine
+from app.services.investigation_engine import run_full_investigation, generate_investigation_graph
 
 
 # ============================================================
@@ -338,6 +346,74 @@ def analyze(request: UnifiedAnalyzeRequest):
 def api_analyze(request: UnifiedAnalyzeRequest):
     """Consistent alias endpoint for unified analysis."""
     return analyze(request)
+
+
+@app.post("/api/investigate")
+def api_investigate(request: InvestigationRequest):
+    """
+    Master investigation endpoint combining claims, semantic search,
+    evidence retrieval, source intelligence, correlation, and relationship graph.
+    """
+    try:
+        return run_full_investigation(request)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Investigation failed: {exc}",
+        )
+
+
+@app.post("/api/semantic-search")
+def api_semantic_search(request: SemanticSearchRequest):
+    """
+    Semantic evidence search endpoint over indexed authoritative records.
+    """
+    try:
+        matches = search_engine.search_similar_claims(
+            query=request.query,
+            top_k=request.top_k,
+            category=request.category,
+        )
+        return {
+            "status": "success",
+            "query": request.query,
+            "results_count": len(matches),
+            "results": [m.model_dump() if hasattr(m, "model_dump") else m.dict() for m in matches],
+        }
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Semantic search failed: {exc}",
+        )
+
+
+@app.get("/api/evidence")
+def api_get_evidence():
+    """Return local evidence index repository records."""
+    return {
+        "status": "success",
+        "total_records": len(search_engine.evidence_list),
+        "evidence": [item.model_dump() if hasattr(item, "model_dump") else item.dict() for item in search_engine.evidence_list],
+    }
+
+
+@app.get("/api/investigation/{investigation_id}/graph")
+def api_investigation_graph(investigation_id: str):
+    """Return evidence relationship graph nodes and edges for visual rendering."""
+    sample_request = UnifiedAnalyzeRequest(
+        text="Sample demonstration article for graph visualization.",
+        source_name="Sample Source",
+    )
+    graph = generate_investigation_graph(
+        investigation_id=investigation_id,
+        request=sample_request,
+        claims=[{"claim": "Sample factual claim for visualization", "verification_status": "CORROBORATED"}],
+        evidence_matches=[],
+    )
+    return {
+        "investigation_id": investigation_id,
+        "graph": graph.model_dump() if hasattr(graph, "model_dump") else graph.dict(),
+    }
 
 
 ALLOWED_IMAGE_MIMES = {

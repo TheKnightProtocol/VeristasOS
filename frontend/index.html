@@ -1036,21 +1036,27 @@
 
         <!-- NAVIGATION ITEMS -->
         <div class="nav-items">
-            <button class="nav-btn active" onclick="switchTab('text-tab')">TEXT CORE</button>
-            <button class="nav-btn" onclick="switchTab('image-tab')">MEDIA CORE</button>
+            <button class="nav-btn active" id="navBtnText" onclick="switchTab('text-tab')">TEXT CORE</button>
+            <button class="nav-btn" id="navBtnSearch" onclick="switchTab('search-tab')">SEMANTIC SEARCH</button>
+            <button class="nav-btn" id="navBtnGraph" onclick="switchTab('graph-tab')">EVIDENCE GRAPH</button>
+            <button class="nav-btn" id="navBtnImage" onclick="switchTab('image-tab')">MEDIA FORENSICS</button>
             <button class="nav-btn" onclick="switchTab('terminal-tab')">TERMINAL</button>
-            <button class="nav-btn" onclick="openHistoryDrawer()">MISSION HISTORY</button>
+            <button class="nav-btn" onclick="openHistoryDrawer()">HISTORY</button>
         </div>
 
         <!-- LIVE STATUS INDICATOR -->
         <div class="status-pill-group">
             <div class="status-pill">
                 <div class="status-dot"></div>
-                SYSTEM ONLINE
+                SYSTEM: ONLINE
             </div>
             <div class="status-pill">
                 <div class="status-dot" id="aiStatusDot"></div>
                 LOCAL AI: <span id="aiStatusText" style="margin-left:4px; font-weight:700;">CHECKING...</span>
+            </div>
+            <div class="status-pill">
+                <div class="status-dot"></div>
+                SEARCH: READY
             </div>
         </div>
     </header>
@@ -1079,8 +1085,9 @@
         <!-- LARGE MODE SELECTORS -->
         <div class="mode-selector-bar">
             <button class="mode-btn active" id="modeBtnText" onclick="switchTab('text-tab')">📝 TEXT MODE</button>
-            <button class="mode-btn" id="modeBtnImage" onclick="switchTab('image-tab')">🖼️ IMAGE MODE</button>
-            <button class="mode-btn" style="opacity:0.5; cursor:not-allowed;" title="Audio analysis core offline">🎙️ AUDIO (OFFLINE)</button>
+            <button class="mode-btn" id="modeBtnSearch" onclick="switchTab('search-tab')">🌐 SEMANTIC SEARCH</button>
+            <button class="mode-btn" id="modeBtnGraph" onclick="switchTab('graph-tab')">🕸️ EVIDENCE GRAPH</button>
+            <button class="mode-btn" id="modeBtnImage" onclick="switchTab('image-tab')">🖼️ MEDIA FORENSICS</button>
         </div>
 
         <!-- TAB 1: TEXT ANALYSIS -->
@@ -1129,9 +1136,14 @@
             <!-- PRIMARY CONTROL BUTTON -->
             <div class="action-row">
                 <span class="char-hint">Ctrl + Enter to execute command analysis</span>
-                <button class="btn-primary-console" id="analyzeBtn" onclick="runTextAnalysis()">
-                    <span>ANALYZE CONTENT</span> ➔
-                </button>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <button class="btn-primary-console" id="analyzeBtn" onclick="runTextAnalysis()">
+                        <span>ANALYZE CONTENT</span> ➔
+                    </button>
+                    <button class="btn-primary-console" id="investigateBtn" onclick="runFullInvestigationUI()" style="background: linear-gradient(135deg, var(--neon-violet), var(--neon-magenta)); box-shadow: 0 0 25px var(--neon-violet-glow);">
+                        <span>DEEP INVESTIGATE</span> ➔
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1168,6 +1180,38 @@ Failed commands automatically send stdout/stderr to local AI for diagnosis.
                     <span class="terminal-prompt-sym">veristasOS&gt;</span>
                     <input type="text" class="terminal-input-field" id="terminalInput" placeholder="python nonexistent.py" onkeydown="handleTerminalKey(event)">
                 </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: SEMANTIC SEARCH -->
+        <div id="search-tab" class="tab-content">
+            <div class="input-header-bar">
+                <label>SEMANTIC CLAIM & EVIDENCE SEARCH</label>
+                <span class="char-hint">Query local indexed authoritative evidence database</span>
+            </div>
+            <div style="display:flex; gap:12px; margin-bottom:14px; flex-wrap:wrap;">
+                <input type="text" id="searchQueryInput" placeholder="e.g. public transit budget increase or cancer cure trials..." style="flex:1; padding:12px 16px; background:var(--bg-input); border:1px solid var(--border-glow); border-radius:var(--radius-md); color:#fff; font-family:var(--font-mono); font-size:13px; outline:none;" onkeydown="if(event.key==='Enter') runSemanticSearchUI()">
+                <button class="btn-primary-console" onclick="runSemanticSearchUI()">
+                    <span>SEARCH EVIDENCE</span> ➔
+                </button>
+            </div>
+            <div id="searchResultsBox" style="display:none; margin-top:16px;">
+                <div style="font-size:12px; font-weight:800; font-family:var(--font-mono); color:var(--neon-cyan); margin-bottom:12px;">
+                    EVIDENCE SEARCH RESULTS (<span id="searchResultCount">0</span> MATCHES)
+                </div>
+                <div id="searchResultsList" style="display:flex; flex-direction:column; gap:12px;"></div>
+            </div>
+        </div>
+
+        <!-- TAB 5: EVIDENCE RELATIONSHIP GRAPH -->
+        <div id="graph-tab" class="tab-content">
+            <div class="input-header-bar">
+                <label>INVESTIGATION RELATIONSHIP GRAPH</label>
+                <span class="char-hint">Visual graph mapping Article ➔ Claims ➔ Sources ➔ Evidence</span>
+            </div>
+            <div id="graphCanvasContainer" style="min-height:360px; background:#020408; border:1px solid var(--neon-cyan); border-radius:var(--radius-md); padding:20px; display:flex; flex-direction:column; justify-content:center; align-items:center; position:relative; box-shadow:0 0 25px var(--neon-cyan-glow);">
+                <svg id="evidenceGraphSvg" width="100%" height="340" style="overflow:visible;"></svg>
+                <div id="graphEmptyState" style="color:var(--text-dim); font-size:12px; font-family:var(--font-mono); text-align:center;">Run an investigation or click 'Deep Investigate' to generate the evidence graph visualization.</div>
             </div>
         </div>
 
@@ -1413,8 +1457,16 @@ Failed commands automatically send stdout/stderr to local AI for diagnosis.
 
         if (tabId === "text-tab") {
             document.getElementById("modeBtnText")?.classList.add("active");
+            document.getElementById("navBtnText")?.classList.add("active");
         } else if (tabId === "image-tab") {
             document.getElementById("modeBtnImage")?.classList.add("active");
+            document.getElementById("navBtnImage")?.classList.add("active");
+        } else if (tabId === "search-tab") {
+            document.getElementById("modeBtnSearch")?.classList.add("active");
+            document.getElementById("navBtnSearch")?.classList.add("active");
+        } else if (tabId === "graph-tab") {
+            document.getElementById("modeBtnGraph")?.classList.add("active");
+            document.getElementById("navBtnGraph")?.classList.add("active");
         }
 
         document.getElementById(tabId)?.classList.add("active");
@@ -1704,6 +1756,201 @@ Failed commands automatically send stdout/stderr to local AI for diagnosis.
         }
 
         content.innerHTML = html;
+    }
+
+    /* =========================================================
+       DEEP INVESTIGATION & SEMANTIC SEARCH EXECUTION
+    ========================================================= */
+    async function runFullInvestigationUI() {
+        const text = document.getElementById("textInput").value.trim();
+        const toast = document.getElementById("errorToast");
+        const btn = document.getElementById("investigateBtn");
+
+        toast.style.display = "none";
+        if (!text) {
+            toast.textContent = "Please enter article text for deep investigation.";
+            toast.style.display = "block";
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = `<span>INVESTIGATING...</span> ⏳`;
+
+        const payload = {
+            text: text,
+            source_url: document.getElementById("sourceUrl").value || null,
+            source_name: document.getElementById("sourceName").value || null,
+            author: document.getElementById("authorName").value || null,
+            publication_date: document.getElementById("pubDate").value || null
+        };
+
+        try {
+            const response = await fetch("/api/investigate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || "Investigation failed.");
+
+            const inv = data.investigation;
+            currentAnalysisResult = inv;
+            renderDashboard(inv);
+            saveHistory(inv);
+
+            if (inv.graph) {
+                renderEvidenceGraph(inv.graph);
+            }
+
+        } catch (err) {
+            toast.textContent = err.message || "Investigation error.";
+            toast.style.display = "block";
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<span>DEEP INVESTIGATE</span> ➔`;
+        }
+    }
+
+    async function runSemanticSearchUI() {
+        const query = document.getElementById("searchQueryInput").value.trim();
+        const box = document.getElementById("searchResultsBox");
+        const list = document.getElementById("searchResultsList");
+        const count = document.getElementById("searchResultCount");
+
+        if (!query) return;
+
+        try {
+            const response = await fetch("/api/semantic-search", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query, top_k: 5 })
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || "Search failed.");
+
+            box.style.display = "block";
+            count.textContent = data.results_count;
+            list.innerHTML = "";
+
+            if (data.results_count === 0) {
+                list.innerHTML = `<div style="color:var(--text-dim); font-size:12px; font-family:var(--font-mono);">No matching evidence found in current repository index.</div>`;
+                return;
+            }
+
+            data.results.forEach(res => {
+                const item = res.evidence;
+                const card = document.createElement("div");
+                card.className = "indicator-card";
+                card.style.flexDirection = "column";
+                card.style.alignItems = "flex-start";
+
+                let relColor = "var(--neon-cyan)";
+                if (res.relationship === "CONTRADICTING") relColor = "var(--red-alert)";
+                else if (res.relationship === "SUPPORTING") relColor = "var(--green-active)";
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; width:100%; font-family:var(--font-mono); font-size:12px;">
+                        <strong style="color:#fff;">${escapeHtml(item.title)}</strong>
+                        <span style="color:${relColor}; font-weight:800;">${res.relationship} (${res.similarity_score}%)</span>
+                    </div>
+                    <div style="font-size:12px; color:var(--text-secondary); margin-top:6px; line-height:1.5;">${escapeHtml(item.text)}</div>
+                    <div style="display:flex; gap:12px; font-size:10px; color:var(--text-dim); margin-top:8px; font-family:var(--font-mono);">
+                        <span>SOURCE: ${escapeHtml(item.source)}</span>
+                        <span>DATE: ${escapeHtml(item.publication_date || "N/A")}</span>
+                        <span>TAG: ${escapeHtml(item.evidence_type)}</span>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        } catch (err) {
+            alert(err.message || "Search error.");
+        }
+    }
+
+    function renderEvidenceGraph(graphData) {
+        const svg = document.getElementById("evidenceGraphSvg");
+        const emptyState = document.getElementById("graphEmptyState");
+        if (!graphData || !graphData.nodes || graphData.nodes.length === 0) return;
+
+        if (emptyState) emptyState.style.display = "none";
+        svg.innerHTML = "";
+
+        const nodes = graphData.nodes;
+        const edges = graphData.edges;
+
+        const width = svg.clientWidth || 800;
+        const height = 320;
+
+        const nodePositions = {};
+        const total = nodes.length;
+        const radius = Math.min(width, height) * 0.35;
+        const cx = width / 2;
+        const cy = height / 2;
+
+        nodes.forEach((n, idx) => {
+            if (n.type === "Article") {
+                nodePositions[n.id] = { x: cx, y: cy };
+            } else {
+                const angle = ((idx - 1) / Math.max(1, total - 1)) * 2 * Math.PI;
+                nodePositions[n.id] = {
+                    x: cx + radius * Math.cos(angle),
+                    y: cy + radius * Math.sin(angle)
+                };
+            }
+        });
+
+        edges.forEach(e => {
+            const p1 = nodePositions[e.source];
+            const p2 = nodePositions[e.target];
+            if (p1 && p2) {
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", p1.x);
+                line.setAttribute("y1", p1.y);
+                line.setAttribute("x2", p2.x);
+                line.setAttribute("y2", p2.y);
+                line.setAttribute("stroke", e.relationship === "CONTRADICTING" ? "var(--red-alert)" : "var(--neon-cyan)");
+                line.setAttribute("stroke-width", "1.5");
+                line.setAttribute("stroke-opacity", "0.6");
+                line.setAttribute("stroke-dasharray", e.relationship === "CONTRADICTING" ? "4 4" : "none");
+                svg.appendChild(line);
+            }
+        });
+
+        nodes.forEach(n => {
+            const pos = nodePositions[n.id];
+            if (!pos) return;
+
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            
+            let fill = "var(--neon-cyan)";
+            if (n.type === "Article") fill = "var(--neon-magenta)";
+            else if (n.type === "Evidence") fill = "var(--green-active)";
+            else if (n.type === "Source") fill = "var(--neon-violet)";
+
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", pos.x);
+            circle.setAttribute("cy", pos.y);
+            circle.setAttribute("r", n.type === "Article" ? "14" : "10");
+            circle.setAttribute("fill", fill);
+            circle.setAttribute("stroke", "#fff");
+            circle.setAttribute("stroke-width", "1.5");
+            circle.setAttribute("style", "filter: drop-shadow(0 0 6px " + fill + "); cursor:pointer;");
+
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", pos.x);
+            text.setAttribute("y", pos.y + 22);
+            text.setAttribute("fill", "#fff");
+            text.setAttribute("font-size", "10");
+            text.setAttribute("font-family", "var(--font-mono)");
+            text.setAttribute("text-anchor", "middle");
+            text.textContent = n.label.length > 18 ? n.label.substring(0, 16) + "..." : n.label;
+
+            g.appendChild(circle);
+            g.appendChild(text);
+            svg.appendChild(g);
+        });
     }
 
     /* =========================================================
