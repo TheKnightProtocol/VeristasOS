@@ -196,11 +196,12 @@ def root():
 
 @app.get("/health")
 def health():
-    """Basic health check endpoint."""
+    """System health check endpoint."""
     return {
-        "status": "healthy",
+        "status": "ok",
         "service": APP_NAME,
         "version": APP_VERSION,
+        "environment": os.getenv("ENVIRONMENT", "production"),
     }
 
 
@@ -230,6 +231,7 @@ def api_info():
             "source provenance evaluation",
             "image media analysis & OCR",
             "AI-assisted media authenticity screening",
+            "deepfake & manipulation risk estimation",
             "local Qwen AI interpretation",
             "risk classification engine",
             "actionable recommendations",
@@ -242,6 +244,7 @@ def api_info():
             "api_status": "/api/status",
             "ai_status": "/api/ai/status",
             "media_authenticity_status": "/api/media/authenticity/status",
+            "media_deepfake_status": "/api/media/deepfake/status",
             "ai_analyze": "/api/ai/analyze",
             "analyze": "/analyze",
             "api_analyze": "/api/analyze",
@@ -263,6 +266,8 @@ def api_status():
     except Exception:
         ai_available = False
 
+    from app.services.deepfake_detector import deepfake_detector
+
     return {
         "status": "healthy",
         "backend": "online",
@@ -276,6 +281,10 @@ def api_status():
             "available": True,
             "model": "heuristic-cpu-v1",
         },
+        "deepfake_detection": {
+            "available": deepfake_detector.is_enabled(),
+            "model": deepfake_detector.default_model,
+        },
         "version": APP_VERSION,
         "features": [
             "text analysis",
@@ -284,6 +293,7 @@ def api_status():
             "provenance evaluation",
             "image OCR analysis",
             "media authenticity screening",
+            "deepfake risk detection",
             "local AI explanation",
         ],
     }
@@ -318,6 +328,18 @@ def media_authenticity_status():
         "model": authenticity_analyzer.model_name,
         "type": "heuristic-cpu-v1",
         "description": "AI-assisted media authenticity screening (CPU-compatible). Not definitive proof of synthetic media.",
+    }
+
+
+@app.get("/api/media/deepfake/status")
+def media_deepfake_status():
+    """Return status of deepfake & manipulation detector module."""
+    from app.services.deepfake_detector import deepfake_detector
+    return {
+        "available": deepfake_detector.is_enabled(),
+        "model": deepfake_detector.default_model,
+        "type": "lightweight-forensic-analysis",
+        "description": "Deepfake / Manipulation Risk screening. AI-assisted forensic estimate, not definitive proof.",
     }
 
 
@@ -514,7 +536,7 @@ async def analyze_image(
     """
     Image and media analysis endpoint with security validation.
     Performs metadata extraction, hashing, OCR text extraction, EXIF inspection,
-    media authenticity screening, and image-text consistency scoring.
+    media authenticity screening, deepfake detection, and image-text consistency scoring.
     """
     try:
         safe_filename = Path(file.filename or "uploaded_image.png").name

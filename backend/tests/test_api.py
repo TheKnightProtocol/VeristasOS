@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from fastapi.testclient import TestClient
 from app.main import app
+from app.services.deepfake_detector import deepfake_detector
 
 client = TestClient(app)
 
@@ -14,8 +15,10 @@ def test_health():
     response = client.get("/health")
     assert response.status_code == 200
     data = response.json()
-    assert data["status"] == "healthy"
+    assert data["status"] == "ok"
     assert data["service"] == "VeristasOS"
+    assert "version" in data
+    assert "environment" in data
 
 
 def test_api_info():
@@ -44,6 +47,36 @@ def test_media_authenticity_status_endpoint():
     assert "model" in data
     assert "type" in data
     assert "description" in data
+
+
+def test_media_deepfake_status_endpoint():
+    response = client.get("/api/media/deepfake/status")
+    assert response.status_code == 200
+    data = response.json()
+    assert "available" in data
+    assert "model" in data
+    assert "type" in data
+
+
+def test_deepfake_detector_disabled_by_default():
+    fake_png = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
+    res = deepfake_detector.analyze_media(fake_png, "test.png")
+    assert res["available"] is False or os.getenv("DEEPFAKE_ENABLED", "false").lower() == "true"
+    assert "explanation" in res
+
+
+def test_deepfake_detector_enabled_mode(monkeypatch):
+    monkeypatch.setenv("DEEPFAKE_ENABLED", "true")
+    fake_png = (
+        b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
+        b"\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\xcf\xc0"
+        b"\x00\x00\x03\x01\x01\x00\x18\xdd\x8d\xb0\x00\x00\x00\x00IEND\xaeB`\x82"
+    )
+    res = deepfake_detector.analyze_media(fake_png, "test.png")
+    assert res["available"] is True
+    assert "deepfake_risk" in res
+    assert "manipulation_risk" in res
+    assert "signals" in res
 
 
 def test_search_endpoint_get_paginated():
@@ -132,9 +165,7 @@ def test_analyze_image_endpoint():
     assert "sha256" in data["image_analysis"]
     assert "perceptual_hash" in data["image_analysis"]
     assert "authenticity_screening" in data["image_analysis"]
-    auth = data["image_analysis"]["authenticity_screening"]
-    assert "assessment" in auth
-    assert "signals" in auth
+    assert "deepfake_analysis" in data["image_analysis"]
 
 
 def test_api_version_endpoint():

@@ -3,9 +3,9 @@ VeristasOS Image & Media Analysis Service
 
 Performs image file inspection, EXIF metadata extraction, cryptographic hashing,
 perceptual difference hashing, graceful OCR text extraction, media-text consistency analysis,
-and lightweight CPU-compatible media authenticity screening.
+lightweight CPU-compatible media authenticity screening, and deepfake risk detection.
 
-DO NOT claim deepfake detection.
+DO NOT claim deepfake certainty.
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ from typing import Any
 from PIL import Image, ExifTags
 
 from app.services.media_authenticity import authenticity_analyzer
+from app.services.deepfake_detector import deepfake_detector
 
 
 def extract_exif(img: Image.Image) -> dict[str, Any]:
@@ -26,7 +27,6 @@ def extract_exif(img: Image.Image) -> dict[str, Any]:
         if raw_exif:
             for tag_id, value in raw_exif.items():
                 tag_name = ExifTags.TAGS.get(tag_id, str(tag_id))
-                # Skip large binary objects
                 if isinstance(value, (bytes, bytearray)) and len(value) > 128:
                     continue
                 exif_data[tag_name] = str(value)
@@ -43,7 +43,7 @@ def analyze_image_bytes(
 ) -> dict[str, Any]:
     """
     Inspect raw image bytes and extract structural metadata, SHA256, perceptual hash,
-    EXIF metadata, OCR text, image-text consistency, and AI-assisted authenticity screening.
+    EXIF metadata, OCR text, image-text consistency, authenticity screening, and deepfake risk assessment.
     """
     size_bytes = len(file_bytes)
     sha256_hash = hashlib.sha256(file_bytes).hexdigest()
@@ -60,13 +60,8 @@ def analyze_image_bytes(
         width, height = img.size
         mime_type = Image.MIME.get(img.format, content_type or "image/unknown")
 
-        # Extract EXIF metadata
         exif_data = extract_exif(img)
-
-        # Compute a simple perceptual hash (Difference Hash / dHash)
         perceptual_hash = compute_dhash(img)
-
-        # Attempt OCR text extraction
         ocr_text = extract_ocr(img)
 
     except Exception as exc:
@@ -78,7 +73,6 @@ def analyze_image_bytes(
 
     consistency_score = consistency.get("score") if consistency else None
 
-    # Perform lightweight CPU-compatible authenticity screening
     authenticity_screening = authenticity_analyzer.analyze(
         file_bytes=file_bytes,
         filename=filename,
@@ -86,6 +80,13 @@ def analyze_image_bytes(
         exif_data=exif_data,
         ocr_text=ocr_text,
         consistency_score=consistency_score,
+    )
+
+    deepfake_analysis = deepfake_detector.analyze_media(
+        file_bytes=file_bytes,
+        filename=filename,
+        content_type=mime_type,
+        exif_data=exif_data,
     )
 
     return {
@@ -100,15 +101,13 @@ def analyze_image_bytes(
         "exif_status": "FOUND" if exif_data else "NOT FOUND",
         "ocr_text": ocr_text,
         "authenticity_screening": authenticity_screening,
+        "deepfake_analysis": deepfake_analysis,
     }
 
 
 def compute_dhash(image: Image.Image, hash_size: int = 8) -> str:
-    """
-    Calculate a simple 64-bit difference hash (dHash) for an image.
-    """
+    """Calculate a simple 64-bit difference hash (dHash) for an image."""
     try:
-        # Convert image to grayscale and resize to (hash_size + 1, hash_size)
         resized = image.convert("L").resize(
             (hash_size + 1, hash_size),
             Image.Resampling.BILINEAR if hasattr(Image, "Resampling") else Image.BILINEAR,
@@ -132,9 +131,7 @@ def compute_dhash(image: Image.Image, hash_size: int = 8) -> str:
 
 
 def extract_ocr(image: Image.Image) -> str:
-    """
-    Extract text using pytesseract if available, failing gracefully if Tesseract is not installed.
-    """
+    """Extract text using pytesseract if available, failing gracefully if Tesseract is not installed."""
     try:
         import pytesseract
 
@@ -148,9 +145,7 @@ def analyze_text_image_consistency(
     article_text: str,
     ocr_text: str,
 ) -> dict[str, Any]:
-    """
-    Compare extracted OCR text with article text to score media/text consistency.
-    """
+    """Compare extracted OCR text with article text to score media/text consistency."""
     if not ocr_text or "unavailable" in ocr_text.lower() or not article_text.strip():
         return {
             "consistency": "INCONCLUSIVE",
