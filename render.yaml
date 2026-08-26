@@ -3,12 +3,17 @@ services:
     name: veristasos
     env: python
     region: oregon
+
     buildCommand: pip install -r backend/requirements.txt
+
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend
+
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.5
+
       - key: ENVIRONMENT
         value: production
+
       - key: ALLOWED_ORIGINS
         value: "*"
