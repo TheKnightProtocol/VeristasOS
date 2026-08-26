@@ -6,7 +6,8 @@ __pycache__/
 .env
 .env.*
 !.env.example
-models/
+/models/
+!backend/app/models/
 *.gguf
 *.bin
 uploads/
