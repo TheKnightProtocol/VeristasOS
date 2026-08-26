@@ -1,8 +1,9 @@
 """
 VeristasOS Image & Media Analysis Service
 
-Performs image file inspection, metadata extraction, cryptographic hashing,
-perceptual difference hashing, graceful OCR text extraction, and media-text consistency analysis.
+Performs image file inspection, EXIF metadata extraction, cryptographic hashing,
+perceptual difference hashing, graceful OCR text extraction, media-text consistency analysis,
+and lightweight CPU-compatible media authenticity screening.
 
 DO NOT claim deepfake detection.
 """
@@ -12,17 +13,37 @@ from __future__ import annotations
 import hashlib
 import io
 from typing import Any
-from PIL import Image
+from PIL import Image, ExifTags
+
+from app.services.media_authenticity import authenticity_analyzer
+
+
+def extract_exif(img: Image.Image) -> dict[str, Any]:
+    """Extract and map EXIF metadata tags safely from a PIL Image."""
+    exif_data: dict[str, Any] = {}
+    try:
+        raw_exif = img._getexif() if hasattr(img, "_getexif") else None
+        if raw_exif:
+            for tag_id, value in raw_exif.items():
+                tag_name = ExifTags.TAGS.get(tag_id, str(tag_id))
+                # Skip large binary objects
+                if isinstance(value, (bytes, bytearray)) and len(value) > 128:
+                    continue
+                exif_data[tag_name] = str(value)
+    except Exception:
+        pass
+    return exif_data
 
 
 def analyze_image_bytes(
     file_bytes: bytes,
     filename: str,
     content_type: str | None = None,
+    article_text: str | None = None,
 ) -> dict[str, Any]:
     """
     Inspect raw image bytes and extract structural metadata, SHA256, perceptual hash,
-    and OCR text if available.
+    EXIF metadata, OCR text, image-text consistency, and AI-assisted authenticity screening.
     """
     size_bytes = len(file_bytes)
     sha256_hash = hashlib.sha256(file_bytes).hexdigest()
@@ -32,11 +53,15 @@ def analyze_image_bytes(
     mime_type = content_type or "image/unknown"
     perceptual_hash = "N/A"
     ocr_text = ""
+    exif_data: dict[str, Any] = {}
 
     try:
         img = Image.open(io.BytesIO(file_bytes))
         width, height = img.size
         mime_type = Image.MIME.get(img.format, content_type or "image/unknown")
+
+        # Extract EXIF metadata
+        exif_data = extract_exif(img)
 
         # Compute a simple perceptual hash (Difference Hash / dHash)
         perceptual_hash = compute_dhash(img)
@@ -47,6 +72,22 @@ def analyze_image_bytes(
     except Exception as exc:
         ocr_text = f"Image processing note: {exc}"
 
+    consistency = None
+    if article_text and article_text.strip():
+        consistency = analyze_text_image_consistency(article_text, ocr_text)
+
+    consistency_score = consistency.get("score") if consistency else None
+
+    # Perform lightweight CPU-compatible authenticity screening
+    authenticity_screening = authenticity_analyzer.analyze(
+        file_bytes=file_bytes,
+        filename=filename,
+        mime_type=mime_type,
+        exif_data=exif_data,
+        ocr_text=ocr_text,
+        consistency_score=consistency_score,
+    )
+
     return {
         "filename": filename,
         "mime_type": mime_type,
@@ -55,7 +96,10 @@ def analyze_image_bytes(
         "height": height,
         "sha256": sha256_hash,
         "perceptual_hash": perceptual_hash,
+        "exif_metadata": exif_data,
+        "exif_status": "FOUND" if exif_data else "NOT FOUND",
         "ocr_text": ocr_text,
+        "authenticity_screening": authenticity_screening,
     }
 
 

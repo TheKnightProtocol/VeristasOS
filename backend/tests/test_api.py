@@ -36,6 +36,37 @@ def test_ai_status_endpoint():
     assert data["model"] == "Qwen2.5-3B-Instruct"
 
 
+def test_media_authenticity_status_endpoint():
+    response = client.get("/api/media/authenticity/status")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["available"] is True
+    assert "model" in data
+    assert "type" in data
+    assert "description" in data
+
+
+def test_search_endpoint_get_paginated():
+    response = client.get("/api/search?q=transit&limit=10&offset=0&sort_by=relevance")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert data["query"] == "transit"
+    assert "total_matches" in data
+    assert "results" in data
+
+
+def test_semantic_search_post_paginated():
+    response = client.post(
+        "/api/semantic-search",
+        json={"query": "transit", "limit": 10, "offset": 0, "sort_by": "relevance"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert "results" in data
+
+
 def test_analyze_endpoint_unified():
     response = client.post(
         "/analyze",
@@ -100,6 +131,10 @@ def test_analyze_image_endpoint():
     assert data["image_analysis"]["filename"] == "test.png"
     assert "sha256" in data["image_analysis"]
     assert "perceptual_hash" in data["image_analysis"]
+    assert "authenticity_screening" in data["image_analysis"]
+    auth = data["image_analysis"]["authenticity_screening"]
+    assert "assessment" in auth
+    assert "signals" in auth
 
 
 def test_api_version_endpoint():

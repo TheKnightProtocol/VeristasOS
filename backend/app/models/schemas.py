@@ -43,8 +43,11 @@ class SemanticSearchRequest(BaseModel):
         max_length=2000,
         description="Claim or topic search query.",
     )
-    top_k: int = Field(5, ge=1, le=20, description="Number of evidence results to return.")
+    top_k: Optional[int] = Field(None, description="Legacy top_k filter.")
+    limit: int = Field(20, ge=1, le=100, description="Max items per page.")
+    offset: int = Field(0, ge=0, description="Pagination offset index.")
     category: Optional[str] = Field(None, description="Optional category filter.")
+    sort_by: str = Field("relevance", description="Sort criteria: relevance | newest | reliability")
 
 
 class InvestigationRequest(BaseModel):
@@ -60,6 +63,26 @@ class InvestigationRequest(BaseModel):
     source_name: Optional[str] = Field(None, description="Optional source name.")
     author: Optional[str] = Field(None, description="Optional author name.")
     publication_date: Optional[str] = Field(None, description="Optional publication date.")
+
+
+class AuthenticitySignal(BaseModel):
+    """Signal item for media authenticity evaluation."""
+
+    name: str
+    status: str  # VERIFIED SIGNAL | SUSPICIOUS SIGNAL | INCONCLUSIVE | NOT AVAILABLE
+    detail: str
+
+
+class MediaAuthenticityResponse(BaseModel):
+    """Structured media authenticity evaluation response model."""
+
+    available: bool
+    assessment: str  # LIKELY AUTHENTIC | SUSPICIOUS | INCONCLUSIVE
+    score: int
+    confidence: int
+    signals: list[AuthenticitySignal]
+    limitations: str
+    model: str
 
 
 class EvidenceItem(BaseModel):

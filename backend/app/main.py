@@ -229,6 +229,7 @@ def api_info():
             "factual claim extraction",
             "source provenance evaluation",
             "image media analysis & OCR",
+            "AI-assisted media authenticity screening",
             "local Qwen AI interpretation",
             "risk classification engine",
             "actionable recommendations",
@@ -240,10 +241,12 @@ def api_info():
             "api_info": "/api",
             "api_status": "/api/status",
             "ai_status": "/api/ai/status",
+            "media_authenticity_status": "/api/media/authenticity/status",
             "ai_analyze": "/api/ai/analyze",
             "analyze": "/analyze",
             "api_analyze": "/api/analyze",
             "analyze_image": "/api/analyze-image",
+            "search": "/api/search",
             "docs": "/docs",
         },
     }
@@ -269,6 +272,10 @@ def api_status():
             "model": "Qwen2.5-3B",
             "endpoint": "http://127.0.0.1:8080" if ai_available else "OFFLINE / LOCAL DEVELOPMENT ONLY",
         },
+        "media_authenticity": {
+            "available": True,
+            "model": "heuristic-cpu-v1",
+        },
         "version": APP_VERSION,
         "features": [
             "text analysis",
@@ -276,6 +283,7 @@ def api_status():
             "claim extraction",
             "provenance evaluation",
             "image OCR analysis",
+            "media authenticity screening",
             "local AI explanation",
         ],
     }
@@ -298,6 +306,18 @@ def ai_status():
         "model": "Qwen2.5-3B-Instruct",
         "local": True,
         "endpoint": "http://127.0.0.1:8080",
+    }
+
+
+@app.get("/api/media/authenticity/status")
+def media_authenticity_status():
+    """Return status of CPU-compatible media authenticity screening engine."""
+    from app.services.media_authenticity import authenticity_analyzer
+    return {
+        "available": authenticity_analyzer.is_available(),
+        "model": authenticity_analyzer.model_name,
+        "type": "heuristic-cpu-v1",
+        "description": "AI-assisted media authenticity screening (CPU-compatible). Not definitive proof of synthetic media.",
     }
 
 
@@ -363,21 +383,75 @@ def api_investigate(request: InvestigationRequest):
         )
 
 
+@app.get("/api/search")
+def api_search(
+    q: str,
+    limit: int = 20,
+    offset: int = 0,
+    category: Optional[str] = None,
+    sort_by: str = "relevance",
+):
+    """
+    Search full indexed evidence corpus with pagination and sorting.
+    """
+    if not q or not q.strip():
+        return {
+            "status": "success",
+            "query": q,
+            "results_count": 0,
+            "total_matches": 0,
+            "limit": limit,
+            "offset": offset,
+            "has_more": False,
+            "results": [],
+        }
+
+    total_matches = search_engine.count_matches(q, category=category)
+    matches = search_engine.search_similar_claims(
+        query=q,
+        top_k=None,
+        limit=limit,
+        offset=offset,
+        category=category,
+        sort_by=sort_by,
+    )
+    has_more = (offset + limit) < total_matches
+
+    return {
+        "status": "success",
+        "query": q,
+        "results_count": len(matches),
+        "total_matches": total_matches,
+        "limit": limit,
+        "offset": offset,
+        "has_more": has_more,
+        "results": [m.model_dump() if hasattr(m, "model_dump") else m.dict() for m in matches],
+    }
+
+
 @app.post("/api/semantic-search")
 def api_semantic_search(request: SemanticSearchRequest):
     """
     Semantic evidence search endpoint over indexed authoritative records.
     """
     try:
+        total_matches = search_engine.count_matches(request.query, category=request.category)
         matches = search_engine.search_similar_claims(
             query=request.query,
             top_k=request.top_k,
+            limit=request.limit,
+            offset=request.offset,
             category=request.category,
+            sort_by=request.sort_by,
         )
         return {
             "status": "success",
             "query": request.query,
             "results_count": len(matches),
+            "total_matches": total_matches,
+            "limit": request.limit,
+            "offset": request.offset,
+            "has_more": (request.offset + len(matches)) < total_matches,
             "results": [m.model_dump() if hasattr(m, "model_dump") else m.dict() for m in matches],
         }
     except Exception as exc:
@@ -439,8 +513,8 @@ async def analyze_image(
 ):
     """
     Image and media analysis endpoint with security validation.
-    Performs metadata extraction, hashing, OCR text extraction (if available),
-    and image-text consistency scoring.
+    Performs metadata extraction, hashing, OCR text extraction, EXIF inspection,
+    media authenticity screening, and image-text consistency scoring.
     """
     try:
         safe_filename = Path(file.filename or "uploaded_image.png").name
@@ -469,6 +543,7 @@ async def analyze_image(
             file_bytes=contents,
             filename=safe_filename,
             content_type=file.content_type,
+            article_text=article_text,
         )
 
         consistency = None

@@ -3,6 +3,7 @@ VeristasOS Semantic Search Engine
 
 Provides lightweight, dependency-safe semantic search and vector representation using
 TF-IDF vectorization and Cosine Similarity over local evidence repositories.
+Supports full corpus searching, pagination, and sorting by relevance, date, or reliability.
 """
 
 from __future__ import annotations
@@ -68,6 +69,39 @@ class SemanticSearchEngine:
                     "reliability_score": 98.0,
                     "evidence_type": "DEMO EVIDENCE",
                 },
+                {
+                    "id": "EV-103",
+                    "title": "Global Energy Outlook & Renewable Transition Statistics",
+                    "text": "International energy regulatory agencies published empirical data indicating solar and wind power generation grew by 18 percent globally year-over-year.",
+                    "source": "Energy Regulatory Bureau",
+                    "source_url": "https://energybureau.org/reports/transition-2026",
+                    "publication_date": "2026-03-01",
+                    "category": "energy",
+                    "reliability_score": 92.0,
+                    "evidence_type": "DEMO EVIDENCE",
+                },
+                {
+                    "id": "EV-104",
+                    "title": "Central Bank Policy Statement on Inflationary Pressure",
+                    "text": "Official central banking monetary committee reports confirm benchmark interest rates were held steady following quarterly inflation statistics review.",
+                    "source": "Central Financial Journal",
+                    "source_url": "https://financialjournal.org/rates-2026",
+                    "publication_date": "2026-02-28",
+                    "category": "finance",
+                    "reliability_score": 96.0,
+                    "evidence_type": "DEMO EVIDENCE",
+                },
+                {
+                    "id": "EV-105",
+                    "title": "Cybersecurity Vulnerability Audit of Critical Power Grids",
+                    "text": "National cybersecurity agency released an infrastructure warning regarding patch deployment for industrial control systems across regional power distribution facilities.",
+                    "source": "Cyber Defense Authority",
+                    "source_url": "https://cyberauthority.gov/alerts/grid-2026",
+                    "publication_date": "2026-01-15",
+                    "category": "security",
+                    "reliability_score": 99.0,
+                    "evidence_type": "DEMO EVIDENCE",
+                },
             ]
 
         self.evidence_list = [EvidenceItem(**item) for item in raw_items]
@@ -88,11 +122,14 @@ class SemanticSearchEngine:
     def search_similar_claims(
         self,
         query: str,
-        top_k: int = 5,
+        top_k: Optional[int] = None,
+        limit: int = 20,
+        offset: int = 0,
         category: Optional[str] = None,
+        sort_by: str = "relevance",
     ) -> list[EvidenceMatch]:
         """
-        Query vector space for semantically related evidence.
+        Query vector space for semantically related evidence with full corpus pagination.
         """
         if not query.strip() or not self.vectorizer or self.tfidf_matrix is None or not self.evidence_list:
             return []
@@ -110,7 +147,6 @@ class SemanticSearchEngine:
 
             score_percent = round(float(sim_score) * 100, 2)
 
-            # Classify relationship based on similarity score and lexical signals
             relationship = "INSUFFICIENT"
             explanation = "Low semantic similarity to indexed evidence."
 
@@ -118,7 +154,6 @@ class SemanticSearchEngine:
             text_lower = item.text.lower()
 
             if score_percent >= 45:
-                # Check for explicit contradiction triggers
                 contradiction_terms = {"no", "not", "refuses", "myth", "debunked", "false", "warned", "fake"}
                 if any(w in text_lower for w in contradiction_terms) and ("cure" in query_lower or "100%" in query_lower or "secret" in query_lower):
                     relationship = "CONTRADICTING"
@@ -139,8 +174,24 @@ class SemanticSearchEngine:
                 )
             )
 
-        matches.sort(key=lambda m: m.similarity_score, reverse=True)
-        return matches[:top_k]
+        # Sorting logic
+        if sort_by == "newest":
+            matches.sort(key=lambda m: m.evidence.publication_date or "", reverse=True)
+        elif sort_by == "reliability":
+            matches.sort(key=lambda m: m.evidence.reliability_score, reverse=True)
+        else:  # default "relevance"
+            matches.sort(key=lambda m: m.similarity_score, reverse=True)
+
+        # Pagination slice
+        if top_k is not None:
+            return matches[:top_k]
+
+        return matches[offset : offset + limit]
+
+    def count_matches(self, query: str, category: Optional[str] = None) -> int:
+        """Count total matching evidence records for query."""
+        all_matches = self.search_similar_claims(query=query, top_k=None, limit=10000, offset=0, category=category)
+        return len(all_matches)
 
     def compute_similarity(self, text1: str, text2: str) -> float:
         """Calculate pairwise cosine similarity score (0.0 to 100.0) between two text strings."""
@@ -156,5 +207,4 @@ class SemanticSearchEngine:
             return 0.0
 
 
-# Global singleton instance for easy import
 search_engine = SemanticSearchEngine()
