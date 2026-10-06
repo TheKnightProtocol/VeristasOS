@@ -15,6 +15,9 @@ from app.services.provenance import analyze_provenance
 from app.services.risk_engine import calculate_risk
 from app.services.image_analyzer import analyze_image_bytes, analyze_text_image_consistency
 from app.services.verification_engine import run_dual_layer_verification
+from app.services.trust_lens_engine import analyze_trust_lens
+from app.services.scam_dna import generate_scam_dna
+from app.services.bharat_language_engine import analyze_bharat_language
 from app.models.schemas import (
     UnifiedAnalyzeRequest,
     SimpleTextRequest,
@@ -44,7 +47,8 @@ FRONTEND_INDEX = PROJECT_ROOT / "frontend" / "index.html"
 async def lifespan(app: FastAPI):
     print()
     print("=" * 60)
-    print("VERISTASOS — DUAL-LAYER PRIVACY & TRUTH ENVIRONMENT")
+    print("VERISTASOS — DIGITAL TRUST & SAFETY LAYER")
+    print("Your truth. Your data. Your device.")
     print("=" * 60)
     print(f"Version : {APP_VERSION}")
     print("Backend : ONLINE")
@@ -77,7 +81,7 @@ app = FastAPI(
     title=APP_NAME,
     version=APP_VERSION,
     description=(
-        "VeristasOS — Dual-Layer Privacy Shield & Truth Intelligence Platform. "
+        "VeristasOS — AI-Powered Digital Trust & Safety Layer. "
         "Your truth. Your data. Your device."
     ),
     lifespan=lifespan,
@@ -135,7 +139,7 @@ class SimpleTextRequest(BaseModel):
 # ============================================================
 
 def run_unified_analysis(request: UnifiedAnalyzeRequest) -> dict[str, Any]:
-    """Execute full VeristasOS Dual-Layer Truth & Privacy analysis pipeline."""
+    """Execute full VeristasOS Digital Trust & Safety analysis pipeline."""
     text = request.text.strip()
     linguistic = analyze_text(text)
     claims = extract_claims(text)
@@ -164,10 +168,17 @@ def run_unified_analysis(request: UnifiedAnalyzeRequest) -> dict[str, Any]:
         publication_date=request.publication_date,
     )
 
+    trust_lens = analyze_trust_lens(
+        text=text,
+        source_url=request.source_url,
+        source_name=request.source_name,
+    )
+
     return {
         "status": "success",
         "service": APP_NAME,
         "version": APP_VERSION,
+        "trust_lens": trust_lens,
         "verification": verification,
         "analysis": {
             "overall_risk_score": risk_output["overall_risk_score"],
@@ -232,17 +243,17 @@ def api_info():
         "name": APP_NAME,
         "version": APP_VERSION,
         "status": "running",
-        "architecture": "VeristasOS Dual-Layer Privacy & Truth Platform",
+        "architecture": "VeristasOS AI-Powered Digital Trust & Safety Layer",
         "tagline": "Your truth. Your data. Your device.",
         "capabilities": [
-            "Layer 1: Privacy Shield (Aadhaar/PAN/UPI/OTP Scanner & Masking)",
-            "Layer 1: Scam Radar (Rule-Assisted Threat Detection)",
-            "Layer 2: Truth & Integrity Engine (Truth Meter & Sensationalism)",
-            "Layer 2: LIME/SHAP Explainability Impact Analysis",
-            "Forward Checker (WhatsApp & Social Claim Verification)",
-            "Media Forensics & Deepfake Risk Lens",
-            "Source Provenance Evaluation",
-            "Local-First AI Integration",
+            "Trust Lens (WHY → RISK → ACTION decision framework)",
+            "Digital Trust Graph (Multi-signal node/edge graph)",
+            "Scam DNA Engine (5-part attack vector fingerprinting)",
+            "Bharat Language Safety Engine (Hinglish/English code-mixed intent detection)",
+            "Privacy Shield (Aadhaar/PAN/UPI/OTP Scanner & Data Masking)",
+            "Content Trust Engine & Sensationalism Highlighter",
+            "Media Forensics & Deepfake Lens",
+            "Local-First AI Architecture Integration",
         ],
         "endpoints": {
             "root": "/",
@@ -251,8 +262,9 @@ def api_info():
             "api_info": "/api",
             "api_status": "/api/status",
             "ai_status": "/api/ai/status",
-            "media_authenticity_status": "/api/media/authenticity/status",
-            "media_deepfake_status": "/api/media/deepfake/status",
+            "trust_lens": "/api/trust-lens",
+            "scam_dna": "/api/scam-dna",
+            "bharat_safety": "/api/bharat-safety",
             "verify": "/api/verify",
             "forward_check": "/api/forward-check",
             "analyze": "/analyze",
@@ -296,6 +308,46 @@ def api_status():
         },
         "version": APP_VERSION,
     }
+
+
+@app.post("/api/trust-lens")
+def api_trust_lens(request: UnifiedAnalyzeRequest):
+    """Primary endpoint for Trust Lens analysis returning WHY → RISK → ACTION."""
+    try:
+        return {
+            "status": "success",
+            "trust_lens": analyze_trust_lens(
+                text=request.text,
+                source_url=request.source_url,
+                source_name=request.source_name,
+            ),
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Trust Lens analysis failed: {exc}")
+
+
+@app.post("/api/scam-dna")
+def api_scam_dna(request: SimpleTextRequest):
+    """Dedicated endpoint for Scam DNA fingerprint extraction."""
+    try:
+        return {
+            "status": "success",
+            "scam_dna": generate_scam_dna(request.text),
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Scam DNA extraction failed: {exc}")
+
+
+@app.post("/api/bharat-safety")
+def api_bharat_safety(request: SimpleTextRequest):
+    """Dedicated endpoint for Bharat Language Safety Engine (Hinglish/English)."""
+    try:
+        return {
+            "status": "success",
+            "bharat_safety": analyze_bharat_language(request.text),
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Bharat Language Safety analysis failed: {exc}")
 
 
 @app.get("/api/ai/status")
@@ -377,27 +429,23 @@ def api_verify(request: UnifiedAnalyzeRequest):
     try:
         return run_unified_analysis(request)
     except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Verification failed: {exc}",
-        )
+        raise HTTPException(status_code=500, detail=f"Verification failed: {exc}")
 
 
 @app.post("/api/forward-check")
 def api_forward_check(request: SimpleTextRequest):
-    """Dedicated endpoint for Forward Checker mode (WhatsApp / Social Media)."""
+    """Dedicated endpoint for Forward Checker mode."""
     try:
         res = run_dual_layer_verification(text=request.text)
+        trust_lens = analyze_trust_lens(text=request.text)
         return {
             "status": "success",
             "mode": "Forward Checker",
+            "trust_lens": trust_lens,
             "verification": res,
         }
     except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Forward check failed: {exc}",
-        )
+        raise HTTPException(status_code=500, detail=f"Forward check failed: {exc}")
 
 
 @app.post("/api/ai/analyze")
@@ -428,10 +476,7 @@ def analyze(request: UnifiedAnalyzeRequest):
     try:
         return run_unified_analysis(request)
     except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Analysis failed: {exc}",
-        )
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {exc}")
 
 
 @app.post("/api/analyze")
@@ -446,10 +491,7 @@ def api_investigate(request: InvestigationRequest):
     try:
         return run_full_investigation(request)
     except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Investigation failed: {exc}",
-        )
+        raise HTTPException(status_code=500, detail=f"Investigation failed: {exc}")
 
 
 @app.get("/api/search")
@@ -519,10 +561,7 @@ def api_semantic_search(request: SemanticSearchRequest):
             "results": [m.model_dump() if hasattr(m, "model_dump") else m.dict() for m in matches],
         }
     except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Semantic search failed: {exc}",
-        )
+        raise HTTPException(status_code=500, detail=f"Semantic search failed: {exc}")
 
 
 ALLOWED_IMAGE_MIMES = {
@@ -574,16 +613,19 @@ async def analyze_image(
             image_analysis=result,
         )
 
+        trust_lens = analyze_trust_lens(
+            text=article_text or result.get("ocr_text", ""),
+            image_analysis=result,
+        )
+
         return {
             "status": "success",
             "image_analysis": result,
             "verification": verification,
+            "trust_lens": trust_lens,
         }
 
     except HTTPException:
         raise
     except Exception as exc:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Image analysis failed: {exc}",
-        )
+        raise HTTPException(status_code=500, detail=f"Image analysis failed: {exc}")
