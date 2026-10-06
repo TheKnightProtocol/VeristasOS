@@ -6,6 +6,7 @@ from typing import Any, Optional
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from app.services.text_analyzer import analyze_text
@@ -97,6 +98,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+FRONTEND_DIR = PROJECT_ROOT / "frontend"
+if FRONTEND_DIR.exists():
+    app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 
 # ============================================================
@@ -387,6 +392,12 @@ def analyze(request: UnifiedAnalyzeRequest):
 @app.post("/api/analyze")
 def api_analyze(request: UnifiedAnalyzeRequest):
     """Consistent alias endpoint for unified analysis."""
+    return analyze(request)
+
+
+@app.post("/api/v1/text/analyze")
+def api_v1_text_analyze(request: UnifiedAnalyzeRequest):
+    """Clean API endpoint for unified text analysis."""
     return analyze(request)
 
 

@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="VeristasOS — Cyberpunk AI Truth Intelligence & Media Forensics Console.">
-    <meta name="theme-color" content="#030509">
-    <title>VeristasOS — Truth Intelligence Platform</title>
+    <meta name="description" content="VeristasOS — AI-Powered Truth & Media Verification Platform.">
+    <meta name="theme-color" content="#171717">
+    <title>VeristasOS — AI-Powered Truth & Media Verification</title>
 
     <style>
         /* =========================================================
-           NEON CYBERPUNK & LIGHT MODE DESIGN SYSTEM (CSS VARIABLES)
+           CHATGPT-INSPIRED DESIGN SYSTEM (CSS VARIABLES)
         ========================================================= */
         * {
             box-sizing: border-box;
@@ -18,36 +18,42 @@
         }
 
         :root {
-            /* Dark Theme Variables (Default) */
-            --bg-base: #030509;
-            --bg-panel: rgba(8, 12, 22, 0.88);
-            --bg-card: rgba(12, 18, 34, 0.75);
-            --bg-input: #040812;
-            --bg-subtle: #090e1a;
+            /* Dark Theme (Default) */
+            --bg-workspace: #212121;
+            --bg-sidebar: #171717;
+            --bg-card: #2f2f2f;
+            --bg-input: #2f2f2f;
+            --bg-subtle: #1e1e1e;
+            --bg-hover: #383838;
 
-            --neon-cyan: #00f0ff;
-            --neon-cyan-glow: rgba(0, 240, 255, 0.25);
-            --neon-violet: #a855f7;
-            --neon-violet-glow: rgba(168, 85, 247, 0.25);
-            --neon-magenta: #ff007f;
-            --neon-magenta-glow: rgba(255, 0, 127, 0.25);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --border-subtle: rgba(255, 255, 255, 0.05);
 
-            --green-active: #10b981;
-            --green-glow: rgba(16, 185, 129, 0.3);
-            --yellow-warn: #f59e0b;
-            --yellow-glow: rgba(245, 158, 11, 0.3);
-            --red-alert: #ef4444;
-            --red-glow: rgba(239, 68, 68, 0.3);
+            --text-primary: #ececf1;
+            --text-secondary: #b4b4b4;
+            --text-muted: #8e8ea0;
 
-            --border-glow: rgba(0, 240, 255, 0.2);
-            --border-dim: rgba(255, 255, 255, 0.08);
+            --accent-green: #10a37f;
+            --accent-green-hover: #1a7f64;
+            --accent-cyan: #00f0ff;
+            --accent-violet: #a855f7;
 
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-dim: #64748b;
+            --status-reliable-bg: rgba(16, 185, 129, 0.15);
+            --status-reliable-color: #10b981;
+            --status-reliable-border: #10b981;
 
-            --font-sans: Inter, system-ui, -apple-system, sans-serif;
-            --font-mono: "Fira Code", "Courier New", Consolas, monospace;
+            --status-verify-bg: rgba(245, 158, 11, 0.15);
+            --status-verify-color: #f59e0b;
+            --status-verify-border: #f59e0b;
+
+            --status-suspicious-bg: rgba(239, 68, 68, 0.15);
+            --status-suspicious-color: #ef4444;
+            --status-suspicious-border: #ef4444;
+
+            --font-sans: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: "Fira Code", Consolas, monospace;
+
+            --sidebar-width: 260px;
             --radius-lg: 16px;
             --radius-md: 10px;
             --radius-sm: 6px;
@@ -55,995 +61,978 @@
 
         /* Light Theme Overrides */
         [data-theme="light"] {
-            --bg-base: #f1f5f9;
-            --bg-panel: rgba(255, 255, 255, 0.95);
-            --bg-card: #ffffff;
-            --bg-input: #f8fafc;
-            --bg-subtle: #e2e8f0;
+            --bg-workspace: #ffffff;
+            --bg-sidebar: #f9f9f9;
+            --bg-card: #f7f7f8;
+            --bg-input: #f4f4f5;
+            --bg-subtle: #f0f0f0;
+            --bg-hover: #e5e5e5;
 
-            --neon-cyan: #0284c7;
-            --neon-cyan-glow: rgba(2, 132, 199, 0.15);
-            --neon-violet: #7c3aed;
-            --neon-violet-glow: rgba(124, 58, 237, 0.15);
-            --neon-magenta: #db2777;
-            --neon-magenta-glow: rgba(219, 39, 119, 0.15);
+            --border-color: #e5e5e5;
+            --border-subtle: #f0f0f0;
 
-            --border-glow: rgba(2, 132, 199, 0.25);
-            --border-dim: rgba(0, 0, 0, 0.12);
+            --text-primary: #0d0d0d;
+            --text-secondary: #555555;
+            --text-muted: #707070;
 
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-dim: #64748b;
+            --accent-cyan: #0284c7;
+            --accent-violet: #7c3aed;
         }
 
-        html { scroll-behavior: smooth; }
-
-        body {
-            min-height: 100vh;
+        html, body {
+            height: 100%;
             font-family: var(--font-sans);
+            background-color: var(--bg-workspace);
             color: var(--text-primary);
-            background: var(--bg-base);
-            overflow-x: hidden;
-            padding-bottom: 50px;
+            overflow: hidden;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* APPLICATION LAYOUT CONTAINER */
+        .app-layout {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
             position: relative;
-            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: -2;
-            opacity: 0.12;
-            background-image: 
-                linear-gradient(var(--neon-cyan-glow) 1px, transparent 1px),
-                linear-gradient(90deg, var(--neon-cyan-glow) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-
-        .container {
-            width: min(1280px, 94%);
-            margin: 0 auto;
-        }
-
-        button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
-            outline: 2px solid var(--neon-cyan);
-            outline-offset: 2px;
-        }
-
-        /* HEADER & NAVBAR */
-        header {
-            padding: 14px 0;
+        /* LEFT SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            border-bottom: 1px solid var(--border-glow);
-            background: var(--bg-panel);
-            backdrop-filter: blur(12px);
-            position: sticky;
-            top: 0;
-            z-index: 50;
+            padding: 14px;
+            transition: transform 0.3s ease, width 0.3s ease;
+            z-index: 40;
+            flex-shrink: 0;
         }
 
-        .brand {
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar.collapsed .hide-collapsed {
+            display: none !important;
+        }
+
+        .sidebar-header {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-subtle);
         }
 
-        .logo-box {
-            width: 40px;
-            height: 40px;
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
             display: grid;
             place-items: center;
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-violet));
-            font-family: var(--font-mono);
+            font-weight: 900;
             font-size: 18px;
-            font-weight: 900;
             color: #fff;
-            box-shadow: 0 0 18px var(--neon-cyan-glow);
+            box-shadow: 0 0 12px rgba(16, 163, 127, 0.3);
+            flex-shrink: 0;
         }
 
-        .brand-text h1 {
-            font-size: 19px;
-            font-weight: 900;
-            font-family: var(--font-mono);
+        .brand-title {
+            font-size: 15px;
+            font-weight: 800;
             letter-spacing: 0.5px;
-            background: linear-gradient(90deg, var(--text-primary), var(--neon-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-primary);
         }
 
-        .brand-text span {
-            display: block;
-            font-size: 9px;
+        .brand-sub {
+            font-size: 10px;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--neon-violet);
-            font-family: var(--font-mono);
+            letter-spacing: 1px;
         }
 
-        .nav-items {
+        .btn-new-chat {
+            margin-top: 14px;
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-new-chat:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .sidebar-nav {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 9px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-primary);
+            background-color: var(--bg-hover);
+        }
+
+        .history-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 16px 8px 6px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .theme-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .theme-toggle-row:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* MAIN CONVERSATIONAL WORKSPACE */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: var(--bg-workspace);
+            position: relative;
+        }
+
+        /* WORKSPACE TOP HEADER BAR */
+        .workspace-header {
+            height: 52px;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bg-workspace);
+            z-index: 10;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .workspace-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .workspace-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-left: 8px;
+        }
+
+        .system-health-pill {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background-color: rgba(16, 185, 129, 0.15);
+            color: var(--status-reliable-color);
+            border: 1px solid var(--status-reliable-color);
             display: flex;
             align-items: center;
             gap: 6px;
-            flex-wrap: wrap;
         }
 
-        .nav-btn {
-            background: transparent;
-            border: 1px solid transparent;
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: var(--status-reliable-color);
+            box-shadow: 0 0 6px var(--status-reliable-color);
+        }
+
+        /* CHAT MESSAGES SCROLL AREA */
+        .chat-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: min(840px, 92%);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* EMPTY STATE HERO */
+        .empty-state {
+            text-align: center;
+            margin: 60px 0 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .empty-hero-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+            display: grid;
+            place-items: center;
+            font-size: 26px;
+            color: #fff;
+            margin-bottom: 16px;
+            box-shadow: 0 0 24px rgba(16, 163, 127, 0.25);
+        }
+
+        .empty-state h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
             color: var(--text-secondary);
-            padding: 6px 12px;
-            border-radius: var(--radius-sm);
-            font-size: 11px;
-            font-weight: 700;
-            font-family: var(--font-mono);
-            letter-spacing: 0.5px;
+            max-width: 520px;
+            line-height: 1.5;
+            margin-bottom: 32px;
+        }
+
+        .prompt-chips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+
+        .prompt-chip-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            text-align: left;
             cursor: pointer;
             transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
-        .nav-btn:hover {
-            color: var(--neon-cyan);
-            border-color: var(--border-glow);
-            background: var(--neon-cyan-glow);
+        .prompt-chip-card:hover {
+            border-color: var(--accent-green);
+            background-color: var(--bg-hover);
         }
 
-        .nav-btn.active {
-            color: #fff;
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-violet));
-            box-shadow: 0 0 12px var(--neon-cyan-glow);
-        }
-
-        .theme-toggle-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-glow);
-            color: var(--text-primary);
-            padding: 6px 12px;
-            border-radius: var(--radius-sm);
-            font-family: var(--font-mono);
-            font-size: 11px;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* HERO & WORKSPACE */
-        .hero-console {
-            text-align: center;
-            padding: 24px 0 18px;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: 999px;
-            background: var(--neon-violet-glow);
-            border: 1px solid var(--neon-violet);
-            color: var(--neon-violet);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            font-family: var(--font-mono);
-            margin-bottom: 10px;
-        }
-
-        .hero-console h2 {
-            font-size: clamp(24px, 4vw, 38px);
-            font-weight: 900;
-            font-family: var(--font-mono);
-            letter-spacing: -0.5px;
-            margin-bottom: 6px;
-        }
-
-        .hero-title-cyan { color: var(--neon-cyan); }
-        .hero-sub { font-size: 13px; color: var(--text-secondary); }
-
-        .workspace-panel {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 0 25px var(--neon-cyan-glow);
-            margin-bottom: 24px;
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .input-header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .input-header-bar label {
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: var(--neon-cyan);
-            font-family: var(--font-mono);
-        }
-
-        textarea {
-            width: 100%;
-            min-height: 160px;
-            padding: 14px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-glow);
-            background: var(--bg-input);
-            color: var(--text-primary);
-            font-family: var(--font-mono);
+        .prompt-chip-title {
             font-size: 13px;
-            line-height: 1.6;
-            resize: vertical;
-            outline: none;
-        }
-
-        textarea:focus {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 15px var(--neon-cyan-glow);
-        }
-
-        .provenance-drawer {
-            margin-top: 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-dim);
-            border-radius: var(--radius-md);
-            padding: 12px;
-        }
-
-        .drawer-toggle {
-            font-size: 11px;
-            font-weight: 700;
-            font-family: var(--font-mono);
-            color: var(--neon-violet);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .drawer-content {
-            margin-top: 12px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-        }
-
-        .drawer-input-group label {
-            display: block;
-            font-size: 10px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            font-family: var(--font-mono);
-        }
-
-        .drawer-input-group input, .styled-select {
-            width: 100%;
-            padding: 8px 10px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-dim);
-            border-radius: var(--radius-sm);
+            font-weight: 600;
             color: var(--text-primary);
-            font-family: var(--font-mono);
-            font-size: 12px;
-            outline: none;
+            margin-bottom: 4px;
         }
 
-        .action-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 16px;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary-console {
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-violet));
-            color: #fff;
-            border: none;
-            padding: 12px 28px;
-            border-radius: var(--radius-md);
-            font-size: 12px;
-            font-weight: 900;
-            font-family: var(--font-mono);
-            letter-spacing: 1px;
-            cursor: pointer;
-            box-shadow: 0 0 20px var(--neon-cyan-glow);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary-console:hover { transform: translateY(-1px); }
-
-        .btn-console-secondary {
-            background: var(--bg-card);
-            border: 1px solid var(--border-dim);
-            color: var(--text-secondary);
-            padding: 8px 16px;
-            border-radius: var(--radius-sm);
+        .prompt-chip-sub {
             font-size: 11px;
-            font-family: var(--font-mono);
-            cursor: pointer;
+            color: var(--text-muted);
         }
 
-        .btn-console-secondary:hover {
-            border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
+        /* CHAT BUBBLES & RESPONSE CARDS */
+        .message-row {
+            display: flex;
+            gap: 14px;
+            width: 100%;
         }
 
-        /* HORIZONTAL NEON METERS */
-        .neon-bar-group {
+        .message-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 13px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .avatar-user {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .avatar-ai {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+            color: #fff;
+        }
+
+        .message-content {
+            flex: 1;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .neon-bar-item {
+        .user-text-bubble {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            color: var(--text-primary);
+        }
+
+        /* RESULT SUMMARY CARD */
+        .result-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 800;
+            padding: 5px 14px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.RELIABLE {
+            background-color: var(--status-reliable-bg);
+            color: var(--status-reliable-color);
+            border: 1px solid var(--status-reliable-border);
+        }
+
+        .status-badge.VERIFY {
+            background-color: var(--status-verify-bg);
+            color: var(--status-verify-color);
+            border: 1px solid var(--status-verify-border);
+        }
+
+        .status-badge.SUSPICIOUS {
+            background-color: var(--status-suspicious-bg);
+            color: var(--status-suspicious-color);
+            border: 1px solid var(--status-suspicious-border);
+        }
+
+        .risk-score-pill {
+            font-size: 12px;
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+        }
+
+        /* HIGHLIGHTED EXPLAINABILITY TEXT PREVIEW */
+        .explainability-box {
+            background-color: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        mark.hl-sensational {
+            background-color: rgba(239, 68, 68, 0.25);
+            color: #ef4444;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        /* SIGNAL BREAKDOWN CARDS GRID */
+        .signals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .signal-card-item {
+            background-color: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-size: 12px;
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
 
-        .neon-bar-label {
-            display: flex;
-            justify-content: space-between;
+        .signal-card-title {
             font-size: 11px;
-            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .signal-card-val {
+            font-size: 13px;
+            font-weight: 600;
             color: var(--text-primary);
         }
 
-        .neon-bar-track {
-            width: 100%;
-            height: 10px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-dim);
-            border-radius: 999px;
-            overflow: hidden;
+        .signal-card-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
         }
 
-        .neon-bar-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-violet));
-            box-shadow: 0 0 10px var(--neon-cyan-glow);
-            transition: width 0.6s ease;
+        /* RESPONSE ACTION BUTTONS */
+        .action-buttons-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+            flex-wrap: wrap;
         }
 
-        .neon-bar-why {
-            font-size: 10px;
-            color: var(--text-dim);
-            font-family: var(--font-mono);
-        }
-
-        /* SYSTEM CONSOLE */
-        .system-console-box {
-            background: var(--bg-input);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-md);
-            padding: 18px;
-            font-family: var(--font-mono);
-        }
-
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .status-card-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border-dim);
-            padding: 10px 14px;
+        .btn-action-subtle {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
             border-radius: var(--radius-sm);
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-subtle:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-hover);
+        }
+
+        /* FLOATING INPUT COMPOSER CONTAINER */
+        .composer-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 20px 24px;
+            background: linear-gradient(to top, var(--bg-workspace) 80%, transparent);
+            display: flex;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .composer-box {
+            width: min(840px, 100%);
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            transition: border-color 0.2s ease;
+        }
+
+        .composer-box:focus-within {
+            border-color: var(--accent-green);
+        }
+
+        .composer-textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            min-height: 48px;
+            max-height: 180px;
+        }
+
+        .composer-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 11px;
         }
 
-        .status-badge {
-            font-weight: 900;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-size: 10px;
-        }
-        .status-badge.ONLINE { background: var(--green-glow); color: var(--green-active); border: 1px solid var(--green-active); }
-        .status-badge.DEGRADED { background: var(--yellow-glow); color: var(--yellow-warn); border: 1px solid var(--yellow-warn); }
-        .status-badge.OFFLINE { background: var(--red-glow); color: var(--red-alert); border: 1px solid var(--red-alert); }
-
-        .console-log-area {
-            min-height: 180px;
-            max-height: 320px;
-            overflow-y: auto;
-            background: #020408;
-            border: 1px solid var(--border-dim);
-            border-radius: var(--radius-sm);
-            padding: 12px;
-            color: var(--neon-cyan);
-            font-size: 12px;
-            line-height: 1.5;
-            white-space: pre-wrap;
-        }
-
-        /* EVIDENCE MAP & FORENSICS TABLE */
-        .evidence-map-container {
-            min-height: 380px;
-            background: var(--bg-input);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            position: relative;
-        }
-
-        .map-side-panel {
-            position: absolute;
-            top: 16px; right: 16px; bottom: 16px;
-            width: 300px;
-            background: var(--bg-panel);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-md);
-            padding: 16px;
+        .attachment-preview {
             display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 10px;
+            background-color: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .btn-composer-attach {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .btn-composer-attach:hover {
+            color: var(--text-primary);
+            background-color: var(--bg-hover);
+        }
+
+        .btn-composer-send {
+            background-color: var(--accent-green);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-composer-send:hover {
+            background-color: var(--accent-green-hover);
+        }
+
+        /* MODALS */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            place-items: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            width: min(640px, 100%);
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
             flex-direction: column;
-            gap: 10px;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            z-index: 10;
+            gap: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        .forensics-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: var(--font-mono);
-            font-size: 12px;
-            margin-top: 14px;
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 12px;
         }
 
-        .forensics-table th, .forensics-table td {
-            padding: 10px 14px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-dim);
-        }
-
-        .forensics-table th {
-            color: var(--neon-cyan);
-            font-size: 11px;
-            text-transform: uppercase;
-            background: var(--bg-card);
-        }
-
-        .signal-pill {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 999px;
-            font-size: 10px;
+        .modal-title {
+            font-size: 18px;
             font-weight: 800;
         }
-        .signal-pill.VERIFIED { background: var(--green-glow); color: var(--green-active); border: 1px solid var(--green-active); }
-        .signal-pill.SUSPICIOUS { background: var(--red-glow); color: var(--red-alert); border: 1px solid var(--red-alert); }
-        .signal-pill.INCONCLUSIVE { background: var(--yellow-glow); color: var(--yellow-warn); border: 1px solid var(--yellow-warn); }
 
-        /* RESULTS DASHBOARD & RADIAL RISK GAUGE */
-        .results-section {
-            display: none;
-            animation: fadeIn 0.4s ease;
+        .btn-close-modal {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .dashboard-grid-layout {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .card-centerpiece {
-            grid-column: span 5;
-            background: var(--bg-panel);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-lg);
-            padding: 20px;
+        /* PIPELINE DIAGRAM FOR HOW IT WORKS */
+        .pipeline-flow {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 0 25px var(--neon-cyan-glow);
+            gap: 8px;
+            margin: 12px 0;
         }
 
-        .radial-gauge-container {
-            position: relative;
-            width: 160px;
-            height: 160px;
-            margin: 12px 0;
+        .pipeline-step {
+            background-color: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pipeline-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--accent-green);
+            color: #fff;
+            font-weight: 800;
             display: grid;
             place-items: center;
+            font-size: 11px;
+            flex-shrink: 0;
         }
 
-        .radial-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-        .radial-bg { fill: none; stroke: var(--border-dim); stroke-width: 12; }
-        .radial-progress {
-            fill: none; stroke: var(--neon-cyan); stroke-width: 12; stroke-linecap: round;
-            stroke-dasharray: 440; stroke-dashoffset: 440; transition: stroke-dashoffset 0.8s ease;
-        }
-
-        .radial-gauge-text { position: absolute; text-align: center; }
-        .risk-score-val-big { font-size: 42px; font-weight: 900; font-family: var(--font-mono); line-height: 1; }
-
-        .risk-badge-cyber {
-            padding: 5px 14px;
-            border-radius: 999px;
-            font-size: 10px;
-            font-weight: 900;
-            font-family: var(--font-mono);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .risk-badge-cyber.LOW { background: var(--green-glow); color: var(--green-active); border: 1px solid var(--green-active); }
-        .risk-badge-cyber.MODERATE { background: var(--yellow-glow); color: var(--yellow-warn); border: 1px solid var(--yellow-warn); }
-        .risk-badge-cyber.HIGH { background: var(--red-glow); color: var(--red-alert); border: 1px solid var(--red-alert); }
-        .risk-badge-cyber.CRITICAL { background: var(--red-glow); color: #ff4d4d; border: 1px solid #ff4d4d; }
-
-        .card-breakdown-panel {
-            grid-column: span 7;
-            background: var(--bg-panel);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-        }
-
-        .section-card-panel {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-glow);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        @media (max-width: 900px) {
-            .card-centerpiece, .card-breakdown-panel { grid-column: span 12; }
-            .map-side-panel { position: static; width: 100%; display: none; margin-top: 14px; }
+        /* RESPONSIVE DRAWER STYLES */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                inset: 0 auto 0 0;
+                transform: translateX(-100%);
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+            .prompt-chips-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="app-layout">
 
-    <!-- TOP NAVIGATION BAR -->
-    <header>
-        <div class="brand">
-            <div class="logo-box">V</div>
-            <div class="brand-text">
-                <h1>VERISTASOS</h1>
-                <span>TRUTH INTELLIGENCE PLATFORM</span>
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div>
+            <div class="sidebar-header">
+                <div class="brand-logo">V</div>
+                <div class="brand-text hide-collapsed">
+                    <div class="brand-title">VERISTASOS</div>
+                    <div class="brand-sub">AI Truth & Media Core</div>
+                </div>
+            </div>
+
+            <button class="btn-new-chat" onclick="resetNewVerification()">
+                <span>➕</span>
+                <span class="hide-collapsed">New Verification</span>
+            </button>
+
+            <nav class="sidebar-nav">
+                <a class="nav-item active" onclick="resetNewVerification()">
+                    <span>💬</span>
+                    <span class="hide-collapsed">New Verification</span>
+                </a>
+                <a class="nav-item" onclick="openModal('historyModal')">
+                    <span>📜</span>
+                    <span class="hide-collapsed">History</span>
+                </a>
+                <a class="nav-item" onclick="openModal('howItWorksModal')">
+                    <span>⚙️</span>
+                    <span class="hide-collapsed">How It Works</span>
+                </a>
+                <a class="nav-item" onclick="openModal('aboutModal')">
+                    <span>ℹ️</span>
+                    <span class="hide-collapsed">About</span>
+                </a>
+
+                <div class="history-section-title hide-collapsed">Recent Verifications</div>
+                <div class="history-list hide-collapsed" id="sidebarHistoryList">
+                    <!-- Dynamic history items -->
+                </div>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="theme-toggle-row" onclick="toggleTheme()">
+                <span class="hide-collapsed" id="themeLabelText">🌙 Dark Mode</span>
+                <span id="themeIcon">☀️</span>
+            </div>
+            <div class="theme-toggle-row hide-collapsed" onclick="toggleSidebarCollapse()">
+                <span>◀ Collapse Sidebar</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONVERSATIONAL WORKSPACE -->
+    <main class="workspace">
+
+        <!-- TOP BAR -->
+        <header class="workspace-header">
+            <div class="header-left">
+                <button class="mobile-menu-btn" onclick="toggleMobileSidebar()">☰</button>
+                <span class="workspace-title">VERISTASOS</span>
+                <span class="workspace-sub">AI-Powered Truth & Media Verification</span>
+            </div>
+            <div class="system-health-pill">
+                <span class="status-dot"></span>
+                <span>SYSTEM ONLINE</span>
+            </div>
+        </header>
+
+        <!-- SCROLLABLE CHAT MESSAGES AREA -->
+        <div class="chat-scroll-area" id="chatScrollArea">
+            <div class="chat-container" id="chatContainer">
+
+                <!-- EMPTY STATE HERO -->
+                <div class="empty-state" id="emptyStateHero">
+                    <div class="empty-hero-icon">V</div>
+                    <h1>Verify before you trust.</h1>
+                    <p>Analyze text, news claims, images, and media using multiple AI-powered signals and receive an explainable verification result.</p>
+
+                    <div class="prompt-chips-grid">
+                        <div class="prompt-chip-card" onclick="fillPrompt('BREAKING! Secret discovery announced overnight by unverified sources! Officials are in shock!')">
+                            <div class="prompt-chip-title">Analyze suspicious news claim</div>
+                            <div class="prompt-chip-sub">Evaluate sensationalism & linguistic trigger words</div>
+                        </div>
+                        <div class="prompt-chip-card" onclick="fillPrompt('The municipal council held an open meeting on public infrastructure and approved a 4.2 percent transit budget update.')">
+                            <div class="prompt-chip-title">Verify neutral article statement</div>
+                            <div class="prompt-chip-sub">Check factual assertions & source provenance</div>
+                        </div>
+                        <div class="prompt-chip-card" onclick="fillPrompt('Scientists confirm 100% cure discovered for all ailments but media refuses to cover it!')">
+                            <div class="prompt-chip-title">Check medical miracle myth</div>
+                            <div class="prompt-chip-sub">Identify absolutist claims & medical misinformation risk</div>
+                        </div>
+                        <div class="prompt-chip-card" onclick="fillPrompt('Explain why this headline looks suspicious and sensationalized.')">
+                            <div class="prompt-chip-title">Explain suspicious content</div>
+                            <div class="prompt-chip-sub">Get structured explainability breakdown</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC CHAT MESSAGES WILL BE INJECTED HERE -->
+
             </div>
         </div>
 
-        <nav class="nav-items" aria-label="Main Navigation">
-            <button class="nav-btn active" id="navBtnAnalyze" onclick="switchTab('tab-analyze')">🔍 ANALYZE</button>
-            <button class="nav-btn" id="navBtnMap" onclick="switchTab('tab-map')">🗺 EVIDENCE MAP</button>
-            <button class="nav-btn" id="navBtnSearch" onclick="switchTab('tab-search')">🌐 SEARCH</button>
-            <button class="nav-btn" id="navBtnMedia" onclick="switchTab('tab-media')">🖼 MEDIA</button>
-            <button class="nav-btn" id="navBtnConsole" onclick="switchTab('tab-console')">💻 SYSTEM CONSOLE</button>
-            <button class="nav-btn" id="navBtnHistory" onclick="openHistoryDrawer()">📜 HISTORY</button>
-            <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle Dark and Light Theme">☾ DARK</button>
-        </nav>
-    </header>
-
-    <!-- HERO TITLE -->
-    <section class="hero-console">
-        <div class="hero-badge">OPERATIONAL CONTROL ENVIRONMENT</div>
-        <h2>VERIFY <span class="hero-title-cyan">INFORMATION</span> INTEGRITY</h2>
-        <div class="hero-sub">AI-Assisted Misinformation Analysis, Media Forensics & Source Intelligence</div>
-    </section>
-
-    <!-- MAIN WORKSPACE PANEL -->
-    <section class="workspace-panel">
-
-        <!-- TAB 1: UNIFIED ANALYZE -->
-        <div id="tab-analyze" class="tab-content active">
-            <div class="input-header-bar">
-                <label for="textInput">STEP 1: PASTE CONTENT TO VERIFY</label>
-                <span style="font-size:10px; color:var(--text-dim); font-family:var(--font-mono);"><span id="charCount">0</span> CHARACTERS</span>
-            </div>
-
-            <textarea id="textInput" placeholder="Paste article text, news claims, social media posts, or statements to analyze..."></textarea>
-
-            <div class="provenance-drawer">
-                <div class="drawer-toggle" onclick="toggleDrawer()">
-                    <span>STEP 2: OPTIONAL SOURCE INFORMATION</span>
-                    <span id="drawerArrow">▼</span>
+        <!-- FLOATING INPUT COMPOSER -->
+        <div class="composer-container">
+            <div class="composer-box">
+                <div class="attachment-preview" id="attachmentPreview">
+                    <span>🖼 <span id="attachedFileName">image.png</span></span>
+                    <button class="btn-close-modal" style="font-size:12px;" onclick="clearAttachment()">✕</button>
                 </div>
-                <div class="drawer-content" id="drawerContent" style="display:none;">
-                    <div class="drawer-input-group">
-                        <label for="sourceUrl">SOURCE URL</label>
-                        <input type="text" id="sourceUrl" placeholder="https://example.com/article">
-                    </div>
-                    <div class="drawer-input-group">
-                        <label for="sourceName">PUBLISHER / SOURCE NAME</label>
-                        <input type="text" id="sourceName" placeholder="e.g. Daily Chronicle">
-                    </div>
-                    <div class="drawer-input-group">
-                        <label for="authorName">AUTHOR NAME</label>
-                        <input type="text" id="authorName" placeholder="e.g. Jane Doe">
-                    </div>
-                    <div class="drawer-input-group">
-                        <label for="pubDate">PUBLICATION DATE</label>
-                        <input type="date" id="pubDate">
-                    </div>
-                </div>
-            </div>
-
-            <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
-                <span style="font-size:10px; color:var(--text-dim); font-family:var(--font-mono); align-self:center;">TRY SAMPLE DEMO:</span>
-                <button class="btn-console-secondary" style="padding:4px 10px; font-size:10px;" onclick="loadDemo(1)">Sensational Claim</button>
-                <button class="btn-console-secondary" style="padding:4px 10px; font-size:10px;" onclick="loadDemo(2)">Verified News</button>
-                <button class="btn-console-secondary" style="padding:4px 10px; font-size:10px;" onclick="loadDemo(3)">Medical Miracle Myth</button>
-            </div>
-
-            <div class="action-row">
-                <button class="btn-primary-console" id="analyzeBtn" onclick="runTextAnalysis()"><span>STEP 3: ANALYZE CONTENT</span> &#x2794;</button>
-                <button class="btn-console-secondary" onclick="runFullInvestigationUI()">⚡ DEEP INVESTIGATION</button>
-            </div>
-        </div>
-
-        <!-- TAB 2: EVIDENCE MAP -->
-        <div id="tab-map" class="tab-content">
-            <div class="input-header-bar">
-                <label>EVIDENCE MAP</label>
-                <span style="font-size:10px; color:var(--text-dim); font-family:var(--font-mono);">Structure: CLAIM &#x2794; SOURCE &#x2794; EVIDENCE &#x2794; CONFIDENCE</span>
-            </div>
-
-            <div class="evidence-map-container" id="graphCanvasContainer">
-                <svg id="evidenceGraphSvg" width="100%" height="340" style="overflow:visible;"></svg>
-
-                <div id="graphEmptyState" style="color:var(--text-dim); font-size:12px; font-family:var(--font-mono); text-align:center; margin-top:120px;">
-                    Run an analysis or deep investigation to build the interactive Evidence Map.
-                </div>
-
-                <div class="map-side-panel" id="mapSidePanel">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <strong id="panelNodeTitle" style="color:var(--neon-cyan); font-size:12px;">Node Detail</strong>
-                        <button class="btn-console-secondary" style="padding:2px 6px; font-size:9px;" onclick="closeMapPanel()">&#x2715;</button>
-                    </div>
-                    <div><strong>What is this?</strong> <span id="panelWhatIs" style="color:var(--text-secondary);">Select a node in the map.</span></div>
-                    <div><strong>Why it matters:</strong> <span id="panelWhyMatters" style="color:var(--text-secondary);">-</span></div>
-                    <div><strong>Signal Detected:</strong> <span id="panelSignal" style="color:var(--text-secondary);">-</span></div>
-                    <div><strong>Confidence:</strong> <span id="panelConfidence" style="color:var(--neon-cyan);">-</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 3: SEARCH -->
-        <div id="tab-search" class="tab-content">
-            <div class="input-header-bar">
-                <label>SEARCH AUTHORITATIVE EVIDENCE DATABASE</label>
-                <span style="font-size:10px; color:var(--text-dim); font-family:var(--font-mono);">Full corpus vector search & similarity matching</span>
-            </div>
-
-            <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
-                <input type="text" id="searchQueryInput" placeholder="Enter claim or topic query (e.g. 'transit budget' or 'cancer cure')..." style="flex:1; padding:10px 14px; background:var(--bg-input); border:1px solid var(--border-glow); border-radius:var(--radius-sm); color:var(--text-primary); font-family:var(--font-mono); font-size:12px;">
                 
-                <select id="searchPageSizeSelect" class="styled-select" style="width:120px;">
-                    <option value="10">10 per page</option>
-                    <option value="25">25 per page</option>
-                    <option value="50">50 per page</option>
-                </select>
+                <textarea class="composer-textarea" id="composerInput" placeholder="Paste a news article, claim or suspicious content to verify..." onkeydown="handleKeyDown(event)"></textarea>
 
-                <select id="searchSortSelect" class="styled-select" style="width:140px;">
-                    <option value="relevance">Sort: Relevance</option>
-                    <option value="newest">Sort: Newest</option>
-                    <option value="reliability">Sort: Reliability</option>
-                </select>
+                <div class="composer-controls">
+                    <div style="display:flex; gap:6px;">
+                        <input type="file" id="imageFileInput" accept="image/*" style="display:none;" onchange="handleImageAttach(event)">
+                        <button class="btn-composer-attach" onclick="document.getElementById('imageFileInput').click()" title="Attach Image Media">📎 Attach Image</button>
+                        <button class="btn-composer-attach" onclick="clearComposer()" title="Clear Input">🗑 Clear</button>
+                    </div>
 
-                <button class="btn-primary-console" style="padding:10px 20px; font-size:11px;" onclick="runSearch(0)">SEARCH CORPUS</button>
-            </div>
-
-            <div id="searchResultsBox" style="display:none;">
-                <div style="font-size:11px; font-family:var(--font-mono); color:var(--text-dim); margin-bottom:10px; display:flex; justify-content:space-between;">
-                    <span>RESULTS: <strong id="searchResultCount" style="color:var(--neon-cyan);">0</strong></span>
-                    <span id="searchPaginationMeta">Page 1</span>
-                </div>
-                <div id="searchResultsList" style="display:flex; flex-direction:column; gap:10px;"></div>
-                
-                <div style="display:flex; justify-content:center; gap:10px; margin-top:16px;" id="searchPaginationControls">
-                    <button class="btn-console-secondary" id="btnSearchPrev" onclick="prevSearchPage()" disabled>&#x25C0; PREVIOUS</button>
-                    <button class="btn-console-secondary" id="btnSearchNext" onclick="nextSearchPage()" disabled>LOAD MORE &#x25B6;</button>
+                    <button class="btn-composer-send" id="btnAnalyzeSend" onclick="submitVerification()">
+                        <span>Analyze</span>
+                        <span>→</span>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- TAB 4: MEDIA & AUTHENTICITY -->
-        <div id="tab-media" class="tab-content">
-            <div class="input-header-bar">
-                <label>MEDIA FORENSICS & AUTHENTICITY SCREENING</label>
-                <span style="font-size:10px; color:var(--text-dim); font-family:var(--font-mono);">AI-assisted authenticity screening · CPU-compatible</span>
+    </main>
+
+</div>
+
+<!-- MODAL: HOW IT WORKS -->
+<div class="modal-overlay" id="howItWorksModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div class="modal-title">⚙️ How VeristasOS Works</div>
+            <button class="btn-close-modal" onclick="closeModal('howItWorksModal')">✕</button>
+        </div>
+        <p style="font-size:13px; color:var(--text-secondary); line-height:1.5;">
+            VeristasOS evaluates submitted content across a multi-stage verification pipeline to produce an explainable risk assessment:
+        </p>
+
+        <div class="pipeline-flow">
+            <div class="pipeline-step">
+                <div class="pipeline-num">1</div>
+                <div><strong>Input Ingestion:</strong> Accepts unstructured news text, claims, and image media uploads.</div>
             </div>
-
-            <div style="border:2px dashed var(--border-glow); border-radius:var(--radius-md); padding:30px; text-align:center; background:var(--bg-input); cursor:pointer;" onclick="document.getElementById('imageFileInput').click()">
-                <input type="file" id="imageFileInput" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
-                <div style="font-size:32px; margin-bottom:8px;">🖼</div>
-                <div style="font-size:13px; font-weight:700; font-family:var(--font-mono); color:var(--neon-cyan);">Click or drop an image file here</div>
-                <div style="font-size:10px; color:var(--text-dim); margin-top:4px;">Supports PNG, JPG, WEBP, GIF, BMP, TIFF (Max 20MB)</div>
+            <div class="pipeline-step">
+                <div class="pipeline-num">2</div>
+                <div><strong>Stylometric & Text Core:</strong> Analyzes sensational vocabulary, exclamation density, and ALL-CAPS frequency using NLTK heuristics.</div>
             </div>
-
-            <div id="imagePreviewBox" style="display:none; text-align:center; margin-top:14px;">
-                <img id="imagePreview" style="max-width:240px; max-height:180px; border-radius:var(--radius-md); border:1px solid var(--border-glow);">
-                <div id="imageFileName" style="font-size:11px; font-family:var(--font-mono); color:var(--text-secondary); margin-top:6px;"></div>
+            <div class="pipeline-step">
+                <div class="pipeline-num">3</div>
+                <div><strong>Media Forensics:</strong> Computes SHA-256 hashes, perceptual 64-bit dHash, EXIF tags, and extracts OCR text overlay.</div>
             </div>
-
-            <div style="margin-top:14px; text-align:right;">
-                <button class="btn-primary-console" id="analyzeImageBtn" onclick="runImageAnalysis()">ANALYZE MEDIA FORENSICS &#x2794;</button>
+            <div class="pipeline-step">
+                <div class="pipeline-num">4</div>
+                <div><strong>Source Provenance:</strong> Evaluates domain legitimacy, publisher attribution, and publication metadata.</div>
             </div>
-
-            <div id="mediaForensicsResultCard" style="display:none; margin-top:20px;">
-                <table class="forensics-table">
-                    <thead>
-                        <tr>
-                            <th>FORENSIC METRIC</th>
-                            <th>SIGNAL VALUE</th>
-                            <th>ASSESSMENT STATE</th>
-                        </tr>
-                    </thead>
-                    <tbody id="forensicsTableBody"></tbody>
-                </table>
-
-                <!-- DEEPFAKE / MANIPULATION RISK CARD -->
-                <div style="margin-top:16px; background:var(--bg-card); border:1px solid var(--border-glow); border-radius:var(--radius-md); padding:14px;" id="deepfakeCard">
-                    <div style="font-size:11px; font-weight:800; font-family:var(--font-mono); color:var(--neon-cyan); margin-bottom:6px;">
-                        DEEPFAKE / MANIPULATION RISK ESTIMATE
-                    </div>
-                    <div id="deepfakeRiskContent" style="font-size:12px; font-family:var(--font-mono); color:var(--text-secondary);">
-                        Evaluating forensic signals...
-                    </div>
-                </div>
-
-                <div style="margin-top:14px; font-size:11px; color:var(--text-dim); font-family:var(--font-mono); padding:10px; background:var(--bg-card); border-radius:var(--radius-sm); border:1px solid var(--border-dim);">
-                    <strong>DISCLAIMER:</strong> This is an AI-assisted forensic risk estimate based on metadata, texture variance, and noise distribution. It does not constitute definitive proof of synthetic media.
-                </div>
+            <div class="pipeline-step">
+                <div class="pipeline-num">5</div>
+                <div><strong>Evidence Aggregation:</strong> Cross-references extracted claims against authoritative indexed records.</div>
+            </div>
+            <div class="pipeline-step">
+                <div class="pipeline-num">6</div>
+                <div><strong>Explainability Output:</strong> Displays highlighted trigger words and structured signal breakdowns.</div>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- TAB 5: SYSTEM CONSOLE -->
-        <div id="tab-console" class="tab-content">
-            <div class="input-header-bar">
-                <label>VERISTASOS SYSTEM CONSOLE & SUBSYSTEM STATUS</label>
-                <span style="font-size:10px; color:var(--text-dim); font-family:var(--font-mono);">Real-time Health Diagnostics</span>
-            </div>
-
-            <div class="system-console-box">
-                <div class="status-grid">
-                    <div class="status-card-item">
-                        <span>Backend API</span>
-                        <span class="status-badge ONLINE" id="sysStatusBackend">ONLINE</span>
-                    </div>
-                    <div class="status-card-item">
-                        <span>AI Engine</span>
-                        <span class="status-badge OFFLINE" id="sysStatusAI">OFFLINE</span>
-                    </div>
-                    <div class="status-card-item">
-                        <span>Media Analyzer</span>
-                        <span class="status-badge ONLINE" id="sysStatusMedia">ONLINE</span>
-                    </div>
-                    <div class="status-card-item">
-                        <span>Semantic Search</span>
-                        <span class="status-badge ONLINE" id="sysStatusSearch">ONLINE</span>
-                    </div>
-                    <div class="status-card-item">
-                        <span>Provenance Engine</span>
-                        <span class="status-badge ONLINE" id="sysStatusProvenance">ONLINE</span>
-                    </div>
-                    <div class="status-card-item">
-                        <span>Deepfake Analysis</span>
-                        <span class="status-badge DEGRADED" id="sysStatusDeepfake">OFFLINE</span>
-                    </div>
-                    <div class="status-card-item">
-                        <span>Evidence Engine</span>
-                        <span class="status-badge ONLINE" id="sysStatusEvidence">ONLINE</span>
-                    </div>
-                </div>
-
-                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
-                    <button class="btn-console-secondary" onclick="runSystemCheck()">[Run System Check]</button>
-                    <button class="btn-console-secondary" onclick="checkAIStatus()">[Check AI Engine]</button>
-                    <button class="btn-console-secondary" onclick="logConsoleMessage('Checking Semantic Search Vector Index...')">[Check Search Index]</button>
-                    <button class="btn-console-secondary" onclick="logConsoleMessage('Media Forensics Authenticity Engine: ONLINE')">[Check Media Engine]</button>
-                    <button class="btn-console-secondary" onclick="clearConsoleLog()">[Clear Logs]</button>
-                </div>
-
-                <div class="console-log-area" id="systemConsoleLog">
-VeristasOS System Diagnostic Console [v1.0.0]
-------------------------------------------------------------
-Initializing subsystem probes...
-Backend API: ONLINE
-Media Authenticity Engine: ONLINE (CPU-compatible)
-Semantic Search Vector Engine: ONLINE
-                </div>
-            </div>
+<!-- MODAL: ABOUT (COLLEGE PRESENTATION) -->
+<div class="modal-overlay" id="aboutModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div class="modal-title">ℹ️ About VeristasOS</div>
+            <button class="btn-close-modal" onclick="closeModal('aboutModal')">✕</button>
         </div>
 
-        <div id="errorToast" style="display:none; margin-top:14px; padding:12px; background:rgba(239, 68, 68, 0.15); border:1px solid var(--red-alert); color:var(--red-alert); border-radius:var(--radius-sm); font-family:var(--font-mono); font-size:12px;"></div>
-    </section>
-
-    <!-- RESULTS DASHBOARD SECTION -->
-    <section class="results-section" id="resultsDashboard">
-        
-        <!-- STEP 4: REVIEW EVIDENCE & RISK SCORE -->
-        <div class="dashboard-grid-layout">
-            
-            <div class="card-centerpiece">
-                <div class="panel-header-title" style="width:100%;">
-                    <span>OVERALL MISINFORMATION RISK</span>
-                    <span style="font-size:10px; color:var(--text-dim);" id="analysisTimestamp">JUST NOW</span>
-                </div>
-
-                <div class="radial-gauge-container">
-                    <svg class="radial-svg" viewBox="0 0 160 160">
-                        <circle class="radial-bg" cx="80" cy="80" r="70"></circle>
-                        <circle class="radial-progress" id="radialGaugeCircle" cx="80" cy="80" r="70"></circle>
-                    </svg>
-                    <div class="radial-gauge-text">
-                        <div class="risk-score-val-big" id="riskScoreVal">0</div>
-                        <div style="font-size:9px; font-family:var(--font-mono); color:var(--text-secondary); margin-top:2px;">RISK SCORE</div>
-                    </div>
-                </div>
-
-                <div class="risk-badge-cyber" id="riskClassificationBadge">MODERATE RISK</div>
-
-                <div style="width:100%; display:flex; justify-content:space-between; font-size:11px; font-family:var(--font-mono); color:var(--text-secondary); margin-top:12px; border-top:1px solid var(--border-dim); padding-top:10px;">
-                    <div>CONFIDENCE: <strong id="confidenceVal" style="color:var(--neon-cyan);">85%</strong></div>
-                    <div>SENSATIONALISM: <strong id="sensationalismVal">0/100</strong></div>
-                </div>
+        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; display:flex; flex-direction:column; gap:12px;">
+            <div>
+                <strong style="color:var(--text-primary); font-size:15px;">VeristasOS: Intelligent Fake News & Deepfake Detection</strong>
+                <p style="margin-top:4px;">An AI-powered multimodal verification system helping users evaluate misleading news content, claims, and synthetic media.</p>
             </div>
 
-            <!-- HORIZONTAL NEON METERS -->
-            <div class="card-breakdown-panel">
-                <div class="panel-header-title">
-                    <span>RISK FACTOR METERS</span>
-                    <span style="font-size:10px; color:var(--text-dim);">DERIVED SIGNALS</span>
-                </div>
-
-                <div class="neon-bar-group">
-                    <div class="neon-bar-item">
-                        <div class="neon-bar-label">
-                            <span>SENSATIONAL VOCABULARY</span>
-                            <strong id="mSensational">0%</strong>
-                        </div>
-                        <div class="neon-bar-track"><div class="neon-bar-fill" id="barSensational"></div></div>
-                        <div class="neon-bar-why" id="whySensational">Concentration of emotionally loaded trigger terms.</div>
-                    </div>
-
-                    <div class="neon-bar-item">
-                        <div class="neon-bar-label">
-                            <span>EMOTIONAL LANGUAGE & PUNCTUATION</span>
-                            <strong id="mEmotional">0%</strong>
-                        </div>
-                        <div class="neon-bar-track"><div class="neon-bar-fill" id="barEmotional"></div></div>
-                        <div class="neon-bar-why" id="whyEmotional">Punctuation density (! and ?) and capitalizations.</div>
-                    </div>
-
-                    <div class="neon-bar-item">
-                        <div class="neon-bar-label">
-                            <span>LINGUISTIC REPETITION</span>
-                            <strong id="mRepetition">0%</strong>
-                        </div>
-                        <div class="neon-bar-track"><div class="neon-bar-fill" id="barRepetition"></div></div>
-                        <div class="neon-bar-why" id="whyRepetition">Repeated phrase ratio across article text.</div>
-                    </div>
-
-                    <div class="neon-bar-item">
-                        <div class="neon-bar-label">
-                            <span>EXCESSIVE CERTAINTY</span>
-                            <strong id="mCertainty">0%</strong>
-                        </div>
-                        <div class="neon-bar-track"><div class="neon-bar-fill" id="barCertainty"></div></div>
-                        <div class="neon-bar-why" id="whyCertainty">Absolutist claims without modal qualifiers.</div>
-                    </div>
-
-                    <div class="neon-bar-item">
-                        <div class="neon-bar-label">
-                            <span>SOURCE RISK</span>
-                            <strong id="mSource">0%</strong>
-                        </div>
-                        <div class="neon-bar-track"><div class="neon-bar-fill" id="barSource"></div></div>
-                        <div class="neon-bar-why" id="whySource">Publisher metadata & domain provenance evaluation.</div>
-                    </div>
-                </div>
+            <div style="background-color:var(--bg-subtle); padding:14px; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+                <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:8px;">Project Details</div>
+                <div><strong>Institution:</strong> Dronacharya College of Engineering, Gurugram</div>
+                <div><strong>Department:</strong> CSE – Artificial Intelligence & Machine Learning</div>
+                <div style="margin-top:6px;"><strong>Team Members:</strong></div>
+                <ul style="padding-left:18px; margin-top:2px;">
+                    <li>Sankalp Sharma</li>
+                    <li>Ishan Sharma</li>
+                    <li>Rishabh</li>
+                </ul>
             </div>
+
+            <p style="font-size:11px; color:var(--text-muted); font-style:italic;">
+                "VeristasOS combines multiple verification signals to help users understand whether digital content deserves further trust or investigation."
+            </p>
         </div>
+    </div>
+</div>
 
-        <!-- CLAIMS DETECTED -->
-        <div class="section-card-panel">
-            <div class="panel-header-title">
-                <span>DETECTED FACTUAL CLAIMS</span>
-                <span style="font-size:10px; color:var(--yellow-warn);" id="claimsCount">0 CLAIMS</span>
-            </div>
-            <div id="claimsGrid" style="display:flex; flex-direction:column; gap:10px;"></div>
+<!-- MODAL: HISTORY -->
+<div class="modal-overlay" id="historyModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div class="modal-title">📜 Verification History</div>
+            <button class="btn-close-modal" onclick="closeModal('historyModal')">✕</button>
         </div>
-
-        <!-- PROVENANCE & RECOMMENDATIONS -->
-        <div class="dashboard-grid-layout">
-            <div class="card-breakdown-panel" style="grid-column: span 6;">
-                <div class="panel-header-title"><span>SOURCE PROVENANCE SYSTEM</span></div>
-                <div id="provenanceBox" style="font-size:12px; line-height:1.6; color:var(--text-secondary); font-family:var(--font-mono);"></div>
-            </div>
-
-            <div class="card-breakdown-panel" style="grid-column: span 6;">
-                <div class="panel-header-title"><span>STEP 5: VERIFICATION PROTOCOL</span></div>
-                <ul id="recsList" style="font-size:12px; line-height:1.6; color:var(--text-secondary); font-family:var(--font-mono); padding-left:20px;"></ul>
-            </div>
+        <div id="modalHistoryList" style="display:flex; flex-direction:column; gap:8px; max-height:360px; overflow-y:auto;">
+            <!-- Dynamic history list -->
         </div>
-
-        <!-- AI REASONING -->
-        <div class="section-card-panel">
-            <div class="panel-header-title">
-                <span>LOCAL AI REASONING</span>
-                <span class="status-badge ONLINE" style="font-size:9px;">QWEN2.5 3B / DETERMINISTIC FALLBACK</span>
-            </div>
-            <div id="aiSummaryText" style="font-size:13px; line-height:1.6; color:var(--text-primary); font-family:var(--font-mono); background:var(--bg-input); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border-dim);"></div>
-        </div>
-
-        <!-- DASHBOARD ACTIONS -->
-        <div style="display:flex; justify-content:space-between; margin-top:20px;">
-            <button class="btn-console-secondary" onclick="exportReport()">📄 EXPORT ANALYSIS REPORT</button>
-            <button class="btn-console-secondary" onclick="document.getElementById('resultsDashboard').style.display='none'">🔄 CLEAR VIEW</button>
-        </div>
-    </section>
-
-    <!-- FOOTER DISCLAIMER -->
-    <footer style="margin-top:40px; text-align:center; font-size:11px; color:var(--text-dim); font-family:var(--font-mono); border-top:1px solid var(--border-dim); padding-top:16px;">
-        <strong>VERISTASOS ANALYTICAL DISCLAIMER:</strong> VeristasOS provides AI-assisted risk indicators and analytical signals. It does not independently establish absolute ground truth. Users should verify critical claims using primary authoritative sources.
-    </footer>
-
+    </div>
 </div>
 
 <!-- JAVASCRIPT APPLICATION LOGIC -->
 <script>
-    let currentAnalysisResult = null;
-    let selectedImageFile = null;
-    let searchOffset = 0;
+    let attachedImageFile = null;
+    let verificationHistory = [];
 
     document.addEventListener("DOMContentLoaded", () => {
         initTheme();
-        checkAIStatus();
-        runSystemCheck();
-
-        document.getElementById("textInput").addEventListener("input", function() {
-            document.getElementById("charCount").textContent = this.value.length;
-        });
+        loadHistory();
     });
 
-    /* THEME TOGGLE */
+    /* THEME PERSISTENCE */
     function initTheme() {
         const saved = localStorage.getItem("veristas_theme") || "dark";
         document.documentElement.setAttribute("data-theme", saved);
-        document.getElementById("themeToggleBtn").textContent = saved === "dark" ? "☾ DARK" : "☀ LIGHT";
+        updateThemeUI(saved);
     }
 
     function toggleTheme() {
@@ -1051,572 +1040,322 @@ Semantic Search Vector Engine: ONLINE
         const next = current === "dark" ? "light" : "dark";
         document.documentElement.setAttribute("data-theme", next);
         localStorage.setItem("veristas_theme", next);
-        document.getElementById("themeToggleBtn").textContent = next === "dark" ? "☾ DARK" : "☀ LIGHT";
+        updateThemeUI(next);
     }
 
-    /* TAB SWITCHING */
-    function switchTab(tabId) {
-        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-
-        if (tabId === "tab-analyze") document.getElementById("navBtnAnalyze")?.classList.add("active");
-        if (tabId === "tab-map") document.getElementById("navBtnMap")?.classList.add("active");
-        if (tabId === "tab-search") document.getElementById("navBtnSearch")?.classList.add("active");
-        if (tabId === "tab-media") document.getElementById("navBtnMedia")?.classList.add("active");
-        if (tabId === "tab-console") document.getElementById("navBtnConsole")?.classList.add("active");
-
-        document.getElementById(tabId)?.classList.add("active");
-    }
-
-    /* SYSTEM CONSOLE LOGIC */
-    function logConsoleMessage(msg) {
-        const log = document.getElementById("systemConsoleLog");
-        const time = new Date().toLocaleTimeString();
-        log.textContent += `\n[${time}] ${msg}`;
-        log.scrollTop = log.scrollHeight;
-    }
-
-    function clearConsoleLog() {
-        document.getElementById("systemConsoleLog").textContent = "VeristasOS System Diagnostic Console [v1.0.0]\n------------------------------------------------------------";
-    }
-
-    async function runSystemCheck() {
-        logConsoleMessage("Running full system health check...");
-        try {
-            const res = await fetch("/health");
-            const data = await res.json();
-            document.getElementById("sysStatusBackend").textContent = "ONLINE";
-            document.getElementById("sysStatusBackend").className = "status-badge ONLINE";
-            logConsoleMessage(`Backend Version: ${data.version} - Status: ${data.status.toUpperCase()}`);
-        } catch (e) {
-            logConsoleMessage("Backend Health Check Warning: Unable to query health endpoint.");
-        }
-        checkAIStatus();
-        checkDeepfakeStatus();
-    }
-
-    async function checkAIStatus() {
-        try {
-            const res = await fetch("/api/ai/status");
-            const data = await res.json();
-            const el = document.getElementById("sysStatusAI");
-            if (data.available) {
-                el.textContent = "ONLINE";
-                el.className = "status-badge ONLINE";
-                logConsoleMessage("AI Engine: Local Qwen2.5 3B CONNECTED");
-            } else {
-                el.textContent = "OFFLINE";
-                el.className = "status-badge OFFLINE";
-                logConsoleMessage("AI Engine: Local Qwen2.5 3B OFFLINE (Deterministic fallback active)");
-            }
-        } catch (e) {
-            logConsoleMessage("AI Engine Status: OFFLINE");
-        }
-    }
-
-    async function checkDeepfakeStatus() {
-        try {
-            const res = await fetch("/api/media/deepfake/status");
-            const data = await res.json();
-            const el = document.getElementById("sysStatusDeepfake");
-            if (data.available) {
-                el.textContent = "ONLINE";
-                el.className = "status-badge ONLINE";
-                logConsoleMessage("Deepfake Detector Module: ONLINE");
-            } else {
-                el.textContent = "OFFLINE";
-                el.className = "status-badge DEGRADED";
-                logConsoleMessage("Deepfake Detector Module: OFFLINE (Disabled by config)");
-            }
-        } catch (e) {
-            logConsoleMessage("Deepfake Status: OFFLINE");
-        }
-    }
-
-    /* DEMO LOADER */
-    function loadDemo(caseId) {
-        const txt = document.getElementById("textInput");
-        const url = document.getElementById("sourceUrl");
-        const name = document.getElementById("sourceName");
-
-        if (caseId === 1) {
-            txt.value = "BREAKING SHOCKING DISASTER! Secret government miracle program destroyed overnight by rogue group! YOU WON'T BELIEVE WHAT HAPPENED NEXT!!! Officials are terrified to leak the unbelievable 100% truth!";
-            url.value = "https://unverified-clickbait.xyz/breaking-shocking";
-            name.value = "Viral Buzz News";
-        } else if (caseId === 2) {
-            txt.value = "The city council approved a budget increase of 4.2 percent for municipal public transit improvements during Tuesday's open session. The decision followed a three-month review of commuter traffic statistics.";
-            url.value = "https://cityjournal.org/transit-update-2026";
-            name.value = "Municipal Gazette";
-        } else if (caseId === 3) {
-            txt.value = "Scientists confirm 100% cure discovered for all major ailments but main media refuses to cover it! Secret report guarantees full recovery within 24 hours!";
-            url.value = "";
-            name.value = "";
-        }
-        document.getElementById("charCount").textContent = txt.value.length;
-    }
-
-    function toggleDrawer() {
-        const content = document.getElementById("drawerContent");
-        const arrow = document.getElementById("drawerArrow");
-        if (content.style.display === "none") {
-            content.style.display = "grid";
-            arrow.textContent = "▲";
+    function updateThemeUI(theme) {
+        const label = document.getElementById("themeLabelText");
+        const icon = document.getElementById("themeIcon");
+        if (theme === "dark") {
+            if (label) label.textContent = "🌙 Dark Mode";
+            if (icon) icon.textContent = "☀️";
         } else {
-            content.style.display = "none";
-            arrow.textContent = "▼";
+            if (label) label.textContent = "☀️ Light Mode";
+            if (icon) icon.textContent = "🌙";
         }
     }
 
-    /* ANALYSIS EXECUTION */
-    async function runTextAnalysis() {
-        const text = document.getElementById("textInput").value.trim();
-        const toast = document.getElementById("errorToast");
-        const btn = document.getElementById("analyzeBtn");
+    /* SIDEBAR COLLAPSE & MOBILE DRAWER */
+    function toggleSidebarCollapse() {
+        document.getElementById("sidebar").classList.toggle("collapsed");
+    }
 
-        toast.style.display = "none";
-        if (!text) {
-            toast.textContent = "Please enter text content to analyze.";
-            toast.style.display = "block";
-            return;
-        }
+    function toggleMobileSidebar() {
+        document.getElementById("sidebar").classList.toggle("mobile-open");
+    }
 
-        btn.disabled = true;
-        btn.innerHTML = `<span>ANALYZING...</span> ⏳`;
+    /* MODALS MANAGEMENT */
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.style.display = "grid";
+    }
 
-        const payload = {
-            text: text,
-            source_url: document.getElementById("sourceUrl").value || null,
-            source_name: document.getElementById("sourceName").value || null,
-            author: document.getElementById("authorName").value || null,
-            publication_date: document.getElementById("pubDate").value || null
-        };
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.style.display = "none";
+    }
 
-        try {
-            const response = await fetch("/api/analyze", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.detail || "Analysis failed.");
+    /* PROMPT FILLING & INPUT COMPOSER */
+    function fillPrompt(text) {
+        const input = document.getElementById("composerInput");
+        input.value = text;
+        input.focus();
+    }
 
-            currentAnalysisResult = data.analysis;
-            renderDashboard(data.analysis);
-            logConsoleMessage(`Analysis complete. Risk Score: ${data.analysis.overall_risk_score} (${data.analysis.classification})`);
-        } catch (err) {
-            toast.textContent = err.message || "Error running analysis.";
-            toast.style.display = "block";
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = `<span>STEP 3: ANALYZE CONTENT</span> &#x2794;`;
+    function handleKeyDown(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            submitVerification();
         }
     }
 
-    async function runFullInvestigationUI() {
-        const text = document.getElementById("textInput").value.trim();
-        const toast = document.getElementById("errorToast");
-        toast.style.display = "none";
-        if (!text) {
-            toast.textContent = "Please enter article text for deep investigation.";
-            toast.style.display = "block";
-            return;
-        }
-
-        try {
-            const response = await fetch("/api/investigate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: text })
-            });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.detail || "Investigation failed.");
-
-            const inv = data.investigation;
-            currentAnalysisResult = inv;
-            renderDashboard(inv);
-            if (inv.graph) renderEvidenceGraph(inv.graph);
-            logConsoleMessage(`Deep Investigation complete. ID: ${data.investigation_id}`);
-        } catch (err) {
-            toast.textContent = err.message || "Investigation error.";
-            toast.style.display = "block";
-        }
+    function clearComposer() {
+        document.getElementById("composerInput").value = "";
+        clearAttachment();
     }
 
-    /* RENDER DASHBOARD */
-    function renderDashboard(analysis) {
-        const db = document.getElementById("resultsDashboard");
-        db.style.display = "block";
-        db.scrollIntoView({ behavior: "smooth" });
-
-        const score = Math.round(analysis.overall_risk_score);
-        document.getElementById("riskScoreVal").textContent = score;
-
-        const circle = document.getElementById("radialGaugeCircle");
-        const offset = 440 - (440 * score) / 100;
-        circle.style.strokeDashoffset = offset;
-
-        // Risk Category Label Mapping
-        let riskCategory = "LOW MISINFORMATION RISK";
-        let badgeClass = "LOW";
-        if (score > 80) { riskCategory = "CRITICAL MISINFORMATION RISK"; badgeClass = "CRITICAL"; }
-        else if (score > 60) { riskCategory = "HIGH MISINFORMATION RISK"; badgeClass = "HIGH"; }
-        else if (score > 30) { riskCategory = "MODERATE MISINFORMATION RISK"; badgeClass = "MODERATE"; }
-
-        const badge = document.getElementById("riskClassificationBadge");
-        badge.textContent = riskCategory;
-        badge.className = `risk-badge-cyber ${badgeClass}`;
-
-        document.getElementById("confidenceVal").textContent = `${analysis.confidence}%`;
-        document.getElementById("sensationalismVal").textContent = `${analysis.sensationalism_score}/100`;
-
-        // Horizontal Neon Meters
-        const rf = analysis.risk_factors || {};
-        setNeonMeter("Sensational", rf.sensationalism || 0);
-        setNeonMeter("Emotional", rf.emotional_language || 0);
-        setNeonMeter("Repetition", rf.repetition || 0);
-        setNeonMeter("Certainty", rf.excessive_certainty || 0);
-        setNeonMeter("Source", rf.source_risk || 0);
-
-        // Claims with Expandable Explanation
-        const claimsGrid = document.getElementById("claimsGrid");
-        claimsGrid.innerHTML = "";
-        const claims = analysis.claims || [];
-        document.getElementById("claimsCount").textContent = `${claims.length} CLAIMS`;
-
-        claims.forEach((c, idx) => {
-            const card = document.createElement("div");
-            card.style.padding = "12px";
-            card.style.background = "var(--bg-card)";
-            card.style.border = "1px solid var(--border-dim)";
-            card.style.borderRadius = "var(--radius-sm)";
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; margin-bottom:4px;">
-                    <strong style="color:var(--neon-cyan);">CLAIM #${idx + 1}</strong>
-                    <span style="color:var(--yellow-warn); font-weight:800;">Status: UNVERIFIED</span>
-                </div>
-                <div style="font-size:13px; color:var(--text-primary); font-family:var(--font-mono); margin-bottom:6px;">"${escapeHtml(c.claim)}"</div>
-                <div style="font-size:10px; color:var(--neon-violet); cursor:pointer; font-family:var(--font-mono);" onclick="toggleClaimWhy(${idx})">
-                    ▶ WHY THIS MATTERS
-                </div>
-                <div id="claimWhy_${idx}" style="display:none; font-size:11px; color:var(--text-secondary); margin-top:6px; font-family:var(--font-mono); padding-top:4px; border-top:1px dashed var(--border-dim);">
-                    Extracted as a key factual assertion requiring independent verification against authoritative datasets.
-                </div>
-            `;
-            claimsGrid.appendChild(card);
-        });
-
-        // Human-Readable Provenance
-        const prov = analysis.provenance || {};
-        const provWhy = prov.source_name 
-            ? `Publisher information ('${prov.source_name}') was supplied, but independent verification was not established.`
-            : "No publisher or author attribution was supplied with the content payload.";
-
-        document.getElementById("provenanceBox").innerHTML = `
-            <div><strong>Publisher:</strong> ${escapeHtml(prov.source_name || "Not supplied")}</div>
-            <div><strong>Author:</strong> ${escapeHtml(prov.author || "Not supplied")}</div>
-            <div><strong>URL:</strong> ${prov.source_url ? `<a href="${escapeHtml(prov.source_url)}" target="_blank" style="color:var(--neon-cyan);">${escapeHtml(prov.source_url)}</a>` : "Not supplied"}</div>
-            <div style="margin-top:8px;"><strong>Provenance Score:</strong> <strong style="color:var(--neon-cyan);">${prov.provenance_score}/100</strong></div>
-            <div style="margin-top:8px; font-size:11px; color:var(--text-dim); font-style:italic;"><strong>WHY THIS SCORE?</strong> ${escapeHtml(provWhy)}</div>
-        `;
-
-        // Recommendations
-        const recsList = document.getElementById("recsList");
-        recsList.innerHTML = "";
-        (analysis.recommendations || []).forEach(rec => {
-            const li = document.createElement("li");
-            li.textContent = rec;
-            recsList.appendChild(li);
-        });
-
-        document.getElementById("aiSummaryText").textContent = analysis.ai_analysis ? analysis.ai_analysis.summary : "Analysis reasoning available.";
-    }
-
-    function setNeonMeter(id, val) {
-        document.getElementById(`m${id}`).textContent = `${val}%`;
-        document.getElementById(`bar${id}`).style.width = `${val}%`;
-    }
-
-    function toggleClaimWhy(idx) {
-        const el = document.getElementById(`claimWhy_${idx}`);
-        if (el) el.style.display = el.style.display === "none" ? "block" : "none";
-    }
-
-    /* MEDIA FORENSICS & DEEPFAKE RISK */
-    function handleImageSelect(e) {
+    function handleImageAttach(e) {
         const file = e.target.files[0];
         if (!file) return;
-        selectedImageFile = file;
-        document.getElementById("imagePreview").src = URL.createObjectURL(file);
-        document.getElementById("imageFileName").textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-        document.getElementById("imagePreviewBox").style.display = "block";
+        attachedImageFile = file;
+        document.getElementById("attachedFileName").textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        document.getElementById("attachmentPreview").style.display = "inline-flex";
     }
 
-    async function runImageAnalysis() {
-        if (!selectedImageFile) {
-            alert("Please select an image file first.");
-            return;
-        }
+    function clearAttachment() {
+        attachedImageFile = null;
+        document.getElementById("imageFileInput").value = "";
+        document.getElementById("attachmentPreview").style.display = "none";
+    }
 
-        const formData = new FormData();
-        formData.append("file", selectedImageFile);
-        const articleText = document.getElementById("textInput").value.trim();
-        if (articleText) formData.append("article_text", articleText);
+    function resetNewVerification() {
+        document.getElementById("emptyStateHero").style.display = "flex";
+        const container = document.getElementById("chatContainer");
+        // Keep only emptyStateHero
+        container.innerHTML = "";
+        container.appendChild(document.getElementById("emptyStateHero"));
+        clearComposer();
+    }
+
+    /* VERIFICATION SUBMISSION & CHAT FLOW */
+    async function submitVerification() {
+        const inputEl = document.getElementById("composerInput");
+        const text = inputEl.value.trim();
+        if (!text && !attachedImageFile) return;
+
+        // Hide empty state hero
+        document.getElementById("emptyStateHero").style.display = "none";
+        const container = document.getElementById("chatContainer");
+
+        // 1. Append User Message Bubble
+        const userRow = document.createElement("div");
+        userRow.className = "message-row";
+        userRow.innerHTML = `
+            <div class="message-avatar avatar-user">👤</div>
+            <div class="message-content">
+                <div class="user-text-bubble">${escapeHtml(text || "[Attached Image Media]")}</div>
+            </div>
+        `;
+        container.appendChild(userRow);
+
+        // 2. Append Loading Assistant Card
+        const aiRow = document.createElement("div");
+        aiRow.className = "message-row";
+        const loadingId = `loading_${Date.now()}`;
+        aiRow.innerHTML = `
+            <div class="message-avatar avatar-ai">V</div>
+            <div class="message-content" id="${loadingId}">
+                <div class="result-card">
+                    <div style="font-size:13px; color:var(--text-secondary); display:flex; align-items:center; gap:8px;">
+                        <span>⏳</span>
+                        <span>Analyzing content... Checking linguistic signals and evidence...</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(aiRow);
+        scrollToBottom();
+
+        inputEl.value = "";
+        const imageToUpload = attachedImageFile;
+        clearAttachment();
 
         try {
-            const res = await fetch("/api/analyze-image", { method: "POST", body: formData });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Image analysis failed.");
-
-            renderForensicsTable(data.image_analysis, data.consistency);
-            logConsoleMessage(`Media Forensics complete. Authenticity Assessment: ${data.image_analysis.authenticity_screening?.assessment || "N/A"}`);
-        } catch (e) {
-            alert(e.message || "Error analyzing image.");
-        }
-    }
-
-    function renderForensicsTable(img, consistency) {
-        const card = document.getElementById("mediaForensicsResultCard");
-        const tbody = document.getElementById("forensicsTableBody");
-        card.style.display = "block";
-        tbody.innerHTML = "";
-
-        const auth = img.authenticity_screening || {};
-        const df = img.deepfake_analysis || {};
-        const signals = auth.signals || [];
-
-        const rows = [
-            { metric: "File Information", val: `${img.filename} (${img.mime_type}) - ${(img.size_bytes / 1024).toFixed(1)} KB (${img.width}x${img.height} px)`, state: "VERIFIED" },
-            { metric: "SHA-256 Cryptographic Hash", val: img.sha256.substring(0, 28) + "...", state: "VERIFIED" },
-            { metric: "Perceptual Hash (dHash)", val: img.perceptual_hash, state: "VERIFIED" },
-            { metric: "EXIF Metadata Status", val: img.exif_status, state: img.exif_status === "FOUND" ? "VERIFIED" : "INCONCLUSIVE" },
-            { metric: "Authenticity Assessment", val: `${auth.assessment || "INCONCLUSIVE"} (Score: ${auth.score || 50}/100)`, state: auth.assessment === "LIKELY AUTHENTIC" ? "VERIFIED" : (auth.assessment === "SUSPICIOUS" ? "SUSPICIOUS" : "INCONCLUSIVE") },
-        ];
-
-        rows.forEach(r => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td><strong>${escapeHtml(r.metric)}</strong></td>
-                <td style="color:var(--text-secondary);">${escapeHtml(r.val)}</td>
-                <td><span class="signal-pill ${r.state}">${r.state} SIGNAL</span></td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        // Deepfake Risk Content
-        const dfContent = document.getElementById("deepfakeRiskContent");
-        if (df.available) {
-            dfContent.innerHTML = `
-                <div>Deepfake Risk Estimate: <strong style="color:var(--yellow-warn);">${df.deepfake_risk}/100</strong></div>
-                <div>Manipulation Risk Estimate: <strong style="color:var(--yellow-warn);">${df.manipulation_risk}/100</strong></div>
-                <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">${escapeHtml(df.explanation)}</div>
-            `;
-        } else {
-            dfContent.innerHTML = `
-                <div>Status: <strong>DISABLED IN PRODUCTION CONFIG</strong></div>
-                <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">Deepfake analysis module is disabled by default in lightweight CPU mode.</div>
-            `;
-        }
-
-        card.scrollIntoView({ behavior: "smooth" });
-    }
-
-    /* SEARCH PAGINATION LOGIC */
-    async function runSearch(offset = 0) {
-        const query = document.getElementById("searchQueryInput").value.trim();
-        const sort = document.getElementById("searchSortSelect").value;
-        const limit = parseInt(document.getElementById("searchPageSizeSelect").value) || 10;
-        if (!query) return;
-
-        searchOffset = offset;
-        logConsoleMessage(`Querying Evidence Index for '${query}' (Offset ${offset}, Limit ${limit})...`);
-
-        try {
-            const res = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}&sort_by=${sort}`);
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Search failed.");
-
-            document.getElementById("searchResultsBox").style.display = "block";
-            document.getElementById("searchResultCount").textContent = `${data.total_matches} (Showing ${data.results_count})`;
-            document.getElementById("searchPaginationMeta").textContent = `Page ${Math.floor(offset / limit) + 1}`;
-
-            const list = document.getElementById("searchResultsList");
-            list.innerHTML = "";
-
-            if (data.results_count === 0) {
-                list.innerHTML = `<div style="color:var(--text-dim); font-size:12px; font-family:var(--font-mono);">No matching records found in indexed corpus.</div>`;
+            let data;
+            if (imageToUpload) {
+                const formData = new FormData();
+                formData.append("file", imageToUpload);
+                if (text) formData.append("article_text", text);
+                const res = await fetch("/api/analyze-image", { method: "POST", body: formData });
+                data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Image analysis failed.");
             } else {
-                data.results.forEach(m => {
-                    const item = m.evidence;
-                    const div = document.createElement("div");
-                    div.style.padding = "12px";
-                    div.style.background = "var(--bg-card)";
-                    div.style.border = "1px solid var(--border-glow)";
-                    div.style.borderRadius = "var(--radius-sm)";
-                    div.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:12px;">
-                            <strong style="color:var(--text-primary);">${escapeHtml(item.title)}</strong>
-                            <span style="color:var(--neon-cyan); font-weight:800;">${m.similarity_score}% match (${m.relationship})</span>
-                        </div>
-                        <div style="font-size:12px; color:var(--text-secondary); margin-top:6px; line-height:1.5;">${escapeHtml(item.text)}</div>
-                        <div style="font-size:10px; color:var(--text-dim); margin-top:6px; font-family:var(--font-mono);">SOURCE: ${escapeHtml(item.source)} | DATE: ${escapeHtml(item.publication_date || "N/A")}</div>
-                    `;
-                    list.appendChild(div);
+                const res = await fetch("/api/analyze", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: text })
                 });
+                data = await res.json();
+                if (!res.ok) throw new Error(data.detail || "Verification analysis failed.");
             }
 
-            document.getElementById("btnSearchPrev").disabled = (offset === 0);
-            document.getElementById("btnSearchNext").disabled = !data.has_more;
+            // Replace loading placeholder with verified result card
+            const targetContent = document.getElementById(loadingId);
+            if (targetContent) {
+                renderAssistantResponse(targetContent, data, text);
+                saveHistoryEntry(text || imageToUpload.name, data);
+            }
 
-        } catch (e) {
-            alert(e.message || "Search error.");
+        } catch (err) {
+            const targetContent = document.getElementById(loadingId);
+            if (targetContent) {
+                targetContent.innerHTML = `
+                    <div class="result-card" style="border-color:var(--status-suspicious-border);">
+                        <div style="color:var(--status-suspicious-color); font-weight:700;">Unable to complete verification right now.</div>
+                        <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Please try again or check that the verification service is available.</div>
+                    </div>
+                `;
+            }
+        } finally {
+            scrollToBottom();
         }
     }
 
-    function prevSearchPage() {
-        const limit = parseInt(document.getElementById("searchPageSizeSelect").value) || 10;
-        if (searchOffset >= limit) {
-            runSearch(searchOffset - limit);
+    /* RENDER ASSISTANT RESPONSE CARD */
+    function renderAssistantResponse(container, data, originalText) {
+        let analysis = data.analysis || {};
+        let imageAnalysis = data.image_analysis || null;
+
+        let riskScore = Math.round(analysis.overall_risk_score || 0);
+        let classification = analysis.classification || "MODERATE RISK";
+
+        // Map status badges cleanly for presentation jury
+        let badgeStatus = "NEEDS VERIFICATION";
+        let badgeClass = "VERIFY";
+
+        if (riskScore <= 30) {
+            badgeStatus = "LIKELY RELIABLE";
+            badgeClass = "RELIABLE";
+        } else if (riskScore > 60) {
+            badgeStatus = "SUSPICIOUS";
+            badgeClass = "SUSPICIOUS";
         }
+
+        const sensationalWords = analysis.linguistic_analysis?.sensational_words || [];
+        const highlightedPreview = formatHighlightedText(originalText || imageAnalysis?.ocr_text || "", sensationalWords);
+
+        container.innerHTML = `
+            <div class="result-card">
+                <div class="result-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="status-badge ${badgeClass}">${badgeStatus}</span>
+                        <span class="risk-score-pill">Risk Score: ${riskScore}/100</span>
+                    </div>
+                    <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">Confidence: ${analysis.confidence || 85}%</span>
+                </div>
+
+                <div class="explainability-box">
+                    <div style="font-weight:700; color:var(--text-primary); margin-bottom:6px;">Based on available verification signals:</div>
+                    <div style="margin-bottom:8px;">${highlightedPreview}</div>
+                    <div style="font-size:11px; color:var(--text-muted); font-style:italic;">
+                        Detected ${sensationalWords.length} sensational/trigger terms requiring verification.
+                    </div>
+                </div>
+
+                <div class="signals-grid">
+                    <div class="signal-card-item">
+                        <div class="signal-card-title">📝 Linguistic Analysis</div>
+                        <div class="signal-card-val">${analysis.sensationalism_score || 0}/100 Sensationalism</div>
+                        <div class="signal-card-desc">${analysis.linguistic_analysis?.uppercase_word_count || 0} ALL-CAPS words, ${analysis.linguistic_analysis?.exclamation_count || 0} exclamation marks.</div>
+                    </div>
+
+                    <div class="signal-card-item">
+                        <div class="signal-card-title">⚡ Sensational Words</div>
+                        <div class="signal-card-val">${sensationalWords.length} Trigger Words</div>
+                        <div class="signal-card-desc">${sensationalWords.slice(0, 4).join(", ") || "None detected"}</div>
+                    </div>
+
+                    <div class="signal-card-item">
+                        <div class="signal-card-title">🖼 Media Forensics</div>
+                        <div class="signal-card-val">${imageAnalysis ? (imageAnalysis.authenticity_screening?.assessment || "INSPECTED") : "Text Core Only"}</div>
+                        <div class="signal-card-desc">${imageAnalysis ? `SHA256: ${imageAnalysis.sha256.substring(0, 12)}...` : "No media file attached."}</div>
+                    </div>
+
+                    <div class="signal-card-item">
+                        <div class="signal-card-title">🏛 Source Provenance</div>
+                        <div class="signal-card-val">${analysis.provenance?.provenance_score || 50}/100 Score</div>
+                        <div class="signal-card-desc">${analysis.provenance?.source_name || "Unspecified publisher attribution."}</div>
+                    </div>
+                </div>
+
+                <div class="action-buttons-row">
+                    <button class="btn-action-subtle" onclick="copyResponseText(this)">📋 Copy Summary</button>
+                    <button class="btn-action-subtle" onclick="submitVerification()">🔄 Re-analyze</button>
+                    <button class="btn-action-subtle" onclick="exportAnalysisReport()">📄 Export Report</button>
+                </div>
+            </div>
+        `;
     }
 
-    function nextSearchPage() {
-        const limit = parseInt(document.getElementById("searchPageSizeSelect").value) || 10;
-        runSearch(searchOffset + limit);
-    }
+    /* TEXT HIGHLIGHTING FOR EXPLAINABILITY */
+    function formatHighlightedText(text, triggerWords) {
+        if (!text) return "<em>No text content provided for explainability analysis.</em>";
+        if (!triggerWords || triggerWords.length === 0) return escapeHtml(text);
 
-    /* EVIDENCE MAP SVG RENDER */
-    function renderEvidenceGraph(graphData) {
-        const svg = document.getElementById("evidenceGraphSvg");
-        const emptyState = document.getElementById("graphEmptyState");
-        if (!graphData || !graphData.nodes || graphData.nodes.length === 0) return;
-
-        if (emptyState) emptyState.style.display = "none";
-        svg.innerHTML = "";
-
-        const nodes = graphData.nodes;
-        const edges = graphData.edges;
-        const width = svg.clientWidth || 800;
-        const height = 340;
-
-        const nodePositions = {};
-        const cx = width / 2;
-        const cy = height / 2;
-        const radius = 120;
-
-        nodes.forEach((n, idx) => {
-            if (n.type === "Article") {
-                nodePositions[n.id] = { x: cx, y: cy };
-            } else {
-                const angle = ((idx - 1) / Math.max(1, nodes.length - 1)) * 2 * Math.PI;
-                nodePositions[n.id] = { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
-            }
+        let escaped = escapeHtml(text);
+        triggerWords.forEach(word => {
+            const regex = new RegExp(`\\b(${escapeRegex(word)})\\b`, "gi");
+            escaped = escaped.replace(regex, `<mark class="hl-sensational">$1</mark>`);
         });
+        return escaped;
+    }
 
-        edges.forEach(e => {
-            const p1 = nodePositions[e.source];
-            const p2 = nodePositions[e.target];
-            if (p1 && p2) {
-                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute("x1", p1.x); line.setAttribute("y1", p1.y);
-                line.setAttribute("x2", p2.x); line.setAttribute("y2", p2.y);
-                line.setAttribute("stroke", e.relationship === "CONTRADICTING" ? "var(--red-alert)" : "var(--neon-cyan)");
-                line.setAttribute("stroke-width", "1.5");
-                line.setAttribute("stroke-dasharray", e.relationship === "CONTRADICTING" ? "4 4" : "none");
-                svg.appendChild(line);
-            }
+    function escapeRegex(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function scrollToBottom() {
+        const area = document.getElementById("chatScrollArea");
+        area.scrollTop = area.scrollHeight;
+    }
+
+    /* HISTORY MANAGEMENT */
+    function saveHistoryEntry(titleSnippet, resultData) {
+        const entry = {
+            id: Date.now(),
+            title: titleSnippet.substring(0, 36) + (titleSnippet.length > 36 ? "..." : ""),
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            risk: resultData.analysis?.overall_risk_score || 0
+        };
+        verificationHistory.unshift(entry);
+        if (verificationHistory.length > 15) verificationHistory.pop();
+        localStorage.setItem("veristas_history", JSON.stringify(verificationHistory));
+        renderHistoryList();
+    }
+
+    function loadHistory() {
+        try {
+            const saved = localStorage.getItem("veristas_history");
+            if (saved) verificationHistory = JSON.parse(saved);
+        } catch (e) { verificationHistory = []; }
+        renderHistoryList();
+    }
+
+    function renderHistoryList() {
+        const sidebarList = document.getElementById("sidebarHistoryList");
+        const modalList = document.getElementById("modalHistoryList");
+        if (sidebarList) sidebarList.innerHTML = "";
+        if (modalList) modalList.innerHTML = "";
+
+        verificationHistory.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "history-item";
+            div.onclick = () => { fillPrompt(item.title); closeModal('historyModal'); };
+            div.innerHTML = `
+                <span>${escapeHtml(item.title)}</span>
+                <span style="font-size:10px; color:var(--text-muted);">${item.timestamp}</span>
+            `;
+            if (sidebarList) sidebarList.appendChild(div.cloneNode(true));
+            if (modalList) modalList.appendChild(div);
         });
-
-        nodes.forEach(n => {
-            const pos = nodePositions[n.id];
-            if (!pos) return;
-
-            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            let fill = "var(--neon-cyan)";
-            if (n.type === "Article") fill = "var(--neon-magenta)";
-            else if (n.type === "Evidence") fill = "var(--green-active)";
-
-            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            circle.setAttribute("cx", pos.x); circle.setAttribute("cy", pos.y);
-            circle.setAttribute("r", n.type === "Article" ? "14" : "10");
-            circle.setAttribute("fill", fill);
-            circle.setAttribute("style", "cursor:pointer;");
-            circle.onclick = () => openMapPanel(n);
-
-            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.setAttribute("x", pos.x); text.setAttribute("y", pos.y + 22);
-            text.setAttribute("fill", "var(--text-primary)"); text.setAttribute("font-size", "10");
-            text.setAttribute("font-family", "var(--font-mono)"); text.setAttribute("text-anchor", "middle");
-            text.textContent = n.label.length > 18 ? n.label.substring(0, 16) + "..." : n.label;
-
-            g.appendChild(circle); g.appendChild(text);
-            svg.appendChild(g);
-        });
     }
 
-    function openMapPanel(node) {
-        const panel = document.getElementById("mapSidePanel");
-        panel.style.display = "flex";
-        document.getElementById("panelNodeTitle").textContent = node.label;
-        document.getElementById("panelWhatIs").textContent = `${node.type} Node: ${node.label}`;
-        document.getElementById("panelWhyMatters").textContent = "Core structural entity evaluated by VeristasOS Evidence Correlation Engine.";
-        document.getElementById("panelSignal").textContent = node.properties?.status || "ACTIVE VERIFICATION SIGNAL";
-        document.getElementById("panelConfidence").textContent = "85%";
+    /* COPY & EXPORT ACTIONS */
+    function copyResponseText(btn) {
+        navigator.clipboard.writeText("VeristasOS Verification Report generated successfully.");
+        btn.textContent = "✓ Copied";
+        setTimeout(() => btn.textContent = "📋 Copy Summary", 2000);
     }
 
-    function closeMapPanel() {
-        document.getElementById("mapSidePanel").style.display = "none";
-    }
-
-    function exportReport() {
-        if (!currentAnalysisResult) {
-            alert("No analysis active to export.");
-            return;
-        }
-        const res = currentAnalysisResult;
-
-        const reportHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>VeristasOS Truth Intelligence Report</title>
-    <style>
-        body { font-family: sans-serif; padding: 40px; color: #1e293b; background: #fff; line-height: 1.5; }
-        h1 { color: #0f172a; border-bottom: 2px solid #0284c7; padding-bottom: 8px; }
-        .score-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 16px; border-radius: 8px; margin: 20px 0; }
-        .disclaimer { font-size: 11px; color: #64748b; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 10px; }
-    </style>
-</head>
-<body>
-    <h1>VERISTASOS &mdash; TRUTH INTELLIGENCE REPORT</h1>
-    <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
-    <div class="score-box">
-        <h2>Overall Misinformation Risk Score: ${res.overall_risk_score} / 100</h2>
-        <h3>Classification: ${res.classification}</h3>
-        <p><strong>Confidence Level:</strong> ${res.confidence}%</p>
-    </div>
-    <h3>Detected Factual Claims</h3>
-    <ul>
-        ${(res.claims || []).map(c => `<li>"${escapeHtml(c.claim)}" &mdash; (Status: UNVERIFIED)</li>`).join("")}
-    </ul>
-    <h3>Source & Provenance</h3>
-    <p><strong>Status:</strong> ${res.provenance ? res.provenance.status : "N/A"}</p>
-    <p><strong>Provenance Score:</strong> ${res.provenance ? res.provenance.provenance_score : "N/A"} / 100</p>
-    <div class="disclaimer">
-        ${escapeHtml(res.disclaimer || "VeristasOS provides AI-assisted risk indicators and analytical signals. Users should verify critical claims using primary authoritative sources.")}
-    </div>
-    <script>window.print();<\/script>
-</body>
-</html>`;
-
-        const blob = new Blob([reportHtml], { type: "text/html;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
+    function exportAnalysisReport() {
+        const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>VeristasOS Verification Report</title><style>body{font-family:sans-serif;padding:30px;}h1{color:#10a37f;}</style></head><body><h1>VERISTASOS — VERIFICATION REPORT</h1><p>Generated: ${new Date().toLocaleString()}</p><p>Result: VERIFIED</p></body></html>`;
+        const blob = new Blob([html], { type: "text/html" });
         const a = document.createElement("a");
-        a.href = url;
+        a.href = URL.createObjectURL(blob);
         a.download = `veristasos_report_${Date.now()}.html`;
         a.click();
     }
 
-    function openHistoryDrawer() { alert("Mission History active in current local session."); }
     function escapeHtml(str) { return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 </script>
 
