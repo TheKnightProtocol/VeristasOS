@@ -18,6 +18,10 @@ from app.services.verification_engine import run_dual_layer_verification
 from app.services.trust_lens_engine import analyze_trust_lens
 from app.services.scam_dna import generate_scam_dna
 from app.services.bharat_language_engine import analyze_bharat_language
+from app.services.trust_firewall import TrustFirewall
+from app.services.saathi_agent import AISaathiAgent
+from app.services.email_service import EmailService
+from app.services.policy_engine import UserPolicyEngine
 from app.models.schemas import (
     UnifiedAnalyzeRequest,
     SimpleTextRequest,
@@ -26,6 +30,7 @@ from app.models.schemas import (
 )
 from app.services.semantic_search import search_engine
 from app.services.investigation_engine import run_full_investigation, generate_investigation_graph
+
 
 
 # ============================================================
@@ -629,3 +634,120 @@ async def analyze_image(
         raise
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Image analysis failed: {exc}")
+
+
+# ============================================================
+# AI SAATHI & TRUST FIREWALL ENDPOINTS
+# ============================================================
+
+class SaathiChatRequest(BaseModel):
+    query: str
+    context: Optional[str] = None
+    user_mode: Optional[str] = "Adult"
+
+
+class EmailActionRequest(BaseModel):
+    email_id: str
+    user_approved: Optional[bool] = False
+    user_mode: Optional[str] = "Adult"
+
+
+class TrustFirewallRequest(BaseModel):
+    action_name: str
+    content: str
+    user_mode: Optional[str] = "Adult"
+
+
+class PolicySettingsRequest(BaseModel):
+    user_mode: str
+    allow_medium_risk: Optional[bool] = False
+
+
+saathi_agent_instance = AISaathiAgent()
+email_service_instance = EmailService()
+trust_firewall_instance = TrustFirewall()
+
+
+@app.post("/api/saathi/chat")
+def saathi_chat_endpoint(req: SaathiChatRequest):
+    """Conversational AI Saathi interface for natural language query processing."""
+    try:
+        saathi_agent_instance.set_user_mode(req.user_mode or "Adult")
+        res = saathi_agent_instance.process_chat_query(
+            query=req.query,
+            context_content=req.context or ""
+        )
+        return {"status": "success", "result": res}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"AI Saathi chat processing failed: {exc}")
+
+
+@app.get("/api/saathi/brief")
+def saathi_brief_endpoint(user_mode: Optional[str] = "Adult"):
+    """Returns Daily Saathi Brief statistics and high/medium/low risk summaries."""
+    try:
+        saathi_agent_instance.set_user_mode(user_mode or "Adult")
+        brief = saathi_agent_instance.get_daily_brief()
+        return {"status": "success", "brief": brief}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Daily Saathi Brief fetch failed: {exc}")
+
+
+@app.get("/api/email/inbox")
+def get_email_inbox_endpoint(user_mode: Optional[str] = "Adult"):
+    """Returns email inbox items with Trust Firewall risk decision evaluations."""
+    try:
+        email_service_instance.set_user_mode(user_mode or "Adult")
+        inbox = email_service_instance.get_inbox()
+        return {"status": "success", "count": len(inbox), "inbox": inbox}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Email inbox fetch failed: {exc}")
+
+
+@app.post("/api/email/action")
+def execute_email_action_endpoint(req: EmailActionRequest):
+    """Executes or requests user confirmation for an email action subject to Trust Firewall gate."""
+    try:
+        email_service_instance.set_user_mode(req.user_mode or "Adult")
+        res = email_service_instance.execute_email_action(
+            email_id=req.email_id,
+            user_approved=req.user_approved or False
+        )
+        return {"status": "success", "result": res}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Email action execution failed: {exc}")
+
+
+@app.post("/api/trust/firewall")
+def trust_firewall_evaluate_endpoint(req: TrustFirewallRequest):
+    """Evaluates proposed AI actions against Content, Privacy, Financial, and Reliability risks."""
+    try:
+        trust_firewall_instance.set_user_mode(req.user_mode or "Adult")
+        res = trust_firewall_instance.evaluate_proposed_action(
+            action_name=req.action_name,
+            content=req.content
+        )
+        return {"status": "success", "evaluation": res}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Trust Firewall evaluation failed: {exc}")
+
+
+@app.post("/api/policy/settings")
+def update_policy_settings_endpoint(req: PolicySettingsRequest):
+    """Updates user policy preferences and mode (Adult vs Senior Citizen)."""
+    try:
+        saathi_agent_instance.set_user_mode(req.user_mode)
+        email_service_instance.set_user_mode(req.user_mode)
+        trust_firewall_instance.set_user_mode(req.user_mode)
+        
+        if req.allow_medium_risk:
+            trust_firewall_instance.policy_engine.user_custom_allow_medium = True
+
+        return {
+            "status": "success",
+            "message": f"User mode updated to '{req.user_mode}' successfully.",
+            "mode": req.user_mode,
+            "allow_medium_risk": req.allow_medium_risk
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Policy update failed: {exc}")

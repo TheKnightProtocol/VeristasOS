@@ -1,516 +1,360 @@
-/* ==========================================================================
-   VERISTASOS — FRONTEND APPLICATION CONTROLLER
-   ========================================================================== */
+/* VeristasOS — Your AI Saathi Frontend Application Logic */
 
-const API_BASE = (typeof window !== "undefined" && window.location.origin && window.location.origin.startsWith("http")) 
-    ? window.location.origin 
-    : "http://127.0.0.1:8000";
-
-let selectedMediaFile = null;
-let verificationHistory = [];
+let isSeniorMode = false;
+let currentInboxData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
-    initTheme();
-    loadHistory();
-    setupComposerEvents();
+    initNavigation();
+    loadDailyBrief();
+    loadInboxData();
 });
 
-/* ==========================================================================
-   1. THEME MANAGEMENT
-   ========================================================================== */
-function initTheme() {
-    const saved = localStorage.getItem("veristas_theme") || "dark";
-    document.documentElement.setAttribute("data-theme", saved);
-    updateThemeUI(saved);
-}
+// NAVIGATION TAB SWITCHING
+function initNavigation() {
+    const navItems = document.querySelectorAll(".nav-item");
+    navItems.forEach(item => {
+        item.addEventListener("click", () => {
+            const targetId = item.getAttribute("data-target");
+            
+            navItems.forEach(n => n.classList.remove("active"));
+            item.classList.add("active");
 
-function toggleTheme() {
-    const current = document.documentElement.getAttribute("data-theme") || "dark";
-    const next = current === "dark" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", next);
-    localStorage.setItem("veristas_theme", next);
-    updateThemeUI(next);
-}
-
-function updateThemeUI(theme) {
-    const label = document.getElementById("themeLabel");
-    const icon = document.getElementById("themeIcon");
-    if (label && icon) {
-        if (theme === "dark") {
-            label.textContent = "Dark Mode";
-            icon.textContent = "☾";
-        } else {
-            label.textContent = "Light Mode";
-            icon.textContent = "☀";
-        }
-    }
-}
-
-/* ==========================================================================
-   2. SIDEBAR TOGGLES
-   ========================================================================== */
-function toggleSidebarCollapse() {
-    const sidebar = document.getElementById("sidebar");
-    const label = document.getElementById("collapseLabel");
-    const icon = document.getElementById("collapseIcon");
-    
-    sidebar.classList.toggle("collapsed");
-    const isCollapsed = sidebar.classList.contains("collapsed");
-    
-    if (label && icon) {
-        label.textContent = isCollapsed ? "" : "Collapse Sidebar";
-        icon.textContent = isCollapsed ? "▶" : "◀";
-    }
-}
-
-function toggleMobileSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    sidebar.classList.toggle("mobile-open");
-}
-
-/* ==========================================================================
-   3. COMPOSER & INPUT EVENTS
-   ========================================================================== */
-function setupComposerEvents() {
-    const input = document.getElementById("composerInput");
-    if (input) {
-        input.addEventListener("input", () => {
-            input.style.height = "auto";
-            input.style.height = Math.min(input.scrollHeight, 200) + "px";
+            document.querySelectorAll(".workspace-view").forEach(v => v.classList.remove("active"));
+            const targetView = document.getElementById(targetId);
+            if (targetView) targetView.classList.add("active");
+            
+            const titleEl = document.getElementById("current-view-title");
+            if (titleEl) titleEl.innerText = item.querySelector("span:last-child").innerText;
         });
+    });
 
-        input.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                submitVerification();
+    // Senior Mode Toggle
+    const toggleSeniorBtn = document.getElementById("toggle-senior-mode");
+    if (toggleSeniorBtn) {
+        toggleSeniorBtn.addEventListener("click", () => {
+            isSeniorMode = !isSeniorMode;
+            const textEl = document.getElementById("senior-mode-text");
+            const banner = document.getElementById("senior-banner-container");
+
+            if (isSeniorMode) {
+                toggleSeniorBtn.classList.add("active");
+                if (textEl) textEl.innerText = "Senior Mode: ON 👴";
+                if (banner) {
+                    banner.style.display = "block";
+                    banner.innerHTML = `
+                        <div class="senior-alert-banner">
+                            🔴 SENIOR CITIZEN SAFETY MODE ACTIVE<br>
+                            <span style="font-size: 13px; font-weight: normal; color: var(--text-primary);">
+                                Sabhi financial requests, OTPs, aur unknown links ko automatic BLOCK kiya jayega. 
+                                Kisi bhi suspicious message par family member ko dikhayein.
+                            </span>
+                        </div>
+                    `;
+                }
+            } else {
+                toggleSeniorBtn.classList.remove("active");
+                if (textEl) textEl.innerText = "Senior Mode: OFF";
+                if (banner) banner.style.display = "none";
             }
+            loadDailyBrief();
         });
     }
 }
 
-function usePrompt(text) {
-    const input = document.getElementById("composerInput");
-    if (input) {
-        input.value = text;
-        input.style.height = "auto";
-        input.style.height = Math.min(input.scrollHeight, 200) + "px";
-        input.focus();
+// DAILY BRIEF DATA
+async function loadDailyBrief() {
+    try {
+        const mode = isSeniorMode ? "Senior" : "Adult";
+        const res = await fetch(`/api/saathi/brief?user_mode=${mode}`);
+        const data = await res.json();
+        
+        if (data.status === "success" && data.brief) {
+            const brief = data.brief;
+            document.getElementById("stat-red-count").innerText = brief.actions_needed_count || 0;
+            document.getElementById("stat-yellow-count").innerText = brief.reviews_needed_count || 0;
+            document.getElementById("stat-green-count").innerText = brief.handled_count || 0;
+
+            renderHomeCardLists(brief.red_actions, brief.yellow_reviews);
+        }
+    } catch (err) {
+        console.warn("Daily brief fetch failed:", err);
     }
 }
 
-function toggleSourceDrawer() {
-    const drawer = document.getElementById("sourceDrawer");
-    if (drawer) {
-        drawer.classList.toggle("open");
+function renderHomeCardLists(redList, yellowList) {
+    const redContainer = document.getElementById("home-red-list");
+    const yellowContainer = document.getElementById("home-yellow-list");
+
+    if (redContainer) {
+        if (!redList || redList.length === 0) {
+            redContainer.innerHTML = `<div style="color: var(--text-muted); font-size: 13px;">No critical threats blocked today.</div>`;
+        } else {
+            redContainer.innerHTML = redList.map(item => `
+                <div class="inbox-card risk-high">
+                    <div>
+                        <div style="font-weight: 700;">${escapeHtml(item.title)}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">From: ${escapeHtml(item.sender)}</div>
+                        <div style="font-size: 12px; color: var(--accent-rose); margin-top: 4px;">Reason: ${escapeHtml(item.reason || '')}</div>
+                    </div>
+                    <span class="badge critical">BLOCKED</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    if (yellowContainer) {
+        if (!yellowList || yellowList.length === 0) {
+            yellowContainer.innerHTML = `<div style="color: var(--text-muted); font-size: 13px;">No pending reviews.</div>`;
+        } else {
+            yellowContainer.innerHTML = yellowList.map(item => `
+                <div class="inbox-card risk-caution">
+                    <div>
+                        <div style="font-weight: 700;">${escapeHtml(item.title)}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">From: ${escapeHtml(item.sender)}</div>
+                    </div>
+                    <span class="badge caution">ASK USER</span>
+                </div>
+            `).join('');
+        }
     }
 }
 
-function clearComposer() {
-    const input = document.getElementById("composerInput");
-    const url = document.getElementById("sourceUrlInput");
-    const name = document.getElementById("sourceNameInput");
-    const author = document.getElementById("authorInput");
-    const mediaLabel = document.getElementById("attachmentLabel");
-
-    if (input) { input.value = ""; input.style.height = "auto"; }
-    if (url) url.value = "";
-    if (name) name.value = "";
-    if (author) author.value = "";
-    if (mediaLabel) mediaLabel.textContent = "Attach Media";
-    selectedMediaFile = null;
-}
-
-function triggerImageUpload() {
-    const fileInput = document.getElementById("mediaFileInput");
-    if (fileInput) fileInput.click();
-}
-
-function handleFileSelected(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    selectedMediaFile = file;
-    const mediaLabel = document.getElementById("attachmentLabel");
-    if (mediaLabel) {
-        mediaLabel.textContent = file.name.length > 15 ? file.name.substring(0, 12) + "..." : file.name;
+// PROTECTED INBOX DATA
+async function loadInboxData() {
+    try {
+        const mode = isSeniorMode ? "Senior" : "Adult";
+        const res = await fetch(`/api/email/inbox?user_mode=${mode}`);
+        const data = await res.json();
+        
+        if (data.status === "success" && data.inbox) {
+            currentInboxData = data.inbox;
+            renderInboxCards(data.inbox);
+        }
+    } catch (err) {
+        console.warn("Inbox fetch failed:", err);
     }
 }
 
-/* ==========================================================================
-   4. VERIFICATION SUBMISSION & CHAT STREAM
-   ========================================================================== */
-async function submitVerification() {
-    const input = document.getElementById("composerInput");
-    const text = input ? input.value.trim() : "";
-    const sendBtn = document.getElementById("sendBtn");
-    const loadingTicker = document.getElementById("loadingTicker");
-    const loadingStepText = document.getElementById("loadingStepText");
+function refreshInbox() {
+    loadInboxData();
+}
 
-    if (!text && !selectedMediaFile) {
-        alert("Please enter text content or select an image file to verify.");
+function renderInboxCards(inbox) {
+    const container = document.getElementById("inbox-cards-list");
+    if (!container) return;
+
+    if (!inbox || inbox.length === 0) {
+        container.innerHTML = `<div style="color: var(--text-muted);">Inbox empty.</div>`;
         return;
     }
 
-    // Lock UI & Show Loading Ticker
-    if (sendBtn) sendBtn.disabled = true;
-    if (loadingTicker) loadingTicker.style.display = "flex";
-    
-    // Hide empty state
-    const emptyState = document.getElementById("emptyState");
-    if (emptyState) emptyState.style.display = "none";
-
-    // Append User Message to Chat Stream
-    appendUserMessage(text || `[Media Attachment: ${selectedMediaFile.name}]`);
-
-    // Ticker Animation Steps
-    const steps = [
-        "Analyzing content...",
-        "Checking linguistic signals...",
-        "Preparing explanation..."
-    ];
-    let stepIdx = 0;
-    const tickerInterval = setInterval(() => {
-        stepIdx = (stepIdx + 1) % steps.length;
-        if (loadingStepText) loadingStepText.textContent = steps[stepIdx];
-    }, 600);
-
-    try {
-        let responseData = null;
-
-        if (selectedMediaFile) {
-            // Media Forensics Endpoint
-            const formData = new FormData();
-            formData.append("file", selectedMediaFile);
-            if (text) formData.append("article_text", text);
-
-            const res = await fetch(`${API_BASE}/api/analyze-image`, {
-                method: "POST",
-                body: formData
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Media analysis failed.");
-            responseData = formatMediaResult(data, text);
-        } else {
-            // Text Analysis Endpoint
-            const payload = {
-                text: text,
-                source_url: document.getElementById("sourceUrlInput")?.value || null,
-                source_name: document.getElementById("sourceNameInput")?.value || null,
-                author: document.getElementById("authorInput")?.value || null
-            };
-
-            const res = await fetch(`${API_BASE}/api/v1/text/analyze`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.detail || "Text analysis failed.");
-            responseData = formatTextResult(data.analysis, text);
+    container.innerHTML = inbox.map(item => {
+        const evalRes = item.firewall_evaluation || {};
+        const decision = evalRes.decision || item.computed_decision || "ALLOW";
+        const risk = evalRes.risk_level || item.computed_risk || "LOW";
+        
+        let riskClass = "risk-low";
+        let badgeClass = "low";
+        if (decision === "BLOCK" || risk === "CRITICAL" || risk === "HIGH") {
+            riskClass = "risk-high";
+            badgeClass = "critical";
+        } else if (decision === "ASK_USER" || risk === "CAUTION") {
+            riskClass = "risk-caution";
+            badgeClass = "caution";
         }
 
-        clearInterval(tickerInterval);
-        appendAssistantResponse(responseData);
-        saveToHistory(text || selectedMediaFile.name, responseData.verdict, responseData);
-
-        // Reset input
-        clearComposer();
-
-    } catch (err) {
-        clearInterval(tickerInterval);
-        appendAssistantError(err.message || "Unable to complete verification. Please check backend connection.");
-    } finally {
-        if (sendBtn) sendBtn.disabled = false;
-        if (loadingTicker) loadingTicker.style.display = "none";
-        scrollToBottom();
-    }
-}
-
-/* ==========================================================================
-   5. RESULT FORMATTERS & EXPLAINABILITY
-   ========================================================================== */
-function formatTextResult(analysis, rawText) {
-    const score = Math.round(analysis.overall_risk_score || 0);
-    let verdict = "NEEDS VERIFICATION";
-    let verdictClass = "NEEDS_VERIFICATION";
-    let summaryText = "Based on the available signals, this content contains mixed risk indicators and warrants further verification.";
-
-    if (score < 30) {
-        verdict = "LIKELY RELIABLE";
-        verdictClass = "RELIABLE";
-        summaryText = "Based on available linguistic and provenance signals, this content exhibits neutral tone and low sensationalism indicators.";
-    } else if (score > 60) {
-        verdict = "SUSPICIOUS";
-        verdictClass = "SUSPICIOUS";
-        summaryText = "Based on available signals, this content exhibits strong sensationalism, emotional language, or unverified claims.";
-    }
-
-    const ling = analysis.linguistic_analysis || {};
-    const sensationalWords = ling.sensational_words || [];
-    
-    // Highlight Sensational Words inline in text
-    let highlightedText = escapeHtml(rawText);
-    if (sensationalWords.length > 0) {
-        sensationalWords.forEach(word => {
-            const regex = new RegExp(`\\b(${word})\\b`, "gi");
-            highlightedText = highlightedText.replace(regex, `<mark class="sensational-highlight">$1</mark>`);
-        });
-    }
-
-    const signals = [
-        `Sensationalism Score: ${ling.sensationalism_score || 0}/100`,
-        `Exclamation mark frequency: ${ling.exclamation_count || 0}`,
-        `ALL-CAPS word frequency: ${ling.uppercase_word_count || 0}`,
-        `Detected trigger terms: ${sensationalWords.length > 0 ? sensationalWords.join(", ") : "None detected"}`
-    ];
-
-    return {
-        verdict: verdict,
-        verdictClass: verdictClass,
-        summary: summaryText,
-        signals: signals,
-        highlightedText: highlightedText,
-        sensationalCount: sensationalWords.length,
-        rawText: rawText
-    };
-}
-
-function formatMediaResult(data, articleText) {
-    const img = data.image_analysis || {};
-    const auth = img.authenticity_screening || {};
-    const verdict = auth.assessment === "LIKELY AUTHENTIC" ? "LIKELY RELIABLE" : "NEEDS VERIFICATION";
-    const verdictClass = verdict === "LIKELY RELIABLE" ? "RELIABLE" : "NEEDS_VERIFICATION";
-
-    const signals = [
-        `File Name: ${img.filename || "Uploaded Image"} (${(img.size_bytes / 1024).toFixed(1)} KB)`,
-        `MIME Type: ${img.mime_type || "image/png"}`,
-        `Cryptographic SHA-256: ${(img.sha256 || "").substring(0, 16)}...`,
-        `EXIF Metadata: ${img.exif_status || "NOT FOUND"}`
-    ];
-
-    return {
-        verdict: verdict,
-        verdictClass: verdictClass,
-        summary: `Media analysis complete. Perceptual dHash: ${img.perceptual_hash || "N/A"}.`,
-        signals: signals,
-        highlightedText: articleText ? escapeHtml(articleText) : null,
-        rawText: articleText || img.filename
-    };
-}
-
-/* ==========================================================================
-   6. DOM RENDERING HELPERS
-   ========================================================================== */
-function appendUserMessage(text) {
-    const stream = document.getElementById("chatStream");
-    const div = document.createElement("div");
-    div.className = "chat-msg user";
-    div.innerHTML = `
-        <div class="msg-avatar">You</div>
-        <div class="msg-content">
-            <div class="msg-bubble">${escapeHtml(text)}</div>
-        </div>
-    `;
-    stream.appendChild(div);
-}
-
-function appendAssistantResponse(data) {
-    const stream = document.getElementById("chatStream");
-    const div = document.createElement("div");
-    div.className = "chat-msg assistant";
-
-    let highlightSection = "";
-    if (data.highlightedText) {
-        highlightSection = `
-            <div style="margin-top:8px;">
-                <div style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase;">
-                    Annotated Text (${data.sensationalCount || 0} trigger words highlighted):
+        return `
+            <div class="inbox-card ${riskClass}">
+                <div style="flex: 1; padding-right: 16px;">
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+                        <span class="badge ${badgeClass}">${decision}</span>
+                        <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">${escapeHtml(item.date)}</span>
+                    </div>
+                    <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">${escapeHtml(item.subject)}</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">From: ${escapeHtml(item.sender_name)} (${escapeHtml(item.sender)})</div>
+                    <div style="font-size: 13px; color: var(--text-muted);">${escapeHtml(item.body)}</div>
+                    
+                    ${evalRes.why ? `
+                        <div style="margin-top: 8px; font-size: 12px; color: var(--accent-cyan);">
+                            <strong>WHY:</strong> ${escapeHtml(evalRes.why.join(' • '))}
+                        </div>
+                    ` : ''}
                 </div>
-                <div class="highlight-text-container">${data.highlightedText}</div>
             </div>
         `;
-    }
-
-    div.innerHTML = `
-        <div class="msg-avatar">V</div>
-        <div class="msg-content">
-            <div class="verification-card">
-                <div class="verification-header">
-                    <strong style="font-size:14px;">Verification Result</strong>
-                    <span class="verdict-badge ${data.verdictClass}">${data.verdict}</span>
-                </div>
-                
-                <div class="verification-summary-text">${data.summary}</div>
-
-                <div class="explainability-box">
-                    <div class="explainability-title">
-                        <span>🔍</span>
-                        <span>Signals Contributing to Result</span>
-                    </div>
-                    <ul class="signals-list">
-                        ${data.signals.map(s => `<li class="signal-item">${escapeHtml(s)}</li>`).join("")}
-                    </ul>
-                    ${highlightSection}
-                </div>
-
-                <div class="msg-actions">
-                    <button class="action-btn" onclick="copyResponseText(this, '${escapeHtml(data.summary)}')">
-                        <span>📋</span>
-                        <span>Copy Response</span>
-                    </button>
-                    <button class="action-btn" onclick="submitVerification()">
-                        <span>🔄</span>
-                        <span>Re-analyze</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-    stream.appendChild(div);
+    }).join('');
 }
 
-function appendAssistantError(errorMsg) {
-    const stream = document.getElementById("chatStream");
+// AI SAATHI CHAT INTERACTION
+async function sendChatMessage() {
+    const input = document.getElementById("chat-input-text");
+    if (!input || !input.value.trim()) return;
+
+    const userMsg = input.value.trim();
+    input.value = "";
+
+    appendChatBubble(userMsg, "user");
+
+    try {
+        const mode = isSeniorMode ? "Senior" : "Adult";
+        const res = await fetch("/api/saathi/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: userMsg, user_mode: mode })
+        });
+        const data = await res.json();
+
+        if (data.status === "success" && data.result) {
+            appendChatBubble(data.result.response, "saathi");
+        } else {
+            appendChatBubble("Kripya punah prayas karein.", "saathi");
+        }
+    } catch (err) {
+        appendChatBubble("AI Saathi offline mode me hai.", "saathi");
+    }
+}
+
+function sendQuickPrompt(promptText) {
+    // Switch to AI Saathi tab
+    const saathiTab = document.querySelector('.nav-item[data-target="view-saathi"]');
+    if (saathiTab) saathiTab.click();
+
+    const input = document.getElementById("chat-input-text");
+    if (input) {
+        input.value = promptText;
+        sendChatMessage();
+    }
+}
+
+function appendChatBubble(text, sender) {
+    const log = document.getElementById("chat-log");
+    if (!log) return;
+
     const div = document.createElement("div");
-    div.className = "chat-msg assistant";
-    div.innerHTML = `
-        <div class="msg-avatar">V</div>
-        <div class="msg-content">
-            <div class="verification-card" style="border-color:var(--status-suspicious);">
-                <div class="verification-header">
-                    <strong style="font-size:14px; color:var(--status-suspicious);">Verification Notice</strong>
-                </div>
-                <div class="verification-summary-text">
-                    ${escapeHtml(errorMsg)}
-                </div>
-            </div>
-        </div>
-    `;
-    stream.appendChild(div);
+    div.className = `msg-bubble ${sender}`;
+    div.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
 }
 
-/* ==========================================================================
-   7. SESSION HISTORY MANAGER
-   ========================================================================== */
-function saveToHistory(text, verdict, fullData) {
-    const record = {
-        id: Date.now(),
-        title: text.length > 30 ? text.substring(0, 28) + "..." : text,
-        verdict: verdict,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        fullData: fullData
-    };
+// TRUST FIREWALL EVALUATOR
+async function evaluateTrustFirewall() {
+    const actionSelect = document.getElementById("firewall-action-select");
+    const contentText = document.getElementById("firewall-content-text");
+    const outContainer = document.getElementById("firewall-result-container");
 
-    verificationHistory.unshift(record);
-    if (verificationHistory.length > 20) verificationHistory.pop();
+    if (!actionSelect || !contentText || !outContainer) return;
 
-    try {
-        localStorage.setItem("veristas_history", JSON.stringify(verificationHistory));
-    } catch (e) {}
-
-    renderHistory();
-}
-
-function loadHistory() {
-    try {
-        const saved = localStorage.getItem("veristas_history");
-        if (saved) verificationHistory = JSON.parse(saved);
-    } catch (e) {
-        verificationHistory = [];
-    }
-    renderHistory();
-}
-
-function renderHistory() {
-    const list = document.getElementById("historyList");
-    if (!list) return;
-
-    if (verificationHistory.length === 0) {
-        list.innerHTML = `<div style="font-size:11px; color:var(--text-muted); padding:4px 8px;">No recent verifications</div>`;
+    const action = actionSelect.value;
+    const content = contentText.value.trim();
+    if (!content) {
+        outContainer.innerHTML = `<div style="color: var(--accent-rose);">Please enter text content to evaluate.</div>`;
         return;
     }
 
-    list.innerHTML = "";
-    verificationHistory.forEach(item => {
-        const a = document.createElement("a");
-        a.className = "history-item";
-        let badgeClass = "NEEDS_VERIFICATION";
-        if (item.verdict === "LIKELY RELIABLE") badgeClass = "RELIABLE";
-        if (item.verdict === "SUSPICIOUS") badgeClass = "SUSPICIOUS";
+    try {
+        const mode = isSeniorMode ? "Senior" : "Adult";
+        const res = await fetch("/api/trust/firewall", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action_name: action, content: content, user_mode: mode })
+        });
+        const data = await res.json();
 
-        a.innerHTML = `
-            <span class="history-item-text">${escapeHtml(item.title)}</span>
-            <span class="history-item-badge ${badgeClass}">${item.verdict}</span>
-        `;
-        a.onclick = (e) => {
-            e.preventDefault();
-            loadHistoryItem(item);
-        };
-        list.appendChild(a);
-    });
-}
+        if (data.status === "success" && data.evaluation) {
+            const evalRes = data.evaluation;
+            outContainer.innerHTML = `
+                <div style="background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px;">
+                        <span class="badge ${evalRes.decision === 'BLOCK' ? 'critical' : evalRes.decision === 'ASK_USER' ? 'caution' : 'low'}">
+                            DECISION: ${evalRes.decision}
+                        </span>
+                        <span style="font-weight: 700;">Risk Level: ${evalRes.risk_level}</span>
+                    </div>
 
-function loadHistoryItem(item) {
-    const emptyState = document.getElementById("emptyState");
-    if (emptyState) emptyState.style.display = "none";
-    appendUserMessage(item.title);
-    appendAssistantResponse(item.fullData);
-    scrollToBottom();
-}
+                    <div style="font-size: 14px; margin-bottom: 10px;"><strong>Reason:</strong> ${escapeHtml(evalRes.decision_reason)}</div>
+                    
+                    <div style="margin-bottom: 10px;">
+                        <strong>WHY:</strong>
+                        <ul style="padding-left: 20px; color: var(--text-secondary); margin-top: 4px;">
+                            ${evalRes.why ? evalRes.why.map(w => `<li>${escapeHtml(w)}</li>`).join('') : '<li>None</li>'}
+                        </ul>
+                    </div>
 
-/* ==========================================================================
-   8. UTILITIES & MODAL CONTROLLERS
-   ========================================================================== */
-function startNewVerification(event) {
-    if (event) event.preventDefault();
-    clearComposer();
-    const stream = document.getElementById("chatStream");
-    if (stream) stream.innerHTML = "";
-    const emptyState = document.getElementById("emptyState");
-    if (emptyState) emptyState.style.display = "flex";
-}
+                    <div style="margin-bottom: 10px;">
+                        <strong>EVIDENCE & RELIABILITY:</strong>
+                        <div style="font-size: 13px; color: var(--accent-cyan); margin-top: 4px;">
+                            Confidence: ${evalRes.confidence_percent}% | Uncertainty: ${evalRes.uncertainty} | Reliability Rating: ${evalRes.reliability}
+                        </div>
+                    </div>
 
-function showHistoryTab(event) {
-    if (event) event.preventDefault();
-    const sidebar = document.getElementById("sidebar");
-    sidebar.classList.remove("collapsed");
-}
-
-function openModal(modalId, event) {
-    if (event) event.preventDefault();
-    const modal = document.getElementById(modalId);
-    if (modal) modal.classList.add("open");
-}
-
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) modal.classList.remove("open");
-}
-
-function closeModalOnOverlay(event, modalId) {
-    if (event.target.id === modalId) {
-        closeModal(modalId);
+                    <div style="background: rgba(0,240,255,0.08); padding: 12px; border-radius: 8px; font-weight: 600; color: var(--accent-cyan);">
+                        💡 Recommended Action: ${escapeHtml(evalRes.recommended_action)}
+                    </div>
+                </div>
+            `;
+        }
+    } catch (err) {
+        outContainer.innerHTML = `<div style="color: var(--accent-rose);">Evaluation failed: ${err}</div>`;
     }
 }
 
-function copyResponseText(btn, text) {
-    navigator.clipboard.writeText(text).then(() => {
-        const orig = btn.innerHTML;
-        btn.innerHTML = "<span>✓</span> <span>Copied!</span>";
-        setTimeout(() => { btn.innerHTML = orig; }, 1500);
-    });
+// PRIVACY SHIELD SCANNER
+async function scanPrivacyInput() {
+    const input = document.getElementById("privacy-input-text");
+    const out = document.getElementById("privacy-scan-output");
+    if (!input || !out) return;
+
+    const text = input.value.trim();
+    if (!text) return;
+
+    try {
+        const res = await fetch("/api/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: text })
+        });
+        const data = await res.json();
+
+        if (data.privacy_analysis) {
+            const p = data.privacy_analysis;
+            out.innerHTML = `
+                <div style="background: var(--bg-subtle); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <div style="font-weight: 700; margin-bottom: 6px;">Privacy Risk: ${p.privacy_risk} (Grade: ${p.privacy_grade})</div>
+                    <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 10px;">${escapeHtml(p.explanation)}</div>
+                    
+                    <div style="font-size: 12px; font-weight: 700; color: var(--accent-green); margin-bottom: 4px;">Masked Output:</div>
+                    <div style="font-family: var(--font-mono); background: var(--bg-card); padding: 10px; border-radius: 6px; font-size: 13px;">
+                        ${escapeHtml(p.masked_text)}
+                    </div>
+                </div>
+            `;
+        }
+    } catch (err) {
+        out.innerHTML = `<div style="color: var(--accent-rose);">Privacy scan failed.</div>`;
+    }
 }
 
-function scrollToBottom() {
-    const area = document.getElementById("contentArea");
-    if (area) area.scrollTop = area.scrollHeight;
+// DEMO SCENARIO PRESET
+function loadKycDemoScenario() {
+    const homeTab = document.querySelector('.nav-item[data-target="view-home"]');
+    if (homeTab) homeTab.click();
+
+    const firewallTab = document.querySelector('.nav-item[data-target="view-firewall"]');
+    if (firewallTab) firewallTab.click();
+
+    const actionSelect = document.getElementById("firewall-action-select");
+    const contentText = document.getElementById("firewall-content-text");
+
+    if (actionSelect) actionSelect.value = "share_otp";
+    if (contentText) {
+        contentText.value = "URGENT: Your SBI Bank account 4589XXXX2109 will be suspended today! Click http://sbi-kyc-update-login.com/login and enter NetBanking OTP immediately.";
+    }
+
+    evaluateTrustFirewall();
 }
 
 function escapeHtml(str) {
     if (!str) return "";
-    return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }

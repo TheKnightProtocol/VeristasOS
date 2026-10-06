@@ -3,31 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="VeristasOS — AI-Powered Digital Trust & Safety Layer. Your truth. Your data. Your device.">
+    <meta name="description" content="VeristasOS — Your AI Saathi. Safety-first personal AI agent for digital trust, privacy protection, and permission-controlled autonomous actions.">
     <meta name="theme-color" content="#171717">
-    <title>VeristasOS — Digital Trust & Safety Layer</title>
+    <title>VeristasOS — Your AI Saathi</title>
 
     <style>
         /* =========================================================
-           VERISTASOS DIGITAL TRUST & SAFETY DESIGN SYSTEM
+           VERISTASOS — YOUR AI SAATHI DESIGN SYSTEM
         ========================================================= */
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            /* Dark Theme (Default) */
-            --bg-workspace: #1a1a1a;
-            --bg-sidebar: #111111;
-            --bg-card: #262626;
-            --bg-input: #262626;
-            --bg-subtle: #151515;
-            --bg-hover: #333333;
+            --bg-workspace: #16171d;
+            --bg-sidebar: #0f1015;
+            --bg-card: #20222a;
+            --bg-input: #292c36;
+            --bg-subtle: #1a1c24;
+            --bg-hover: #323542;
 
             --border-color: rgba(255, 255, 255, 0.1);
-            --border-subtle: rgba(255, 255, 255, 0.05);
+            --border-subtle: rgba(255, 255, 255, 0.06);
 
-            --text-primary: #f3f3f3;
-            --text-secondary: #b0b0b0;
-            --text-muted: #808080;
+            --text-primary: #f5f6fa;
+            --text-secondary: #a0a5b5;
+            --text-muted: #6c7285;
 
             --accent-cyan: #00f0ff;
             --accent-green: #10b981;
@@ -44,21 +43,20 @@
             --radius-sm: 6px;
         }
 
-        /* Light Theme Overrides */
         [data-theme="light"] {
-            --bg-workspace: #ffffff;
-            --bg-sidebar: #f8f9fa;
-            --bg-card: #f1f3f5;
-            --bg-input: #e9ecef;
-            --bg-subtle: #f8f9fa;
-            --bg-hover: #dee2e6;
+            --bg-workspace: #f8fafc;
+            --bg-sidebar: #ffffff;
+            --bg-card: #f1f5f9;
+            --bg-input: #e2e8f0;
+            --bg-subtle: #ffffff;
+            --bg-hover: #cbd5e1;
 
-            --border-color: #dee2e6;
-            --border-subtle: #e9ecef;
+            --border-color: #cbd5e1;
+            --border-subtle: #e2e8f0;
 
-            --text-primary: #121212;
-            --text-secondary: #495057;
-            --text-muted: #6c757d;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
 
             --accent-cyan: #0284c7;
             --accent-violet: #7c3aed;
@@ -70,7 +68,6 @@
             background-color: var(--bg-workspace);
             color: var(--text-primary);
             overflow: hidden;
-            transition: background-color 0.25s ease, color 0.25s ease;
         }
 
         .app-layout {
@@ -78,10 +75,9 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            position: relative;
         }
 
-        /* LEFT SIDEBAR */
+        /* SIDEBAR */
         .sidebar {
             width: var(--sidebar-width);
             background-color: var(--bg-sidebar);
@@ -89,699 +85,594 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 14px;
-            transition: transform 0.3s ease, width 0.3s ease;
-            z-index: 40;
+            padding: 16px;
             flex-shrink: 0;
         }
 
-        .sidebar.collapsed { width: 70px; }
-        .sidebar.collapsed .hide-collapsed { display: none !important; }
-
-        .sidebar-header {
+        .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-subtle);
+            gap: 12px;
+            margin-bottom: 24px;
+            padding: 6px 0;
         }
 
-        .brand-logo {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
+        .brand-icon {
+            width: 36px;
+            height: 36px;
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
-            display: grid;
-            place-items: center;
-            font-weight: 900;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #000;
             font-size: 18px;
-            color: #fff;
-            box-shadow: 0 0 14px rgba(0, 240, 255, 0.3);
-            flex-shrink: 0;
+            box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
         }
 
         .brand-title {
+            font-weight: 700;
             font-size: 16px;
-            font-weight: 900;
             letter-spacing: 0.5px;
-            color: var(--text-primary);
         }
 
-        .brand-sub {
-            font-size: 10px;
+        .brand-tagline {
+            font-size: 11px;
             color: var(--accent-cyan);
-            font-family: var(--font-mono);
-        }
-
-        .btn-new-chat {
-            margin-top: 14px;
-            width: 100%;
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-color);
-            background: transparent;
-            color: var(--text-primary);
-            font-size: 13px;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: background 0.2s ease;
         }
 
-        .btn-new-chat:hover { background-color: var(--bg-hover); }
-
-        .sidebar-nav {
-            margin-top: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .nav-item {
-            padding: 9px 12px;
-            border-radius: var(--radius-sm);
-            color: var(--text-secondary);
-            font-size: 12px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.2s ease;
-        }
-
-        .nav-item:hover, .nav-item.active {
-            color: var(--text-primary);
-            background-color: var(--bg-hover);
-        }
-
-        .sidebar-footer {
-            border-top: 1px solid var(--border-subtle);
-            padding-top: 12px;
+        .nav-list {
+            list-style: none;
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
 
-        .theme-toggle-row {
+        .nav-item {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 8px 10px;
-            border-radius: var(--radius-sm);
-            font-size: 12px;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
             color: var(--text-secondary);
             cursor: pointer;
+            font-weight: 500;
+            font-size: 13.5px;
+            transition: all 0.2s ease;
         }
 
-        .theme-toggle-row:hover { background-color: var(--bg-hover); color: var(--text-primary); }
+        .nav-item:hover, .nav-item.active {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
 
-        /* MAIN CONVERSATIONAL WORKSPACE */
-        .workspace {
+        .nav-item.active {
+            border-left: 3px solid var(--accent-cyan);
+            background: linear-gradient(90deg, rgba(0, 240, 255, 0.1), transparent);
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            height: 100%;
-            background-color: var(--bg-workspace);
-            position: relative;
+            overflow: hidden;
         }
 
-        .workspace-header {
-            height: 56px;
+        .topbar {
+            height: 60px;
             border-bottom: 1px solid var(--border-color);
-            padding: 0 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: var(--bg-workspace);
-            z-index: 10;
+            padding: 0 24px;
+            background-color: var(--bg-sidebar);
         }
 
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .workspace-title { font-size: 16px; font-weight: 900; letter-spacing: 0.5px; }
-        .workspace-tagline { font-size: 11px; color: var(--text-muted); font-style: italic; margin-left: 8px; }
-
-        .local-ai-badge {
-            font-size: 11px; font-family: var(--font-mono);
-            padding: 4px 10px; border-radius: 999px;
-            background-color: var(--bg-card); border: 1px solid var(--border-color);
-            color: var(--accent-green);
-        }
-
-        /* CHAT SCROLL AREA */
-        .chat-scroll-area {
-            flex: 1; overflow-y: auto;
-            padding: 20px 0 150px;
-            display: flex; flex-direction: column; align-items: center;
-        }
-
-        .chat-container {
-            width: min(900px, 94%);
-            display: flex; flex-direction: column; gap: 24px;
-        }
-
-        /* EMPTY STATE HERO */
-        .empty-state {
-            text-align: center; margin: 30px 0 20px;
-            display: flex; flex-direction: column; align-items: center;
-        }
-
-        .empty-hero-icon {
-            width: 58px; height: 58px; border-radius: 16px;
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
-            display: grid; place-items: center; font-size: 28px; color: #fff;
-            margin-bottom: 14px; box-shadow: 0 0 24px rgba(0, 240, 255, 0.25);
-        }
-
-        .empty-state h1 { font-size: 28px; font-weight: 900; margin-bottom: 6px; }
-        .empty-state p { font-size: 14px; color: var(--text-secondary); max-width: 560px; line-height: 1.5; margin-bottom: 20px; }
-
-        /* JURY DEMO SCENARIO BUTTON */
-        .jury-demo-banner {
-            background: var(--bg-card);
-            border: 1px solid var(--accent-cyan);
-            border-radius: var(--radius-md);
-            padding: 14px 20px;
+        .topbar-title {
+            font-weight: 600;
+            font-size: 15px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            margin-bottom: 20px;
-            box-shadow: 0 0 16px rgba(0, 240, 255, 0.15);
+            gap: 10px;
         }
 
-        .btn-jury-scenario {
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
-            color: #fff; border: none; padding: 8px 18px; border-radius: var(--radius-sm);
-            font-size: 12px; font-weight: 700; cursor: pointer;
-        }
-
-        /* TRUST LENS RESULT CARD (WHY -> RISK -> ACTION) */
-        .trust-lens-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 22px;
-            display: flex; flex-direction: column; gap: 18px;
-        }
-
-        .risk-header-bar {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;
-        }
-
-        .risk-pill-badge {
-            font-size: 12px; font-weight: 900; padding: 6px 16px; border-radius: 999px;
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-
-        .risk-pill-badge.LOW { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; }
-        .risk-pill-badge.CAUTION { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid #f59e0b; }
-        .risk-pill-badge.HIGH { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444; }
-        .risk-pill-badge.CRITICAL { background: rgba(239, 68, 68, 0.25); color: #ff3333; border: 1px solid #ff3333; }
-
-        /* WHY -> RISK -> ACTION THREE PANEL LAYOUT */
-        .decision-flow-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .topbar-actions {
+            display: flex;
+            align-items: center;
             gap: 14px;
         }
 
-        .decision-panel {
-            background-color: var(--bg-subtle);
-            border: 1px solid var(--border-subtle);
+        .btn-mode-toggle {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-mode-toggle.active {
+            border-color: var(--accent-amber);
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-amber);
+        }
+
+        .workspace-view {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: none;
+        }
+
+        .workspace-view.active {
+            display: block;
+        }
+
+        /* DAILY BRIEF DASHBOARD */
+        .daily-brief-hero {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.08), rgba(168, 85, 247, 0.08));
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .hero-text p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .safety-meter-box {
+            text-align: right;
+            background: var(--bg-card);
+            padding: 14px 20px;
             border-radius: var(--radius-md);
-            padding: 14px;
-            display: flex; flex-direction: column; gap: 10px;
+            border: 1px solid var(--border-color);
         }
 
-        .panel-label-title {
-            font-size: 11px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 0.5px; color: var(--accent-cyan);
+        .safety-score-num {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent-green);
         }
 
-        /* SCAM DNA METERS */
-        .scam-dna-group { display: flex; flex-direction: column; gap: 8px; }
-        .scam-dna-item { display: flex; flex-direction: column; gap: 3px; font-size: 11px; font-family: var(--font-mono); }
-        .scam-dna-label { display: flex; justify-content: space-between; }
-        .scam-dna-track { width: 100%; height: 6px; background: var(--bg-workspace); border-radius: 999px; overflow: hidden; }
-        .scam-dna-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet)); transition: width 0.6s ease; }
-
-        /* FLOATING INPUT COMPOSER */
-        .composer-container {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            padding: 16px 20px 24px;
-            background: linear-gradient(to top, var(--bg-workspace) 80%, transparent);
-            display: flex; justify-content: center; z-index: 20;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
-        .composer-box {
-            width: min(900px, 100%); background-color: var(--bg-input);
-            border: 1px solid var(--border-color); border-radius: var(--radius-lg);
-            padding: 12px 16px; display: flex; flex-direction: column; gap: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
-        .composer-box:focus-within { border-color: var(--accent-cyan); }
-        .composer-textarea {
-            width: 100%; background: transparent; border: none; outline: none;
-            color: var(--text-primary); font-family: var(--font-sans);
-            font-size: 14px; line-height: 1.5; resize: none; min-height: 48px; max-height: 180px;
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-icon.red { background: rgba(239, 68, 68, 0.15); color: var(--accent-rose); }
+        .stat-icon.yellow { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+
+        .stat-val { font-size: 22px; font-weight: 800; }
+        .stat-lbl { font-size: 12px; color: var(--text-muted); }
+
+        /* QUICK ACTIONS BAR */
+        .quick-actions-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 10px 16px;
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-btn:hover {
+            border-color: var(--accent-cyan);
+            background: var(--bg-hover);
+        }
+
+        /* INBOX TABLE & CARDS */
+        .inbox-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.2s ease;
+        }
+
+        .inbox-card:hover { border-color: var(--border-color); }
+        .inbox-card.risk-high { border-left: 4px solid var(--accent-rose); }
+        .inbox-card.risk-caution { border-left: 4px solid var(--accent-amber); }
+        .inbox-card.risk-low { border-left: 4px solid var(--accent-green); }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge.critical { background: rgba(239, 68, 68, 0.2); color: var(--accent-rose); }
+        .badge.high { background: rgba(239, 68, 68, 0.2); color: var(--accent-rose); }
+        .badge.caution { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
+        .badge.low { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+
+        /* CHAT WORKSPACE */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 120px);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .chat-log {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .msg-bubble {
+            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .msg-bubble.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #0284c7, #7c3aed);
+            color: #fff;
+        }
+
+        .msg-bubble.saathi {
+            align-self: flex-start;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-color);
+        }
+
+        .chat-input-bar {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-sidebar);
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
         }
 
         .btn-send {
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
-            color: #fff; border: none; padding: 8px 20px; border-radius: var(--radius-sm);
-            font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            color: #000;
+            font-weight: 700;
+            padding: 0 20px;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
         }
 
-        /* MODALS */
-        .modal-overlay {
-            display: none; position: fixed; inset: 0;
-            background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px);
-            z-index: 100; place-items: center; padding: 20px;
-        }
-
-        .modal-card {
-            background-color: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg); width: min(720px, 100%); max-height: 85vh;
-            overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px;
-        }
-
-        @media (max-width: 900px) {
-            .decision-flow-grid { grid-template-columns: 1fr; }
-            .sidebar { position: fixed; inset: 0 auto 0 0; transform: translateX(-100%); }
-            .sidebar.mobile-open { transform: translateX(0); }
+        .senior-alert-banner {
+            background: rgba(239, 68, 68, 0.15);
+            border: 2px solid var(--accent-rose);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            color: var(--accent-rose);
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 16px;
         }
     </style>
 </head>
-
 <body>
 
 <div class="app-layout">
-
-    <!-- LEFT SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
+    <!-- LEFT SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
         <div>
-            <div class="sidebar-header">
-                <div class="brand-logo">V</div>
-                <div class="brand-text hide-collapsed">
+            <div class="brand">
+                <div class="brand-icon">S</div>
+                <div>
                     <div class="brand-title">VERISTASOS</div>
-                    <div class="brand-sub">Your truth. Your data. Your device.</div>
+                    <div class="brand-tagline">YOUR AI SAATHI</div>
                 </div>
             </div>
 
-            <button class="btn-new-chat" onclick="resetNewVerification()">
-                <span>➕</span>
-                <span class="hide-collapsed">New Verification</span>
-            </button>
-
-            <nav class="sidebar-nav">
-                <a class="nav-item active" onclick="resetNewVerification()">
-                    <span>🔍</span><span class="hide-collapsed">HOME</span>
-                </a>
-                <a class="nav-item" onclick="resetNewVerification()">
-                    <span>🔎</span><span class="hide-collapsed">TRUST LENS</span>
-                </a>
-                <a class="nav-item" onclick="openModal('scamShieldModal')">
-                    <span>🛡️</span><span class="hide-collapsed">SCAM SHIELD</span>
-                </a>
-                <a class="nav-item" onclick="openModal('privacyModal')">
-                    <span>🔐</span><span class="hide-collapsed">PRIVACY</span>
-                </a>
-                <a class="nav-item" onclick="openModal('intelModal')">
-                    <span>📡</span><span class="hide-collapsed">THREAT INTELLIGENCE</span>
-                </a>
-                <a class="nav-item" onclick="openModal('academyModal')">
-                    <span>🎓</span><span class="hide-collapsed">SAFETY ACADEMY</span>
-                </a>
-                <a class="nav-item" onclick="openModal('howItWorksModal')">
-                    <span>⚙️</span><span class="hide-collapsed">How It Works</span>
-                </a>
-                <a class="nav-item" onclick="openModal('aboutModal')">
-                    <span>ℹ️</span><span class="hide-collapsed">About</span>
-                </a>
-            </nav>
+            <ul class="nav-list">
+                <li class="nav-item active" data-target="view-home">
+                    <span>🏠</span> <span>Home & Brief</span>
+                </li>
+                <li class="nav-item" data-target="view-saathi">
+                    <span>🤖</span> <span>AI Saathi Chat</span>
+                </li>
+                <li class="nav-item" data-target="view-inbox">
+                    <span>📧</span> <span>Protected Inbox</span>
+                </li>
+                <li class="nav-item" data-target="view-firewall">
+                    <span>🛡️</span> <span>Trust Firewall</span>
+                </li>
+                <li class="nav-item" data-target="view-privacy">
+                    <span>🔐</span> <span>Privacy Shield</span>
+                </li>
+                <li class="nav-item" data-target="view-academy">
+                    <span>🚨</span> <span>Safety Academy</span>
+                </li>
+                <li class="nav-item" data-target="view-permissions">
+                    <span>⚙️</span> <span>Permissions</span>
+                </li>
+            </ul>
         </div>
 
-        <div class="sidebar-footer">
-            <div style="font-size:10px; font-family:var(--font-mono); color:var(--text-muted); margin-bottom:6px;" class="hide-collapsed" id="localAiStatusSidebar">
-                ○ Local model not configured
-            </div>
-            <div class="theme-toggle-row" onclick="toggleTheme()">
-                <span class="hide-collapsed" id="themeLabelText">🌙 Dark Mode</span>
-                <span id="themeIcon">☀️</span>
-            </div>
+        <div style="font-size: 11px; color: var(--text-muted); padding: 10px 0; border-top: 1px solid var(--border-color);">
+            VeristasOS v1.0 • College Evaluation Demo
         </div>
     </aside>
 
-    <!-- MAIN CONVERSATIONAL WORKSPACE -->
-    <main class="workspace">
-
-        <!-- TOP BAR -->
-        <header class="workspace-header">
-            <div class="header-left">
-                <button style="background:none; border:none; color:var(--text-primary); font-size:18px; cursor:pointer;" onclick="document.getElementById('sidebar').classList.toggle('mobile-open')">☰</button>
-                <span class="workspace-title">VERISTASOS</span>
-                <span class="workspace-tagline">"Your truth. Your data. Your device."</span>
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="main-content">
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <div class="topbar-title">
+                <span id="current-view-title">Good afternoon 👋</span>
+                <span style="font-size: 12px; color: var(--text-muted);">| Aap busy ho. Saathi sambhal lega.</span>
             </div>
-            <div class="local-ai-badge" id="localAiBadgeTop">
-                ● Local-First AI Active
+            <div class="topbar-actions">
+                <button class="btn-mode-toggle" id="toggle-senior-mode">
+                    <span>👴</span> <span id="senior-mode-text">Senior Mode: OFF</span>
+                </button>
             </div>
         </header>
 
-        <!-- CHAT SCROLL AREA -->
-        <div class="chat-scroll-area" id="chatScrollArea">
-            <div class="chat-container" id="chatContainer">
+        <!-- VIEW 1: HOME & DAILY BRIEF -->
+        <div id="view-home" class="workspace-view active">
+            <div class="daily-brief-hero">
+                <div class="hero-text">
+                    <h1>Good afternoon, Sankalp 👋</h1>
+                    <p>Your AI Saathi active. Protect. Understand. Act.</p>
+                </div>
+                <div class="safety-meter-box">
+                    <div class="safety-score-num">87 / 100</div>
+                    <div style="font-size: 11px; color: var(--text-muted);">Digital Safety Score</div>
+                </div>
+            </div>
 
-                <!-- JURY DEMONSTRATION BANNER -->
-                <div class="jury-demo-banner" id="juryBanner">
+            <!-- STATS COUNTERS -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon red">🔴</div>
                     <div>
-                        <strong style="color:var(--accent-cyan); font-size:13px;">JURY DEMONSTRATION SCENARIO</strong>
-                        <div style="font-size:11px; color:var(--text-secondary);">Test bank KYC expiry phishing scam with Scam DNA & Privacy Shield.</div>
+                        <div class="stat-val" id="stat-red-count">2</div>
+                        <div class="stat-lbl">Actions Needed (Blocked)</div>
                     </div>
-                    <button class="btn-jury-scenario" onclick="runJuryDemoScenario()">⚡ Run Demo Scenario</button>
                 </div>
-
-                <!-- EMPTY STATE HERO -->
-                <div class="empty-state" id="emptyStateHero">
-                    <div class="empty-hero-icon">V</div>
-                    <h1>Verify before you trust.</h1>
-                    <p>Analyze digital interactions across content, URLs, language, privacy and threat patterns using the Digital Trust Graph.</p>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- FLOATING INPUT COMPOSER -->
-        <div class="composer-container">
-            <div class="composer-box">
-                <div id="attachmentPreview" style="display:none; font-size:11px; color:var(--text-secondary);">
-                    🖼 <span id="attachedFileName">image.png</span>
-                    <button style="background:none; border:none; color:var(--text-muted); cursor:pointer;" onclick="clearAttachment()">✕</button>
-                </div>
-                
-                <textarea class="composer-textarea" id="composerInput" placeholder="Check this: Paste suspicious content, URL, message or claim..." onkeydown="handleKeyDown(event)"></textarea>
-
-                <div class="composer-controls">
-                    <div style="display:flex; gap:6px;">
-                        <input type="file" id="imageFileInput" accept="image/*" style="display:none;" onchange="handleImageAttach(event)">
-                        <button style="background:var(--bg-card); border:1px solid var(--border-color); color:var(--text-primary); padding:4px 10px; border-radius:4px; font-size:11px; cursor:pointer;" onclick="document.getElementById('imageFileInput').click()">📎 Attach Image</button>
-                        <button style="background:var(--bg-card); border:1px solid var(--border-color); color:var(--text-primary); padding:4px 10px; border-radius:4px; font-size:11px; cursor:pointer;" onclick="clearComposer()">🗑 Clear</button>
+                <div class="stat-card">
+                    <div class="stat-icon yellow">🟡</div>
+                    <div>
+                        <div class="stat-val" id="stat-yellow-count">3</div>
+                        <div class="stat-lbl">Items to Review</div>
                     </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">🟢</div>
+                    <div>
+                        <div class="stat-val" id="stat-green-count">8</div>
+                        <div class="stat-lbl">Handled Automatically</div>
+                    </div>
+                </div>
+            </div>
 
-                    <button class="btn-send" id="btnAnalyzeSend" onclick="submitVerification()">
-                        <span>Check this</span>
-                        <span>→</span>
-                    </button>
+            <!-- QUICK SHORTCUT BUTTONS -->
+            <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Quick Assistant Shortcuts</div>
+            <div class="quick-actions-bar">
+                <button class="quick-btn" onclick="sendQuickPrompt('Check my inbox')">📧 Check my inbox</button>
+                <button class="quick-btn" onclick="sendQuickPrompt('Anything important today?')">🟡 Anything important today?</button>
+                <button class="quick-btn" onclick="sendQuickPrompt('Is this message safe?')">🛡️ Is this message safe?</button>
+                <button class="quick-btn" onclick="sendQuickPrompt('What should I do?')">💡 What should I do?</button>
+                <button class="quick-btn" style="border-color: var(--accent-rose); color: var(--accent-rose);" onclick="loadKycDemoScenario()">🚨 Demo: Bank KYC Scam</button>
+            </div>
+
+            <!-- SENIOR MODE BANNER CONTAINER -->
+            <div id="senior-banner-container" style="display: none;"></div>
+
+            <!-- DAILY BRIEF SUMMARY CARDS -->
+            <div style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">🔴 Actions Needed</div>
+            <div id="home-red-list"></div>
+
+            <div style="font-size: 14px; font-weight: 700; margin-top: 20px; margin-bottom: 12px;">🟡 Pending Reviews</div>
+            <div id="home-yellow-list"></div>
+        </div>
+
+        <!-- VIEW 2: AI SAATHI CHAT WORKSPACE -->
+        <div id="view-saathi" class="workspace-view">
+            <div class="chat-container">
+                <div class="chat-log" id="chat-log">
+                    <div class="msg-bubble saathi">
+                        <strong>Namaste! I am your AI Saathi 🙏</strong><br>
+                        Main aapki digital safety, inbox management aur scam detection me madad karta hoon.
+                        Mujhse poochiye: <em>"Check my emails"</em>, <em>"Is this link safe?"</em>, ya <em>"What should I do?"</em>.
+                    </div>
+                </div>
+                <div class="chat-input-bar">
+                    <input type="text" class="chat-input" id="chat-input-text" placeholder="Type message to AI Saathi..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <button class="btn-send" onclick="sendChatMessage()">Send</button>
                 </div>
             </div>
         </div>
 
-    </main>
-
-</div>
-
-<!-- MODAL: HOW IT WORKS (COLLEGE VIVA) -->
-<div class="modal-overlay" id="howItWorksModal">
-    <div class="modal-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); padding-bottom:10px;">
-            <strong style="font-size:16px;">⚙️ Digital Trust Graph Architecture</strong>
-            <button style="background:none; border:none; color:var(--text-muted); font-size:18px; cursor:pointer;" onclick="closeModal('howItWorksModal')">✕</button>
+        <!-- VIEW 3: PROTECTED INBOX -->
+        <div id="view-inbox" class="workspace-view">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h2>📧 Protected Email Inbox</h2>
+                <button class="quick-btn" onclick="refreshInbox()">🔄 Refresh Inbox</button>
+            </div>
+            <div id="inbox-cards-list"></div>
         </div>
 
-        <div style="font-size:12px; font-family:var(--font-mono); color:var(--text-secondary); line-height:1.8;">
-            <div style="background:var(--bg-subtle); padding:10px; border-radius:6px; margin-bottom:8px;">DIGITAL INTERACTION (Text / URL / Image)</div>
-            <div style="text-align:center;">↓</div>
-            <div style="background:var(--bg-subtle); padding:10px; border-radius:6px; margin:8px 0; border:1px solid var(--accent-violet);">
-                SIGNAL EXTRACTION (Sensationalism, Urgency, Impersonation, Sensitive Data)
-            </div>
-            <div style="text-align:center;">↓</div>
-            <div style="background:var(--bg-subtle); padding:10px; border-radius:6px; margin:8px 0; border:1px solid var(--accent-cyan);">
-                DIGITAL TRUST GRAPH (Connects content, domain, intent, Scam DNA)
-            </div>
-            <div style="text-align:center;">↓</div>
-            <div style="background:var(--bg-subtle); padding:10px; border-radius:6px; margin:8px 0;">UNIFIED RISK ENGINE</div>
-            <div style="text-align:center;">↓</div>
-            <div style="background:var(--bg-subtle); padding:10px; border-radius:6px; margin-top:8px; border:1px solid var(--accent-green);">
-                <strong style="color:var(--accent-green);">WHY → RISK → ACTION DECISION SCHEMA</strong>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL: ABOUT -->
-<div class="modal-overlay" id="aboutModal">
-    <div class="modal-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-subtle); padding-bottom:10px;">
-            <strong style="font-size:16px;">ℹ️ About VeristasOS</strong>
-            <button style="background:none; border:none; color:var(--text-muted); font-size:18px; cursor:pointer;" onclick="closeModal('aboutModal')">✕</button>
-        </div>
-
-        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6;">
-            <h3 style="color:var(--text-primary); margin-bottom:4px;">VeristasOS: AI-Powered Digital Trust & Safety Layer</h3>
-            <p style="font-style:italic; color:var(--accent-cyan); margin-bottom:12px;">"Your truth. Your data. Your device."</p>
-
-            <div style="background:var(--bg-subtle); padding:14px; border-radius:8px; border:1px solid var(--border-subtle); margin-bottom:12px;">
-                <div><strong>Institution:</strong> Dronacharya College of Engineering, Gurugram</div>
-                <div><strong>Department:</strong> CSE – Artificial Intelligence & Machine Learning</div>
-                <div style="margin-top:6px;"><strong>Team Members:</strong></div>
-                <ul style="padding-left:18px;">
-                    <li>Sankalp Sharma</li>
-                    <li>Ishan Sharma</li>
-                    <li>Rishabh</li>
-                </ul>
-            </div>
-
-            <p style="font-size:12px; color:var(--text-muted);">
-                VeristasOS analyzes digital interactions across content, URLs, language, privacy, and threat patterns to provide explainable risk assessments and actionable guidance.
+        <!-- VIEW 4: TRUST FIREWALL GATEKEEPER -->
+        <div id="view-firewall" class="workspace-view">
+            <h2>🛡️ Trust Firewall Gatekeeper</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                Evaluates content risk, privacy risk, financial risk, and user policy before executing any AI action.
             </p>
-        </div>
-    </div>
-</div>
+            
+            <div style="background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); margin-bottom: 20px;">
+                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 8px;">Proposed Action Type:</label>
+                <select id="firewall-action-select" class="chat-input" style="margin-bottom: 14px;">
+                    <option value="upi_payment">upi_payment (HIGH RISK)</option>
+                    <option value="share_otp">share_otp (HIGH RISK)</option>
+                    <option value="draft_email_reply">draft_email_reply (MEDIUM RISK)</option>
+                    <option value="create_reminder">create_reminder (LOW RISK)</option>
+                </select>
 
-<!-- OTHER FEATURE MODALS -->
-<div class="modal-overlay" id="scamShieldModal"><div class="modal-card"><div><strong>🛡️ SCAM SHIELD:</strong> Rule-assisted Scam Radar protecting against KYC fraud, OTP theft, and bank impersonation.</div><button style="margin-top:12px;" onclick="closeModal('scamShieldModal')">Close</button></div></div>
-<div class="modal-overlay" id="privacyModal"><div class="modal-card"><div><strong>🔐 PRIVACY SHIELD:</strong> India-First sensitive data masking for Aadhaar, PAN, UPI IDs, and OTP PINs.</div><button style="margin-top:12px;" onclick="closeModal('privacyModal')">Close</button></div></div>
-<div class="modal-overlay" id="intelModal"><div class="modal-card"><div><strong>📡 THREAT INTELLIGENCE:</strong> Multi-signal threat aggregation connecting Scam DNA attack fingerprints.</div><button style="margin-top:12px;" onclick="closeModal('intelModal')">Close</button></div></div>
-<div class="modal-overlay" id="academyModal"><div class="modal-card"><div><strong>🎓 SAFETY ACADEMY:</strong> Digital trust guidelines and safety awareness tips for online safety.</div><button style="margin-top:12px;" onclick="closeModal('academyModal')">Close</button></div></div>
-
-<script>
-    let attachedImageFile = null;
-
-    document.addEventListener("DOMContentLoaded", () => {
-        initTheme();
-        checkSystemStatus();
-    });
-
-    function initTheme() {
-        const saved = localStorage.getItem("veristas_theme") || "dark";
-        document.documentElement.setAttribute("data-theme", saved);
-        document.getElementById("themeLabelText").textContent = saved === "dark" ? "🌙 Dark Mode" : "☀️ Light Mode";
-    }
-
-    function toggleTheme() {
-        const current = document.documentElement.getAttribute("data-theme") || "dark";
-        const next = current === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        localStorage.setItem("veristas_theme", next);
-        document.getElementById("themeLabelText").textContent = next === "dark" ? "🌙 Dark Mode" : "☀️ Light Mode";
-    }
-
-    function openModal(id) { document.getElementById(id).style.display = "grid"; }
-    function closeModal(id) { document.getElementById(id).style.display = "none"; }
-
-    async function checkSystemStatus() {
-        try {
-            const res = await fetch("/api/status");
-            const data = await res.json();
-            const topBadge = document.getElementById("localAiBadgeTop");
-            const sideLabel = document.getElementById("localAiStatusSidebar");
-            if (data.local_ai?.available) {
-                topBadge.textContent = "● Local AI Connected (Qwen 3B)";
-                sideLabel.textContent = "● Local model available";
-            } else {
-                topBadge.textContent = "○ Deterministic Engine Mode";
-                sideLabel.textContent = "○ Local model not configured";
-            }
-        } catch (e) {}
-    }
-
-    function runJuryDemoScenario() {
-        const input = document.getElementById("composerInput");
-        input.value = "URGENT! Your bank KYC has expired. Your account will be blocked today. Verify immediately using this link.";
-        submitVerification();
-    }
-
-    function handleKeyDown(e) {
-        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submitVerification(); }
-    }
-
-    function clearComposer() {
-        document.getElementById("composerInput").value = "";
-        clearAttachment();
-    }
-
-    function handleImageAttach(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        attachedImageFile = file;
-        document.getElementById("attachedFileName").textContent = file.name;
-        document.getElementById("attachmentPreview").style.display = "block";
-    }
-
-    function clearAttachment() {
-        attachedImageFile = null;
-        document.getElementById("imageFileInput").value = "";
-        document.getElementById("attachmentPreview").style.display = "none";
-    }
-
-    function resetNewVerification() {
-        document.getElementById("emptyStateHero").style.display = "flex";
-        const container = document.getElementById("chatContainer");
-        container.innerHTML = "";
-        container.appendChild(document.getElementById("juryBanner"));
-        container.appendChild(document.getElementById("emptyStateHero"));
-        clearComposer();
-    }
-
-    async function submitVerification() {
-        const inputEl = document.getElementById("composerInput");
-        const text = inputEl.value.trim();
-        if (!text && !attachedImageFile) return;
-
-        document.getElementById("emptyStateHero").style.display = "none";
-        const container = document.getElementById("chatContainer");
-
-        // User Message
-        const userRow = document.createElement("div");
-        userRow.style.cssText = "background:var(--bg-card); border:1px solid var(--border-color); padding:12px 16px; border-radius:12px; font-size:14px;";
-        userRow.textContent = text || "[Image Attached]";
-        container.appendChild(userRow);
-
-        // Loading State
-        const loadingDiv = document.createElement("div");
-        loadingDiv.style.cssText = "font-size:13px; color:var(--text-secondary); font-family:var(--font-mono);";
-        loadingDiv.textContent = "⏳ Extracting signals & building Digital Trust Graph...";
-        container.appendChild(loadingDiv);
-
-        inputEl.value = "";
-        const imageToUpload = attachedImageFile;
-        clearAttachment();
-
-        try {
-            let data;
-            if (imageToUpload) {
-                const formData = new FormData();
-                formData.append("file", imageToUpload);
-                if (text) formData.append("article_text", text);
-                const res = await fetch("/api/analyze-image", { method: "POST", body: formData });
-                data = await res.json();
-            } else {
-                const res = await fetch("/api/trust-lens", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ text: text })
-                });
-                data = await res.json();
-            }
-
-            loadingDiv.remove();
-            renderTrustLensCard(container, data, text);
-        } catch (err) {
-            loadingDiv.textContent = "Unable to complete trust analysis right now. Service unavailable.";
-        }
-    }
-
-    /* RENDER TRUST LENS CARD (WHY -> RISK -> ACTION) */
-    function renderTrustLensCard(container, data, originalText) {
-        const tl = data.trust_lens || data.verification?.trust_lens || {};
-        const scamDna = tl.scam_dna || {};
-        const bharat = tl.bharat_safety || {};
-        const privacy = tl.privacy_shield || {};
-        const riskLevel = tl.risk_level || "HIGH";
-
-        const card = document.createElement("div");
-        card.className = "trust-lens-card";
-
-        card.innerHTML = `
-            <div class="risk-header-bar">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <span class="risk-pill-badge ${riskLevel}">${riskLevel} RISK</span>
-                    <span style="font-size:12px; font-family:var(--font-mono); color:var(--text-secondary);">Trust Lens Assessment</span>
-                </div>
-                <span style="font-size:11px; font-family:var(--font-mono); color:var(--accent-cyan);">Fingerprint: ${scamDna.fingerprint || 'DNA-00'}</span>
+                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 8px;">Input Content / Message:</label>
+                <textarea id="firewall-content-text" class="chat-input" rows="4" style="width: 100%; font-family: inherit; margin-bottom: 14px;" placeholder="Paste suspicious message or content to test Trust Firewall..."></textarea>
+                
+                <button class="btn-send" style="height: 42px;" onclick="evaluateTrustFirewall()">Evaluate Action Gate</button>
             </div>
 
-            <!-- THREE PANEL WHY -> RISK -> ACTION LAYOUT -->
-            <div class="decision-flow-grid">
-                
-                <!-- PANEL 1: WHY (SIGNALS) -->
-                <div class="decision-panel">
-                    <div class="panel-label-title">🔍 WHY (SIGNALS DETECTED)</div>
-                    <ul style="padding-left:16px; font-size:12px; color:var(--text-secondary); line-height:1.5;">
-                        ${(tl.why_signals || ["Suspicious pattern detected"]).map(s => `<li>${escapeHtml(s)}</li>`).join("")}
-                    </ul>
-                </div>
+            <div id="firewall-result-container"></div>
+        </div>
 
-                <!-- PANEL 2: EVIDENCE & SCAM DNA -->
-                <div class="decision-panel">
-                    <div class="panel-label-title">🧬 SCAM DNA FINGERPRINT</div>
-                    <div class="scam-dna-group">
-                        <div class="scam-dna-item">
-                            <div class="scam-dna-label"><span>Urgency</span><span>${scamDna.urgency_score || 0}%</span></div>
-                            <div class="scam-dna-track"><div class="scam-dna-fill" style="width:${scamDna.urgency_score || 0}%"></div></div>
-                        </div>
-                        <div class="scam-dna-item">
-                            <div class="scam-dna-label"><span>Impersonation</span><span>${scamDna.impersonation_score || 0}%</span></div>
-                            <div class="scam-dna-track"><div class="scam-dna-fill" style="width:${scamDna.impersonation_score || 0}%"></div></div>
-                        </div>
-                        <div class="scam-dna-item">
-                            <div class="scam-dna-label"><span>Financial Pressure</span><span>${scamDna.financial_pressure_score || 0}%</span></div>
-                            <div class="scam-dna-track"><div class="scam-dna-fill" style="width:${scamDna.financial_pressure_score || 0}%"></div></div>
-                        </div>
-                        <div class="scam-dna-item">
-                            <div class="scam-dna-label"><span>Credential Request</span><span>${scamDna.credential_request_score || 0}%</span></div>
-                            <div class="scam-dna-track"><div class="scam-dna-fill" style="width:${scamDna.credential_request_score || 0}%"></div></div>
-                        </div>
+        <!-- VIEW 5: PRIVACY SHIELD PII SCANNER -->
+        <div id="view-privacy" class="workspace-view">
+            <h2>🔐 Layer 1 — Privacy Shield</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 16px;">Detects and redacts Aadhaar, PAN, UPI IDs, OTPs, and phone numbers before AI processing.</p>
+            
+            <div style="background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                <textarea id="privacy-input-text" class="chat-input" rows="4" style="width: 100%; font-family: inherit; margin-bottom: 14px;" placeholder="Enter text with Aadhaar (3456 7890 1234), PAN (ABCDE1234F), or UPI (user@upi)..."></textarea>
+                <button class="btn-send" style="height: 42px;" onclick="scanPrivacyInput()">Scan & Mask Data</button>
+
+                <div id="privacy-scan-output" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 6: SAFETY ACADEMY -->
+        <div id="view-academy" class="workspace-view">
+            <h2>🚨 Bharat Safety Academy</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Common digital scam patterns in India and protective advice in Hinglish.</p>
+            
+            <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="stat-card" style="flex-direction: column; align-items: flex-start;">
+                    <div style="font-weight: 700; font-size: 16px; color: var(--accent-rose);">🏦 Bank KYC Expiry Scam</div>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px;">
+                        <em>"Apka bank account aaj suspend hone wala hai. Link pe click karein aur OTP share karein."</em>
+                    </p>
+                    <div style="margin-top: 10px; font-weight: 600; color: var(--accent-cyan); font-size: 12px;">
+                        Saathi Advice: Bank kabhi OTP ya link ke zariye KYC update nahi maangta.
                     </div>
                 </div>
 
-                <!-- PANEL 3: RECOMMENDED ACTION -->
-                <div class="decision-panel">
-                    <div class="panel-label-title">🛡️ RECOMMENDED ACTION</div>
-                    <ul style="padding-left:16px; font-size:12px; color:var(--text-primary); font-weight:600; line-height:1.5;">
-                        ${(tl.recommended_actions || ["Verify through official application"]).map(a => `<li>${escapeHtml(a)}</li>`).join("")}
-                    </ul>
+                <div class="stat-card" style="flex-direction: column; align-items: flex-start;">
+                    <div style="font-weight: 700; font-size: 16px; color: var(--accent-amber);">💰 Guaranteed Income / Crypto Scam</div>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-top: 6px;">
+                        <em>"Rs 999 pay karein aur daily Rs 50,000 guaranteed passive income payeein."</em>
+                    </p>
+                    <div style="margin-top: 10px; font-weight: 600; color: var(--accent-cyan); font-size: 12px;">
+                        Saathi Advice: Koi bhi legal business bina kaam ke guaranteed return nahi deta.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 7: PERMISSIONS & USER POLICY -->
+        <div id="view-permissions" class="workspace-view">
+            <h2>⚙️ User Policy & Permissions</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Configure AI Saathi execution control rules.</p>
+            
+            <div style="background: var(--bg-card); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <div style="font-weight: 600;">🟢 Low Risk Actions (Summarize, Reminders, Spam filter)</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Allowed for automatic execution</div>
+                    </div>
+                    <div style="color: var(--accent-green); font-weight: 700;">AUTO_ACT</div>
                 </div>
 
-            </div>
-
-            <!-- BHARAT LANGUAGE SAFETY ADVICE CARD -->
-            ${bharat.safety_advice_hinglish ? `
-                <div style="background:var(--bg-subtle); border:1px solid var(--accent-violet); padding:12px 16px; border-radius:8px; font-size:12px; font-family:var(--font-mono);">
-                    <strong style="color:var(--accent-violet);">BHARAT LANGUAGE SAFETY (${bharat.language}):</strong>
-                    <div style="margin-top:4px; color:var(--text-primary);">${escapeHtml(bharat.safety_advice_hinglish)}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                    <div>
+                        <div style="font-weight: 600;">🟡 Medium Risk Actions (Draft replies, Meetings)</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Requires explicit user confirmation</div>
+                    </div>
+                    <div style="color: var(--accent-amber); font-weight: 700;">ASK_USER</div>
                 </div>
-            ` : ''}
 
-            <!-- DIGITAL TRUST GRAPH VISUAL SUMMARY -->
-            <div style="font-size:11px; font-family:var(--font-mono); color:var(--text-muted); border-top:1px dashed var(--border-subtle); padding-top:8px; display:flex; justify-content:space-between;">
-                <span>Digital Trust Graph: ${tl.digital_trust_graph?.node_count || 5} Nodes Connected</span>
-                <span>Tagline: "${escapeHtml(tl.tagline || 'Your truth. Your data. Your device.')}"</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                    <div>
+                        <div style="font-weight: 600;">🔴 High Risk Actions (Financial payments, OTP, UPI, Password)</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Strictly blocked from autonomous execution</div>
+                    </div>
+                    <div style="color: var(--accent-rose); font-weight: 700;">ALWAYS_BLOCKED</div>
+                </div>
             </div>
-        `;
+        </div>
+    </main>
+</div>
 
-        container.appendChild(card);
+<script src="/frontend/app.js"></script>
+<script>
+    // Inline safety script fallback
+    if (typeof initSaathiApp !== 'function') {
+        console.log("Loading app logic...");
     }
-
-    function escapeHtml(str) { return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 </script>
-
 </body>
 </html>

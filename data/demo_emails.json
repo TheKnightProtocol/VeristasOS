@@ -1,0 +1,62 @@
+[
+  {
+    "id": "email-001",
+    "sender": "alerts@sbi-bank-verify-sec.com",
+    "sender_name": "State Bank Security Department",
+    "subject": "URGENT: Your Bank Account Will Be Suspended Today! Complete KYC Immediately",
+    "body": "Dear Customer, Your State Bank account 4589XXXX2109 is flagged due to pending KYC verification. Please click http://sbi-kyc-update-login.com/login and enter your NetBanking Password and OTP immediately to avoid permanent account block.",
+    "date": "Today, 10:15 AM",
+    "category": "CRITICAL_SCAM",
+    "risk_level": "CRITICAL",
+    "proposed_action": "share_otp",
+    "read": false
+  },
+  {
+    "id": "email-002",
+    "sender": "dr.sharma@dronacharya.edu.in",
+    "sender_name": "Dr. Rajesh Sharma (HOD CSE)",
+    "subject": "VeristasOS Final Project Review Meeting Scheduled for Friday",
+    "body": "Dear Sankalp, Ishan, and Rishabh. The final evaluation panel review for VeristasOS is scheduled for Friday at 2:00 PM in Lab 3. Please ensure all code commits are pushed and the demo slides are ready.",
+    "date": "Today, 09:30 AM",
+    "category": "ROUTINE",
+    "risk_level": "LOW",
+    "proposed_action": "create_reminder",
+    "read": false
+  },
+  {
+    "id": "email-003",
+    "sender": "careers@techcorp-india.com",
+    "sender_name": "TechCorp HR Team",
+    "subject": "Internship Interview Invitation: AI Engineer Role",
+    "body": "Hi Sankalp, We reviewed your application for the AI Engineering Internship. We would like to invite you for a 45-minute technical interview tomorrow at 11:00 AM. Please reply to confirm your availability.",
+    "date": "Yesterday, 04:45 PM",
+    "category": "IMPORTANT",
+    "risk_level": "CAUTION",
+    "proposed_action": "draft_email_reply",
+    "read": true
+  },
+  {
+    "id": "email-004",
+    "sender": "newsletter@devdeals.io",
+    "sender_name": "DevDeals India",
+    "subject": "Exclusive 50% Off Cloud Hosting Subscription for Students",
+    "body": "Get 50% discount on all cloud server deployments. Use coupon code DEVSPECIAL2026 at checkout.",
+    "date": "Yesterday, 11:20 AM",
+    "category": "PROMOTIONAL",
+    "risk_level": "LOW",
+    "proposed_action": "summarize_email",
+    "read": true
+  },
+  {
+    "id": "email-005",
+    "sender": "guaranteed-returns@crypto-wealth-now.net",
+    "sender_name": "Global Wealth Club",
+    "subject": "Guaranteed ₹50,000 Daily Passive Income! Pay ₹999 Registration Fee via UPI",
+    "body": "Congratulations! You have been selected for guaranteed crypto arbitrage returns. Transfer ₹999 registration fee to upi-id@ybl immediately to claim your ₹50,000 payout within 10 minutes.",
+    "date": "2 Days Ago",
+    "category": "FINANCIAL_SCAM",
+    "risk_level": "HIGH",
+    "proposed_action": "upi_payment",
+    "read": true
+  }
+]
