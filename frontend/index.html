@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="VeristasOS — Your AI Saathi. Safety-first personal AI agent with explainable digital trust, privacy protection, and permission-controlled autonomous actions.">
+    <meta name="description" content="VeristasOS — Your AI Saathi. Safety-first personal AI agent for digital trust, privacy protection, and permission-controlled autonomous actions.">
     <meta name="theme-color" content="#0f1015">
     <title>VeristasOS — Your AI Saathi</title>
 
@@ -497,7 +497,6 @@
             transition: width 0.4s ease;
         }
 
-        /* PERMISSION TOGGLE SELECTOR */
         .perm-select {
             background: var(--bg-input);
             border: 1px solid var(--border-color);
@@ -510,11 +509,11 @@
             cursor: pointer;
         }
 
-        /* MODAL DIALOG */
+        /* MODAL DIALOGS */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.75);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -529,11 +528,10 @@
             width: 90%;
             max-width: 600px;
             padding: 24px;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
         }
 
-        /* TOAST NOTIFICATION */
         .toast-banner {
             position: fixed;
             bottom: 24px;
@@ -570,7 +568,7 @@
 
             <ul class="nav-list">
                 <li class="nav-item active" data-target="view-home">
-                    <span>🏠</span> <span class="nav-text">Home & Brief</span>
+                    <span>🏠</span> <span class="nav-text">Home</span>
                 </li>
                 <li class="nav-item" data-target="view-trust-lens">
                     <span>🧠</span> <span class="nav-text">Trust Lens</span>
@@ -585,7 +583,7 @@
                     <span>📧</span> <span class="nav-text">Mail Shield</span>
                 </li>
                 <li class="nav-item" data-target="view-family">
-                    <span>👨‍👩‍👧</span> <span class="nav-text">Family Safety</span>
+                    <span>👨‍👩‍👧</span> <span class="nav-text">Family</span>
                 </li>
                 <li class="nav-item" data-target="view-safety-score">
                     <span>🛡️</span> <span class="nav-text">Safety Score</span>
@@ -632,12 +630,12 @@
             </div>
         </header>
 
-        <!-- VIEW 1: HOME & DAILY BRIEF -->
+        <!-- VIEW 1: HOME DASHBOARD -->
         <div id="view-home" class="workspace-view active">
             <div class="daily-brief-hero">
                 <div class="hero-text">
-                    <h1>Good afternoon, Sankalp 👋</h1>
-                    <p>Your AI Saathi active. Protect. Understand. Act.</p>
+                    <h1 id="home-greeting-heading">Good afternoon, <span id="user-display-name">User</span> 👋</h1>
+                    <p>Your digital safety overview. Protect. Understand. Act.</p>
                 </div>
                 <div class="safety-meter-box">
                     <div class="safety-score-num">87 / 100</div>
@@ -693,7 +691,7 @@
         <div id="view-trust-lens" class="workspace-view">
             <h2>🧠 Trust Lens Decision Engine</h2>
             <p style="color: var(--text-secondary); margin-bottom: 16px;">
-                Unified WHY → EVIDENCE → CONFIDENCE → RELIABILITY → ACTION framework.
+                Can I trust this? Unified WHY → EVIDENCE → CONFIDENCE → RELIABILITY → ACTION decision analyzer.
             </p>
 
             <div class="card-panel">
@@ -701,7 +699,7 @@
                 <textarea id="trust-lens-input" class="chat-input" rows="4" style="width: 100%; font-family: inherit; margin-bottom: 14px;" placeholder="Paste article text, message, or URL to analyze with Trust Lens..."></textarea>
                 
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn-send" id="btn-analyze-lens" onclick="runTrustLensAnalysis()">Analyze Trust Lens</button>
+                    <button class="btn-send" id="btn-analyze-lens" onclick="runTrustLensAnalysis()">Analyze</button>
                     <button class="quick-btn" onclick="loadKycDemoScenario()">Load Bank KYC Preset</button>
                 </div>
             </div>
@@ -713,7 +711,7 @@
         <div id="view-scam-shield" class="workspace-view">
             <h2>🚨 Bharat Scam Shield & Scam DNA</h2>
             <p style="color: var(--text-secondary); margin-bottom: 16px;">
-                Extracts threat feature profiles across KYC, UPI, OTP, Bank, Investment, Job, and Courier scam vectors.
+                Check suspicious messages before you act across KYC, UPI, OTP, Bank, Investment, Job, and Courier scam vectors.
             </p>
 
             <div class="quick-actions-bar" style="margin-bottom: 16px;">
@@ -726,8 +724,8 @@
             </div>
 
             <div class="card-panel">
-                <textarea id="scam-shield-input" class="chat-input" rows="3" style="width: 100%; font-family: inherit; margin-bottom: 14px;" placeholder="Paste suspicious Indian SMS or message (English or Hinglish)..."></textarea>
-                <button class="btn-send" id="btn-scan-scam" onclick="runScamShieldScan()">Analyze Scam DNA</button>
+                <textarea id="scam-shield-input" class="chat-input" rows="3" style="width: 100%; font-family: inherit; margin-bottom: 14px;" placeholder="Paste suspicious message or SMS (English or Hinglish)..."></textarea>
+                <button class="btn-send" id="btn-scan-scam" onclick="runScamShieldScan()">Analyze</button>
             </div>
 
             <div id="scam-shield-output"></div>
@@ -878,12 +876,23 @@
             </div>
         </div>
 
-        <!-- VIEW 9: PERMISSIONS & USER POLICY -->
+        <!-- VIEW 9: PERMISSIONS & USER PROFILE SETTINGS -->
         <div id="view-permissions" class="workspace-view">
-            <h2>⚙️ User Policy & Permissions</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 20px;">Configure AI Saathi execution control rules. Updating these options updates real backend Firewall policy!</p>
+            <h2>⚙️ User Policy, Profile & Permissions</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">Configure AI Saathi execution control rules and update your user profile.</p>
+
+            <!-- PROFILE SETTINGS CARD -->
+            <div class="card-panel" style="margin-bottom: 24px;">
+                <h3 style="font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">👤 User Profile</h3>
+                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 6px;">Your Display Name:</label>
+                <div style="display: flex; gap: 10px; max-width: 450px;">
+                    <input type="text" id="profile-name-input" class="chat-input" placeholder="Enter your name (e.g. Rahul, Priya)">
+                    <button class="btn-send" onclick="saveProfileNameChanges()">Save Name</button>
+                </div>
+            </div>
             
             <div class="card-panel">
+                <h3 style="font-size: 16px; margin-bottom: 16px;">🛡️ Action Permission Rules</h3>
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border-color);">
                     <div>
                         <div style="font-weight: 600;">📧 Email Actions (Summarize, Reminders, Spam filter)</div>
@@ -918,6 +927,20 @@
             </div>
         </div>
     </main>
+</div>
+
+<!-- FIRST LAUNCH ONBOARDING MODAL -->
+<div class="modal-overlay" id="onboarding-modal" style="display: none;">
+    <div class="modal-card" style="text-align: center; max-width: 480px; padding: 32px 24px;">
+        <div class="brand-icon" style="margin: 0 auto 16px auto; width: 50px; height: 50px; font-size: 24px;">S</div>
+        <h2 style="font-size: 22px; margin-bottom: 4px;">VERISTASOS</h2>
+        <p style="color: var(--accent-cyan); font-weight: 700; font-size: 13px; margin-bottom: 20px;">Your AI Saathi</p>
+        <p style="color: var(--text-secondary); font-size: 14.5px; margin-bottom: 24px; line-height: 1.5;">
+            Welcome! Let's set up your personal AI Saathi.<br>What should I call you?
+        </p>
+        <input type="text" id="onboarding-name-input" class="chat-input" placeholder="Your name (e.g. Rahul, Priya, Alex)" style="width: 100%; margin-bottom: 20px; text-align: center; font-size: 15px; height: 46px;" onkeypress="if(event.key==='Enter') submitOnboardingName()">
+        <button class="btn-send" style="width: 100%; height: 46px; font-size: 15px;" onclick="submitOnboardingName()">Continue →</button>
+    </div>
 </div>
 
 <!-- EMAIL DETAIL MODAL -->

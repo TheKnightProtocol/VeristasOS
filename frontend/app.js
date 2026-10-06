@@ -4,13 +4,67 @@ let isSeniorMode = false;
 let currentLanguage = "English";
 let currentInboxData = [];
 let activeInboxFilter = "ALL";
+let userName = "User";
 
 document.addEventListener("DOMContentLoaded", () => {
+    initUserProfile();
     initNavigation();
     initThemeAndSidebar();
     loadDailyBrief();
     loadInboxData();
 });
+
+// ONBOARDING & USER PROFILE MANAGEMENT
+function initUserProfile() {
+    const savedName = localStorage.getItem("veristasos_user_name");
+    if (!savedName || !savedName.trim()) {
+        const modal = document.getElementById("onboarding-modal");
+        if (modal) modal.style.display = "flex";
+    } else {
+        userName = savedName.trim();
+        updateUserNameUI(userName);
+    }
+}
+
+function submitOnboardingName() {
+    const input = document.getElementById("onboarding-name-input");
+    if (!input || !input.value.trim()) {
+        showToast("Please enter your name to continue");
+        return;
+    }
+
+    userName = input.value.trim();
+    localStorage.setItem("veristasos_user_name", userName);
+    
+    const modal = document.getElementById("onboarding-modal");
+    if (modal) modal.style.display = "none";
+
+    updateUserNameUI(userName);
+    showToast(`Welcome, ${userName}! Your AI Saathi is ready.`);
+}
+
+function saveProfileNameChanges() {
+    const input = document.getElementById("profile-name-input");
+    if (!input || !input.value.trim()) {
+        showToast("Please enter a valid name");
+        return;
+    }
+
+    userName = input.value.trim();
+    localStorage.setItem("veristasos_user_name", userName);
+    updateUserNameUI(userName);
+    showToast(`✓ Display name updated to "${userName}"`);
+}
+
+function updateUserNameUI(name) {
+    const displayNameEl = document.getElementById("user-display-name");
+    const topbarTitleEl = document.getElementById("current-view-title");
+    const profileInputEl = document.getElementById("profile-name-input");
+
+    if (displayNameEl) displayNameEl.innerText = name;
+    if (profileInputEl) profileInputEl.value = name;
+    if (topbarTitleEl) topbarTitleEl.innerText = `Good afternoon 👋`;
+}
 
 // NAVIGATION TAB SWITCHING
 function initNavigation() {
@@ -361,9 +415,9 @@ async function runTrustLensAnalysis() {
             showToast("✓ Trust Lens Analysis Complete");
         }
     } catch (err) {
-        container.innerHTML = `<div style="color: var(--accent-rose);">Evaluation failed. Please verify backend connection.</div>`;
+        container.innerHTML = `<div style="color: var(--accent-rose);">Evaluation failed. Please try again.</div>`;
     } finally {
-        if (btn) { btn.innerText = "Analyze Trust Lens"; btn.disabled = false; }
+        if (btn) { btn.innerText = "Analyze"; btn.disabled = false; }
     }
 }
 
@@ -377,7 +431,7 @@ async function runScamShieldScan() {
     const text = input.value.trim();
     if (!text) return;
 
-    if (btn) { btn.innerText = "Scanning..."; btn.disabled = true; }
+    if (btn) { btn.innerText = "Analyzing..."; btn.disabled = true; }
 
     try {
         const mode = isSeniorMode ? "Senior" : "Adult";
@@ -424,7 +478,7 @@ async function runScamShieldScan() {
     } catch (err) {
         container.innerHTML = `<div style="color: var(--accent-rose);">Scam scan failed.</div>`;
     } finally {
-        if (btn) { btn.innerText = "Analyze Scam DNA"; btn.disabled = false; }
+        if (btn) { btn.innerText = "Analyze"; btn.disabled = false; }
     }
 }
 
