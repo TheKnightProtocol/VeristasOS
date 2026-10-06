@@ -1,193 +1,144 @@
-# VeristasOS — Intelligent Fake News & Deepfake Detection
+# VERISTASOS — YOUR AI SAATHI
 
-> **"Your truth. Your data. Your device."**
-> **Multimodal Dual-Layer Privacy Shield & Truth Intelligence Platform**
+> **"An AI agent that doesn't just act for you — it verifies whether it should act before it does."**
+> 
+> **Academic Description**: A Safety-First Personal AI Agent with an Explainable Digital Trust & Permission Engine.
+> **Taglines**: *"Protect. Understand. Act."* | *"Aap busy ho. Saathi sambhal lega."*
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg)](https://fastapi.tiangolo.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Build Status](https://img.shields.io/badge/tests-passing-brightgreen.svg)]()
-
-VeristasOS is a privacy-first, local-first AI verification and digital-integrity platform designed to evaluate textual news claims, inspect media metadata, calculate sensationalism risk, protect sensitive personal data, and detect scam coercion tactics.
+[![Build Status](https://img.shields.io/badge/tests-55%2F55%20passing-brightgreen.svg)]()
 
 ---
 
-## 🌟 Why VeristasOS is Different
+## 🌟 The Central Novelty
 
-Unlike standard fake-news classifiers that return an ungrounded black-box percentage score, VeristasOS operates a **Dual-Layer Verification Architecture**:
+VeristasOS is NOT just another chatbot, email writer, or fake-news classifier.
 
-1. **Combines Truth Verification with Privacy Protection**: VeristasOS answers both *"Is this content trustworthy?"* and *"What is this content attempting to do with my data?"*
-2. **India-First Sensitive Data Guard**: Automatically scans and masks Aadhaar numbers (`XXXX XXXX 1234`), PAN cards (`XXXXX1234X`), UPI handles (`user@upi`), OTP security PINs, and mobile numbers without storing sensitive information.
-3. **Rule-Assisted Scam Radar**: Identifies financial coercion, KYC threat warnings, bank account block threats, and high-pressure urgency tactics.
-4. **Explainable AI (LIME/SHAP Inspired)**: Provides transparent signal impact tables showing exactly why a verdict was generated (Sensational wording, ALL-CAPS density, Exclamation ratio).
-5. **Local-First Privacy Architecture**: Designed to run linguistic heuristics and local AI inference (`llama.cpp` + `Qwen2.5-3B`) directly on-device to prevent data leakage.
-6. **Multimodal Media Authenticity**: Evaluates SHA-256 cryptographic hashes, 64-bit perceptual `dHash`, EXIF camera tags, and OCR text consistency without heavy GPU requirements.
+The central innovation is the **TRUST FIREWALL**: Every potentially autonomous AI action must pass through a multi-stage safety decision layer before execution.
 
----
-
-## 1. Project Overview & Dual-Layer Architecture
-
-```
-                                [ User Input ]
-                                      │
-                                      ▼
-                        [ Master Verification Engine ]
-                                      │
-          ┌───────────────────────────┴───────────────────────────┐
-          ▼                                                       ▼
-[ LAYER 1 — PRIVACY SHIELD ]                      [ LAYER 2 — TRUTH ENGINE ]
-  • Aadhaar / PAN / UPI / OTP Masking               • Truth Meter Status
-  • Sensitive Data Exposure                         • Sensationalism Highlighter
-  • Scam Radar Coercion Detection                   • LIME/SHAP Signal Impact Matrix
-  • Privacy Grade (A / B / C / F)                   • Source Provenance Score
-          │                                                       │
-          └───────────────────────────┬───────────────────────────┘
-                                      │
-                                      ▼
-                    [ Cyberpunk & ChatGPT Assistant UI ]
-```
-
----
-
-## 2. Key Features
-
-- **Truth Meter**: Evaluates content reliability (`LIKELY RELIABLE`, `NEEDS VERIFICATION`, `SUSPICIOUS`, `CRITICAL WARNING`).
-- **Sensationalism Highlighter**: Visually highlights trigger words directly in the prose using `<mark>` tags.
-- **Privacy Shield (India-First Protection)**: Identifies and masks Aadhaar, PAN, UPI IDs, OTPs, and phone numbers (`XXXX XXXX 1234`).
-- **Scam Radar**: Flags financial threats, bank suspension warnings, and KYC scam coercion.
-- **Forward Checker Mode**: Specialized interface for WhatsApp and social media forwarded message verification.
-- **Deepfake Lens (Prototype)**: Media metadata inspection, SHA-256 hashing, perceptual `dHash`, EXIF tag analysis, and OCR text overlay.
-- **Local-First AI Status**: Live indicator showing whether local LLM (`llama.cpp`) or deterministic CPU fallback is active.
-
----
-
-## 3. Technology Stack
-
-- **Backend**: Python 3.12, FastAPI, Uvicorn, Pydantic v2
-- **NLP & Stylometrics**: NLTK (Tokenization & Stylometric Analysis), Regex Pattern Matchers
-- **Vector Search**: Scikit-learn (TF-IDF Vectorizer), NumPy
-- **Image Processing**: Pillow (PIL), PyTesseract (Optional OCR), Hashlib
-- **Local Generative AI**: `llama.cpp` HTTP server + `Qwen2.5-3B-Instruct`
-- **Frontend**: Vanilla HTML5, CSS3 Custom Properties, ES6+ JavaScript, SVG
-- **Testing**: Pytest, FastAPI TestClient
-
----
-
-## 4. Repository Structure
-
-```
-VeristasOS/
-├── app/
-│   ├── main.py                     # FastAPI main application & routes
-│   ├── models/
-│   │   └── schemas.py              # Pydantic request/response data contracts
-│   ├── services/
-│   │   ├── ai_analyzer.py          # Generative AI prompt construction
-│   │   ├── claim_analyzer.py       # Factual claim extraction
-│   │   ├── deepfake_detector.py    # Modular deepfake risk detector
-│   │   ├── explainability.py       # LIME/SHAP signal impact matrix
-│   │   ├── image_analyzer.py       # Image hashing, OCR, EXIF & dHash
-│   │   ├── media_authenticity.py   # CPU authenticity analyzer
-│   │   ├── privacy_scanner.py      # India-First Aadhaar/PAN/UPI/OTP scanner
-│   │   ├── provenance.py           # Publisher & source trust score
-│   │   ├── risk_engine.py          # Weighted composite risk calculator
-│   │   ├── scam_detector.py        # Rule-assisted Scam Radar
-│   │   ├── semantic_search.py      # TF-IDF vector search & pagination
-│   │   ├── text_analyzer.py        # Stylometric sensationalism scoring
-│   │   └── verification_engine.py  # Master Dual-Layer Aggregator
-│   └── tests/                      # Automated Pytest suite
-├── frontend/
-│   ├── app.js
-│   ├── style.css
-│   └── index.html                  # Dual-Layer ChatGPT-Style UI
-├── .env.example                    # Environment variable template
-├── .gitignore                      # Git exclusion rules
-├── pytest.ini                      # Pytest runner configuration
-├── render.yaml                     # Render Cloud deployment specification
-└── README.md                       # Complete technical documentation
+```text
+                                USER
+                                  │
+                              AI SAATHI
+                                  │
+                        INTENT UNDERSTANDING
+                                  │
+                     ┌────────────────────────┐
+                     │     DIGITAL TRUST      │
+                     │        ENGINE          │
+                     └────────────────────────┘
+                                  │
+                     ┌────────────────────────┐
+                     │   MODEL RELIABILITY    │
+                     │        ENGINE          │
+                     └────────────────────────┘
+                                  │
+                     ┌────────────────────────┐
+                     │    USER PERMISSION     │
+                     │        ENGINE          │
+                     └────────────────────────┘
+                                  │
+                         TRUST FIREWALL
+                                  │
+                     ┌────────────┼────────────┐
+                     ▼            ▼            ▼
+                  AUTO-ACT       ASK         BLOCK
+                     │            │            │
+                     └────────────┼────────────┘
+                                  │
+                         EXPLAINABLE RESULT
 ```
 
+### Decision Framework:
+- **🟢 LOW RISK** → `AUTO-ACT` (e.g. Summarize routine email, categorize message, create reminder)
+- **🟡 MEDIUM RISK** → `ASK USER` (e.g. Draft email reply, schedule project review meeting)
+- **🔴 HIGH RISK** → `BLOCK & PROTECT` (e.g. Bank KYC scam, UPI payment request, OTP/Password share, Aadhaar/PAN upload)
+
 ---
 
-## 5. Local Setup & Installation
+## 🚀 Key Engines & Architecture
 
-### Prerequisites
-- **Python**: Version 3.12+ installed.
-- **Git**: Installed and available on PATH.
+### 1. Trust Firewall (`backend/app/services/trust_firewall.py`)
+Central decision gatekeeper evaluating proposed actions against Content Risk, Privacy Risk, Financial Risk, Prompt Injection Defense, Model Reliability, and User Policy rules.
 
-### 1. Clone & Setup
+### 2. Model Reliability Engine (`backend/app/services/reliability_engine.py`)
+Evaluates prediction confidence, heuristic uncertainty indicators (LOW, MEDIUM, HIGH), evidence quality, input quality, and Out-of-Distribution (OOD) risk.
+
+### 3. User Policy / Permission Engine (`backend/app/services/policy_engine.py`)
+Configurable permission tiers (`ALWAYS_ALLOW`, `ASK_FIRST`, `NEVER_ALLOW`) with Senior Citizen Mode support for enlarged alerts and strict safety rules.
+
+### 4. Scam DNA Engine (`backend/app/services/scam_dna.py`)
+Generates 5-part threat feature profiles (Urgency %, Impersonation %, Financial Pressure %, Sensitive Data %, Suspicious URL %) and identifies attack vectors (Bank KYC, OTP Scam, UPI Scam, Investment Fraud).
+
+### 5. Prompt Injection Defense (`backend/app/services/prompt_defense.py`)
+Structural boundary separation isolating untrusted external content from system/user safety policies, preventing adversarial prompt overrides.
+
+### 6. India-First Privacy Shield (`backend/app/services/privacy_scanner.py`)
+Automatically scans and redacts Aadhaar numbers (`XXXX XXXX 1234`), PAN cards (`XXXXX1234X`), UPI handles (`user@upi`), OTP PINs, and Indian mobile numbers.
+
+---
+
+## 🛠️ Technology Stack
+
+- **Backend Framework**: Python 3.12, FastAPI, Uvicorn, Pydantic v2
+- **NLP & Text Core**: NLTK (Stylometrics & Sensationalism Scoring), Regex Heuristics
+- **Similarity & Forensics**: Scikit-learn (TF-IDF Vectorizer), NumPy, Pillow, dHash Perceptual Hashing
+- **Frontend**: Vanilla HTML5, CSS3 Custom Properties (Dark/Light themes), ES6 JavaScript
+- **Testing**: Pytest (55 Unit Tests, 100% Pass Rate)
+
+---
+
+## 🏃 Running the Application
+
+### 1. Install Dependencies
 ```bash
-git clone https://github.com/TheKnightProtocol/VeristasOS.git
-cd VeristasOS
-```
-
-### 2. Create Virtual Environment
-```bash
-# Windows
 python -m venv venv
-.\venv\Scripts\activate
-
-# Linux / macOS
-python3 -m venv venv
-source venv/bin/activate
+venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-### 3. Install Dependencies
+### 2. Start Local Server
 ```bash
-pip install -r backend/requirements.txt
+python -m uvicorn backend.app.main:app --reload --port 8000
 ```
+Open your browser at: **`http://127.0.0.1:8000/`**
 
-### 4. Run Application
-```bash
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --app-dir backend --reload
-```
-
-Access local endpoints:
-- **Web App**: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-- **API Docs**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **Health Check**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
-
----
-
-## 6. API Endpoint Reference
-
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/health` | System health check (`{"status": "ok"}`). |
-| `GET` | `/api/status` | Real-time system health and local AI status. |
-| `POST` | `/api/verify` | Primary endpoint for Master Dual-Layer Verification. |
-| `POST` | `/api/forward-check` | Dedicated Forward Checker endpoint for WhatsApp messages. |
-| `POST` | `/analyze` | Unified text analysis pipeline. |
-| `POST` | `/api/analyze-image` | Media forensics, perceptual hash, EXIF, & OCR endpoint. |
-| `GET` | `/api/search` | Paginated vector search endpoint (`q`, `limit`, `offset`). |
-
----
-
-## 7. Automated Testing
-
-Run the automated Pytest suite:
-
+### 3. Run Automated Tests
 ```bash
 pytest -v
 ```
 
 ---
 
-## 8. Render Cloud Deployment
+## 🎯 5 End-to-End Demonstration Scenarios
 
-Render deploys directly from GitHub repository `main` branch using `render.yaml`:
-- **Build Command**: `pip install -r backend/requirements.txt`
-- **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend`
-- **Live URL**: [https://veristasos.onrender.com/](https://veristasos.onrender.com/)
+### DEMO 1 — High-Risk Scam (Blocked)
+- **Input**: *"URGENT: Your SBI account will be blocked today! Complete KYC immediately: http://sbi-kyc-update-login.com"*
+- **Result**: `🔴 HIGH RISK` → **ACTION BLOCKED**
+- **WHY**: Urgency detected, Bank impersonation, Suspicious URL.
+
+### DEMO 2 — Safe Routine Content (Auto-Acted)
+- **Input**: *"Tomorrow's project evaluation meeting is scheduled for 2:00 PM."*
+- **Result**: `🟢 LOW RISK` → **AUTO-ACTED** (Calendar reminder created).
+
+### DEMO 3 — Medium Risk Action (Human Approval Required)
+- **Input**: *"Reply to recruiter regarding interview invitation."*
+- **Result**: `🟡 MEDIUM RISK` → **ASK USER** (Draft response prepared, awaiting approval).
+
+### DEMO 4 — Dangerous Financial/OTP Request (Blocked)
+- **Input**: *"Use the OTP 4589 and complete payment of Rs 999 via UPI."*
+- **Result**: `🔴 CRITICAL RISK` → **STRICTLY BLOCKED** (Financial/OTP actions cannot be performed automatically).
+
+### DEMO 5 — Hinglish Intent Understanding
+- **Input**: *"Bhai ye KYC wala link safe hai kya?"*
+- **Result**: *"⚠️ Ye suspicious lag raha hai. KYC impersonation aur urgency signals detect hue hain. Link mat kholo aur OTP/UPI PIN share mat karo."*
 
 ---
 
-## 9. Academic Project Credits & Team
+## 📜 Team & License
 
-- **Institution**: Dronacharya College of Engineering, Gurugram
-- **Department**: CSE – Artificial Intelligence & Machine Learning
-- **Team Members**:
-  - Sankalp Sharma
-  - Ishan Sharma
-  - Rishabh
+- **Team**: **Sankalp Sharma**, **Ishan Sharma**, and **Rishabh**
+- **Institution**: Dronacharya College of Engineering, Gurugram (CSE - AI & ML)
 - **License**: MIT License
