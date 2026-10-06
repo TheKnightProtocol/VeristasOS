@@ -13,6 +13,7 @@ node_modules/
 *.bin
 *.pt
 *.pth
+*.zip
 .DS_Store
 uploads/
 *.log
