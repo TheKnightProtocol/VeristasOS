@@ -931,7 +931,8 @@
 
 <!-- FIRST LAUNCH ONBOARDING MODAL -->
 <div class="modal-overlay" id="onboarding-modal" style="display: none;">
-    <div class="modal-card" style="text-align: center; max-width: 480px; padding: 32px 24px;">
+    <div class="modal-card" style="text-align: center; max-width: 480px; padding: 32px 24px; position: relative;">
+        <button class="btn-sidebar-toggle" style="position: absolute; top: 16px; right: 16px;" onclick="closeOnboardingModal()" title="Close">✕</button>
         <div class="brand-icon" style="margin: 0 auto 16px auto; width: 50px; height: 50px; font-size: 24px;">S</div>
         <h2 style="font-size: 22px; margin-bottom: 4px;">VERISTASOS</h2>
         <p style="color: var(--accent-cyan); font-weight: 700; font-size: 13px; margin-bottom: 20px;">Your AI Saathi</p>
@@ -958,6 +959,6 @@
 <!-- TOAST BANNER -->
 <div class="toast-banner" id="toast-banner"></div>
 
-<script src="/frontend/app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

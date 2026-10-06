@@ -6,6 +6,7 @@ from typing import Any, Optional
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from app.services.text_analyzer import analyze_text
@@ -107,6 +108,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+frontend_dir = PROJECT_ROOT / "frontend"
+if frontend_dir.exists():
+    app.mount("/frontend", StaticFiles(directory=frontend_dir), name="frontend")
+
 
 
 # ============================================================
@@ -218,6 +224,30 @@ def root():
         "status": "running",
         "message": "VeristasOS backend is running.",
     }
+
+
+@app.get("/index.html", include_in_schema=False)
+def serve_index_html():
+    if FRONTEND_INDEX.exists():
+        return FileResponse(FRONTEND_INDEX, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Index HTML not found")
+
+
+@app.get("/app.js", include_in_schema=False)
+def serve_app_js():
+    app_js_path = PROJECT_ROOT / "frontend" / "app.js"
+    if app_js_path.exists():
+        return FileResponse(app_js_path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="app.js not found")
+
+
+@app.get("/style.css", include_in_schema=False)
+def serve_style_css():
+    style_css_path = PROJECT_ROOT / "frontend" / "style.css"
+    if style_css_path.exists():
+        return FileResponse(style_css_path, media_type="text/css")
+    raise HTTPException(status_code=404, detail="style.css not found")
+
 
 
 @app.get("/health")

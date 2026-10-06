@@ -12,6 +12,17 @@ document.addEventListener("DOMContentLoaded", () => {
     initThemeAndSidebar();
     loadDailyBrief();
     loadInboxData();
+
+    window.addEventListener("click", (e) => {
+        const emailModal = document.getElementById("email-modal");
+        const onboardingModal = document.getElementById("onboarding-modal");
+        if (e.target === emailModal) {
+            closeEmailModal();
+        }
+        if (e.target === onboardingModal) {
+            closeOnboardingModal();
+        }
+    });
 });
 
 // ONBOARDING & USER PROFILE MANAGEMENT
@@ -36,11 +47,20 @@ function submitOnboardingName() {
     userName = input.value.trim();
     localStorage.setItem("veristasos_user_name", userName);
     
+    closeOnboardingModal();
+    showToast(`Welcome, ${userName}! Your AI Saathi is ready.`);
+}
+
+function closeOnboardingModal() {
     const modal = document.getElementById("onboarding-modal");
     if (modal) modal.style.display = "none";
-
-    updateUserNameUI(userName);
-    showToast(`Welcome, ${userName}! Your AI Saathi is ready.`);
+    if (!userName || !userName.trim()) {
+        userName = "User";
+        localStorage.setItem("veristasos_user_name", "User");
+        updateUserNameUI("User");
+    } else {
+        updateUserNameUI(userName);
+    }
 }
 
 function saveProfileNameChanges() {
@@ -384,6 +404,8 @@ async function runTrustLensAnalysis() {
 
         if (data.trust_lens) {
             const tl = data.trust_lens;
+            const highlighted = data.highlighted_text || (data.verification && data.verification.highlighted_text);
+
             container.innerHTML = `
                 <div class="card-panel">
                     <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 14px;">
@@ -404,10 +426,10 @@ async function runTrustLensAnalysis() {
                         💡 Recommended Action: ${escapeHtml(tl.actionable_recommendation)}
                     </div>
 
-                    ${data.highlighted_text ? `
+                    ${highlighted ? `
                         <div style="font-size: 12px; font-weight: 700; margin-bottom: 4px;">Highlighted Sensational Words:</div>
                         <div style="background: var(--bg-subtle); padding: 12px; border-radius: 6px; font-size: 13px; line-height: 1.5;">
-                            ${data.highlighted_text}
+                            ${highlighted}
                         </div>
                     ` : ''}
                 </div>
