@@ -4,7 +4,7 @@ VeristasOS Structured Data Schemas & Models
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -131,3 +131,39 @@ class InvestigationGraph(BaseModel):
 
     nodes: list[GraphNode]
     edges: list[GraphEdge]
+
+
+# ============================================================
+# VERISTASOS CHAT ARCHITECTURE SCHEMAS
+# ============================================================
+
+class ChatApiRequest(BaseModel):
+    """Request model for POST /api/chat."""
+
+    message: str = Field(..., min_length=1, max_length=10000, description="User message text.")
+    conversation_id: Optional[str] = Field(None, description="Optional conversation identifier for context continuation.")
+    user_name: Optional[str] = Field("User", description="User profile display name.")
+
+
+class ChatApiResponse(BaseModel):
+    """Structured response model for POST /api/chat."""
+
+    message: str = Field(..., description="AI Saathi natural response text.")
+    conversation_id: str = Field(..., description="Active conversation session ID.")
+    intent: str = Field("GENERAL_ASSISTANCE", description="Detected user intent classification.")
+    risk_level: str = Field("LOW", description="Risk level evaluation: LOW | MEDIUM | HIGH.")
+    action: str = Field("RESPOND", description="Action gate decision: RESPOND | AUTO_ACT | ASK_CONFIRMATION | BLOCK.")
+    requires_confirmation: bool = Field(False, description="True if action requires explicit user confirmation.")
+    reasons: List[str] = Field(default_factory=list, description="Reasoning and risk breakdown list.")
+    suggested_action: Optional[str] = Field(None, description="Optional recommended action or guidance.")
+    tool_requested: Optional[dict[str, Any]] = Field(None, description="Proposed tool invocation object if applicable.")
+    provider: Optional[str] = Field("Local Engine", description="AI provider used to generate response.")
+
+
+class ActionConfirmationRequest(BaseModel):
+    """Request model to confirm or decline an ASK_CONFIRMATION action."""
+
+    conversation_id: str = Field(..., description="Active conversation session ID.")
+    user_approved: bool = Field(..., description="User decision: true to execute, false to cancel.")
+    action_type: str = Field(..., description="Action name to execute or decline.")
+    action_details: Optional[dict[str, Any]] = Field(default_factory=dict, description="Action parameters.")

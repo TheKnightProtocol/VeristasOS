@@ -28,7 +28,13 @@ from app.models.schemas import (
     SimpleTextRequest,
     SemanticSearchRequest,
     InvestigationRequest,
+    ChatApiRequest,
+    ChatApiResponse,
+    ActionConfirmationRequest,
 )
+from app.services.action_router import action_router_instance
+from app.services.memory_service import memory_service_instance
+
 from app.services.semantic_search import search_engine
 from app.services.investigation_engine import run_full_investigation, generate_investigation_graph
 
@@ -781,3 +787,79 @@ def update_policy_settings_endpoint(req: PolicySettingsRequest):
         }
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Policy update failed: {exc}")
+
+
+# ============================================================
+# MASTER CHAT ARCHITECTURE ENDPOINTS
+# ============================================================
+
+@app.post("/api/chat", response_model=ChatApiResponse)
+def chat_endpoint(req: ChatApiRequest):
+    """Primary endpoint for AI Saathi natural conversation & Trust Firewall gating."""
+    try:
+        res = action_router_instance.process_chat_message(
+            message=req.message,
+            conversation_id=req.conversation_id,
+            user_name=req.user_name or "User",
+        )
+        return ChatApiResponse(**res)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Chat processing failed: {exc}")
+
+
+@app.get("/api/chat/history/{conversation_id}")
+def get_chat_history_endpoint(conversation_id: str):
+    """Fetch sliding window message history for a conversation session."""
+    try:
+        history = memory_service_instance.get_recent_history(conversation_id, limit=20)
+        return {
+            "status": "success",
+            "conversation_id": conversation_id,
+            "count": len(history),
+            "history": history,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"History fetch failed: {exc}")
+
+
+@app.delete("/api/chat/history/{conversation_id}")
+def clear_chat_history_endpoint(conversation_id: str):
+    """Clear all message turns for a conversation session."""
+    try:
+        success = memory_service_instance.clear_conversation(conversation_id)
+        return {
+            "status": "success" if success else "failed",
+            "conversation_id": conversation_id,
+            "message": "Conversation history cleared.",
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Clear history failed: {exc}")
+
+
+@app.get("/api/chat/conversations")
+def list_user_conversations_endpoint(user_name: Optional[str] = None):
+    """List active user conversation sessions."""
+    try:
+        convs = memory_service_instance.list_conversations(user_name=user_name)
+        return {
+            "status": "success",
+            "count": len(convs),
+            "conversations": convs,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"List conversations failed: {exc}")
+
+
+@app.post("/api/chat/confirm_action")
+def confirm_action_endpoint(req: ActionConfirmationRequest):
+    """Execute or decline an ASK_CONFIRMATION action decision."""
+    try:
+        res = action_router_instance.execute_confirmed_action(
+            conversation_id=req.conversation_id,
+            user_approved=req.user_approved,
+            action_type=req.action_type,
+            action_details=req.action_details,
+        )
+        return {"status": "success", "result": res}
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Action confirmation failed: {exc}")

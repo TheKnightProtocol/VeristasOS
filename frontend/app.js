@@ -577,10 +577,20 @@ async function updatePolicySetting(cat, val) {
     }
 }
 
-// AI SAATHI CHAT INTERACTION
+// AI SAATHI CHAT ARCHITECTURE & CONVERSATION MEMORY
+let currentConversationId = null;
+
+function handleChatKeyPress(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendChatMessage();
+    }
+}
+
 async function sendChatMessage() {
     const input = document.getElementById("chat-input-text");
     const btn = document.getElementById("btn-chat-send");
+    const indicator = document.getElementById("typing-indicator");
     if (!input || !input.value.trim()) return;
 
     const userMsg = input.value.trim();
@@ -588,25 +598,133 @@ async function sendChatMessage() {
 
     appendChatBubble(userMsg, "user");
     if (btn) btn.disabled = true;
+    if (indicator) indicator.style.display = "block";
 
     try {
         const mode = isSeniorMode ? "Senior" : "Adult";
-        const res = await fetch("/api/saathi/chat", {
+        const res = await fetch("/api/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query: userMsg, user_mode: mode })
+            body: JSON.stringify({
+                message: userMsg,
+                conversation_id: currentConversationId,
+                user_name: userName,
+                user_mode: mode
+            })
         });
         const data = await res.json();
 
-        if (data.status === "success" && data.result) {
-            appendChatBubble(data.result.response, "saathi");
+        if (data && data.message) {
+            currentConversationId = data.conversation_id || currentConversationId;
+            updateChatSessionBadge(currentConversationId);
+
+            // Append main AI response bubble
+            appendChatBubble(data.message, "saathi", data);
+
+            // Handle ASK_CONFIRMATION card rendering
+            if (data.action === "ASK_CONFIRMATION" && data.tool_requested) {
+                renderActionConfirmationCard(data);
+            }
         } else {
-            appendChatBubble("Kripya punah prayas karein.", "saathi");
+            appendChatBubble("⚠️ Service responded with an unexpected structure. Please try again.", "saathi");
         }
     } catch (err) {
-        appendChatBubble("🔌 Saathi is offline. Basic local safety checks available.", "saathi");
+        appendChatBubbleWithRetry("🔌 AI service is temporarily unavailable. Local safety tools remain active.", userMsg);
     } finally {
         if (btn) btn.disabled = false;
+        if (indicator) indicator.style.display = "none";
+    }
+}
+
+function updateChatSessionBadge(convId) {
+    const badge = document.getElementById("chat-conv-badge");
+    if (badge && convId) {
+        badge.innerText = `Session: ${convId.slice(0, 10)}...`;
+    }
+}
+
+function startNewConversation() {
+    currentConversationId = null;
+    const log = document.getElementById("chat-log");
+    const badge = document.getElementById("chat-conv-badge");
+    if (badge) badge.innerText = "Session: Active";
+
+    if (log) {
+        log.innerHTML = `
+            <div class="msg-bubble saathi">
+                <strong>Namaste ${escapeHtml(userName)}! I am your AI Saathi 🙏</strong><br>
+                Started a new conversation session. How can I assist or verify digital safety for you now?
+            </div>
+        `;
+    }
+    showToast("✓ Started new conversation session");
+}
+
+async function clearCurrentConversation() {
+    if (!currentConversationId) {
+        startNewConversation();
+        return;
+    }
+
+    try {
+        await fetch(`/api/chat/history/${currentConversationId}`, { method: "DELETE" });
+        startNewConversation();
+        showToast("✓ Conversation memory cleared");
+    } catch (err) {
+        showToast("Failed to clear memory");
+    }
+}
+
+function renderActionConfirmationCard(chatData) {
+    const log = document.getElementById("chat-log");
+    if (!log) return;
+
+    const tool = chatData.tool_requested || {};
+    const div = document.createElement("div");
+    div.className = "card-panel";
+    div.style.background = "var(--bg-subtle)";
+    div.style.border = "1px solid var(--accent-amber)";
+    div.style.margin = "8px 0";
+
+    div.innerHTML = `
+        <div style="font-weight: 700; color: var(--accent-amber); margin-bottom: 6px;">
+            ⚠️ CONFIRMATION REQUIRED
+        </div>
+        <div style="font-size: 13.5px; margin-bottom: 10px;">
+            AI Saathi requested to execute tool: <strong>${escapeHtml(tool.name || 'External Communication')}</strong>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-send" style="background: var(--accent-green); color: #000;" onclick="confirmPendingAction(true, '${tool.name}', this)">✓ Approve & Execute</button>
+            <button class="quick-btn" style="border-color: var(--accent-rose); color: var(--accent-rose);" onclick="confirmPendingAction(false, '${tool.name}', this)">✕ Decline</button>
+        </div>
+    `;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+}
+
+async function confirmPendingAction(approved, toolName, btnEl) {
+    const parentCard = btnEl ? btnEl.closest('.card-panel') : null;
+    if (parentCard) {
+        parentCard.innerHTML = `<div style="font-size: 13px; font-weight: 600; color: var(--text-secondary);">${approved ? '⏳ Processing approval...' : '🚫 Action cancelled by user.'}</div>`;
+    }
+
+    try {
+        const res = await fetch("/api/chat/confirm_action", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                conversation_id: currentConversationId,
+                user_approved: approved,
+                action_type: toolName,
+                action_details: {}
+            })
+        });
+        const data = await res.json();
+        if (data && data.result) {
+            appendChatBubble(data.result.message, "saathi");
+        }
+    } catch (err) {
+        showToast("Action execution update failed");
     }
 }
 
@@ -619,15 +737,41 @@ function sendQuickPrompt(promptText) {
     }
 }
 
-function appendChatBubble(text, sender) {
+function appendChatBubble(text, sender, meta) {
     const log = document.getElementById("chat-log");
     if (!log) return;
 
     const div = document.createElement("div");
     div.className = `msg-bubble ${sender}`;
+    if (meta && meta.action === "BLOCK") {
+        div.style.border = "1px solid var(--accent-rose)";
+    }
     div.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
     log.appendChild(div);
     log.scrollTop = log.scrollHeight;
+}
+
+function appendChatBubbleWithRetry(text, retryQuery) {
+    const log = document.getElementById("chat-log");
+    if (!log) return;
+
+    const div = document.createElement("div");
+    div.className = "msg-bubble saathi";
+    div.style.border = "1px solid var(--accent-amber)";
+    div.innerHTML = `
+        ${escapeHtml(text)}<br><br>
+        <button class="quick-btn" style="font-size: 11px; padding: 4px 10px;" onclick="retryChatQuery('${escapeHtml(retryQuery)}')">🔄 Retry Request</button>
+    `;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+}
+
+function retryChatQuery(query) {
+    const input = document.getElementById("chat-input-text");
+    if (input) {
+        input.value = query;
+        sendChatMessage();
+    }
 }
 
 // DEMO SCENARIO PRESET

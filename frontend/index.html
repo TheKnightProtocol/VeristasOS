@@ -862,16 +862,36 @@
         <!-- VIEW 8: AI SAATHI CHAT WORKSPACE -->
         <div id="view-saathi" class="workspace-view">
             <div class="chat-container">
+                <!-- CHAT HEADER BAR -->
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--border-color); background: var(--bg-sidebar);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-weight: 700; font-size: 15px;">🤖 AI Saathi Assistant</span>
+                        <span id="chat-conv-badge" class="badge low" style="font-size: 10px; font-weight: 600;">Session: Active</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="quick-btn" onclick="startNewConversation()" title="Start New Conversation">➕ New Chat</button>
+                        <button class="quick-btn" onclick="clearCurrentConversation()" title="Clear Current Chat">🗑️ Clear Chat</button>
+                    </div>
+                </div>
+
+                <!-- CHAT LOG -->
                 <div class="chat-log" id="chat-log">
                     <div class="msg-bubble saathi">
                         <strong>Namaste! I am your AI Saathi 🙏</strong><br>
-                        Main aapki digital safety, inbox management aur scam detection me madad karta hoon.
-                        Mujhse poochiye: <em>"Check my emails"</em>, <em>"Is this link safe?"</em>, ya <em>"What should I do?"</em>.
+                        Main aapki digital safety, inbox management aur scam detection me madad karta hoon.<br>
+                        Ask me: <em>"Is this message safe?"</em>, <em>"What is phishing?"</em>, or paste any suspicious text.
                     </div>
                 </div>
-                <div class="chat-input-bar">
-                    <input type="text" class="chat-input" id="chat-input-text" placeholder="Type message to AI Saathi..." onkeypress="if(event.key==='Enter') sendChatMessage()">
-                    <button class="btn-send" id="btn-chat-send" onclick="sendChatMessage()">Send</button>
+
+                <!-- TYPING / THINKING INDICATOR -->
+                <div id="typing-indicator" style="display: none; padding: 8px 20px; font-size: 12px; color: var(--accent-cyan); font-weight: 600;">
+                    🤖 AI Saathi is analyzing & verifying...
+                </div>
+
+                <!-- CHAT INPUT BAR -->
+                <div class="chat-input-bar" style="align-items: flex-end;">
+                    <textarea class="chat-input" id="chat-input-text" rows="2" placeholder="Ask your AI Saathi... (Press Enter to send, Shift+Enter for new line)" style="resize: none; font-family: inherit;" onkeydown="handleChatKeyPress(event)"></textarea>
+                    <button class="btn-send" id="btn-chat-send" style="height: 48px;" onclick="sendChatMessage()">Send</button>
                 </div>
             </div>
         </div>

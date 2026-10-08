@@ -69,3 +69,7 @@ def detect_scam_signals(text: str) -> dict[str, Any]:
         "explanation": explanation,
         "detector_type": "Scam Radar — Rule-Assisted Detection",
     }
+
+
+analyze_scam_signals = detect_scam_signals
+
