@@ -162,5 +162,26 @@ class ActionRouter:
             "conversation_id": conversation_id,
         }
 
+    def stream_chat_message(
+        self,
+        message: str,
+        conversation_id: Optional[str] = None,
+        user_name: str = "User",
+        user_mode: str = "Adult",
+    ):
+        """Stream response chunks line-by-line via Server-Sent Events."""
+        conv_id = conversation_id or memory_service_instance.generate_conversation_id()
+        history = memory_service_instance.get_recent_history(conv_id, limit=10)
+        memory_service_instance.save_message(conv_id, "user", message, user_name)
+
+        user_context = {"user_name": user_name, "user_mode": user_mode}
+        
+        for chunk_event in ai_service_instance.stream_response(message, history, user_context):
+            yield chunk_event
+
+        res = ai_service_instance.generate_response(message, history, user_context)
+        memory_service_instance.save_message(conv_id, "assistant", res.get("text", ""), user_name)
+
 
 action_router_instance = ActionRouter()
+

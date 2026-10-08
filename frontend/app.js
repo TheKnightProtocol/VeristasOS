@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
     loadDailyBrief();
     loadInboxData();
 
+    const savedLang = localStorage.getItem("veristasos_language") || "English";
+    changeLanguage(savedLang);
+
     window.addEventListener("click", (e) => {
         const emailModal = document.getElementById("email-modal");
         const onboardingModal = document.getElementById("onboarding-modal");
@@ -192,7 +195,14 @@ function updateThemeUI(theme) {
 
 function changeLanguage(lang) {
     currentLanguage = lang;
-    showToast(`Language set to ${lang}`);
+    const selectEl = document.getElementById("select-language");
+    if (selectEl) selectEl.value = lang;
+    if (typeof applyI18n === "function") {
+        applyI18n(lang);
+    }
+    const dict = (typeof TRANSLATIONS !== "undefined" && typeof getLanguageCode === "function" && TRANSLATIONS[getLanguageCode(lang)]) || {};
+    const prefix = dict.toast_lang_set || "Language set to";
+    showToast(`${prefix} ${lang}`);
 }
 
 // DAILY BRIEF DATA
@@ -746,9 +756,63 @@ function appendChatBubble(text, sender, meta) {
     if (meta && meta.action === "BLOCK") {
         div.style.border = "1px solid var(--accent-rose)";
     }
-    div.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
+    
+    if (sender === "saathi") {
+        div.innerHTML = parseMarkdown(text);
+    } else {
+        div.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
+    }
+    
     log.appendChild(div);
     log.scrollTop = log.scrollHeight;
+}
+
+function parseMarkdown(text) {
+    if (!text) return "";
+    let html = escapeHtml(text);
+
+    // Code blocks with Copy Code button
+    html = html.replace(/```([a-zA-Z0-9_\-#\+]*)\n([\s\S]*?)```/g, (match, lang, code) => {
+        const cleanLang = lang.trim() || "code";
+        return `<div class="code-block-wrapper" style="background: #11131a; border: 1px solid var(--border-color); border-radius: 8px; margin: 10px 0; overflow: hidden;"><div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 6px 12px; font-size: 11px; font-weight: 600; color: var(--accent-cyan); text-transform: uppercase;"><span>${cleanLang}</span><button class="quick-btn" style="padding: 2px 8px; font-size: 10px;" onclick="copyCode(this)">Copy Code</button></div><pre style="margin:0; padding:12px; font-family: var(--font-mono); font-size: 13px; overflow-x: auto;"><code>${code.trim()}</code></pre></div>`;
+    });
+
+    // Inline Code
+    html = html.replace(/`([^`]+)`/g, '<code style="background: rgba(0,240,255,0.1); color: var(--accent-cyan); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 12.5px;">$1</code>');
+
+    // Headings
+    html = html.replace(/^### (.*$)/gim, '<h3 style="font-size: 15px; font-weight: 700; margin: 10px 0 6px 0;">$1</h3>');
+    html = html.replace(/^## (.*$)/gim, '<h2 style="font-size: 17px; font-weight: 800; margin: 12px 0 6px 0;">$1</h2>');
+    html = html.replace(/^# (.*$)/gim, '<h1 style="font-size: 19px; font-weight: 800; margin: 14px 0 8px 0;">$1</h1>');
+
+    // Bold & Italic
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+    // Bullet points
+    html = html.replace(/^\s*[-•]\s+(.*$)/gim, '<li style="margin-left: 18px;">$1</li>');
+
+    // New lines
+    html = html.replace(/\n/g, '<br>');
+
+    return html;
+}
+
+function copyCode(btnEl) {
+    const codeWrapper = btnEl.closest('.code-block-wrapper');
+    if (codeWrapper) {
+        const codeBlock = codeWrapper.querySelector('code');
+        if (codeBlock) {
+            const text = codeBlock.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const orig = btnEl.innerText;
+                btnEl.innerText = "✓ Copied!";
+                setTimeout(() => { btnEl.innerText = orig; }, 2000);
+            }).catch(() => {
+                showToast("Copied code to clipboard");
+            });
+        }
+    }
 }
 
 function appendChatBubbleWithRetry(text, retryQuery) {

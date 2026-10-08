@@ -568,31 +568,31 @@
 
             <ul class="nav-list">
                 <li class="nav-item active" data-target="view-home">
-                    <span>🏠</span> <span class="nav-text">Home</span>
+                    <span>🏠</span> <span class="nav-text" data-i18n="nav_home">Home</span>
                 </li>
                 <li class="nav-item" data-target="view-trust-lens">
-                    <span>🧠</span> <span class="nav-text">Trust Lens</span>
+                    <span>🧠</span> <span class="nav-text" data-i18n="nav_trust_lens">Trust Lens</span>
                 </li>
                 <li class="nav-item" data-target="view-scam-shield">
-                    <span>🚨</span> <span class="nav-text">Scam Shield</span>
+                    <span>🚨</span> <span class="nav-text" data-i18n="nav_scam_shield">Scam Shield</span>
                 </li>
                 <li class="nav-item" data-target="view-privacy">
-                    <span>🔐</span> <span class="nav-text">Privacy Shield</span>
+                    <span>🔐</span> <span class="nav-text" data-i18n="nav_privacy">Privacy Shield</span>
                 </li>
                 <li class="nav-item" data-target="view-mail-shield">
-                    <span>📧</span> <span class="nav-text">Mail Shield</span>
+                    <span>📧</span> <span class="nav-text" data-i18n="nav_mail_shield">Mail Shield</span>
                 </li>
                 <li class="nav-item" data-target="view-family">
-                    <span>👨‍👩‍👧</span> <span class="nav-text">Family</span>
+                    <span>👨‍👩‍👧</span> <span class="nav-text" data-i18n="nav_family">Family</span>
                 </li>
                 <li class="nav-item" data-target="view-safety-score">
-                    <span>🛡️</span> <span class="nav-text">Safety Score</span>
+                    <span>🛡️</span> <span class="nav-text" data-i18n="nav_safety_score">Safety Score</span>
                 </li>
                 <li class="nav-item" data-target="view-saathi">
-                    <span>🤖</span> <span class="nav-text">AI Saathi Chat</span>
+                    <span>🤖</span> <span class="nav-text" data-i18n="nav_saathi">AI Saathi Chat</span>
                 </li>
                 <li class="nav-item" data-target="view-permissions">
-                    <span>⚙️</span> <span class="nav-text">Permissions</span>
+                    <span>⚙️</span> <span class="nav-text" data-i18n="nav_permissions">Permissions</span>
                 </li>
             </ul>
         </div>
@@ -611,11 +611,23 @@
                 <span style="font-size: 12px; color: var(--text-muted);">| Aap busy ho. Saathi sambhal lega.</span>
             </div>
             <div class="topbar-actions">
-                <!-- LANGUAGE SELECTOR -->
+                <!-- MULTILINGUAL LANGUAGE SELECTOR -->
                 <select class="select-lang" id="select-language" onchange="changeLanguage(this.value)">
                     <option value="English">🌐 English</option>
                     <option value="Hinglish">🌐 Hinglish</option>
-                    <option value="Hindi">🌐 हिन्दी</option>
+                    <option value="Hindi">🌐 हिन्दी (Hindi)</option>
+                    <option value="Bengali">🌐 বাংলা (Bengali)</option>
+                    <option value="Telugu">🌐 తెలుగు (Telugu)</option>
+                    <option value="Marathi">🌐 मराठी (Marathi)</option>
+                    <option value="Tamil">🌐 தமிழ் (Tamil)</option>
+                    <option value="Gujarati">🌐 ગુજરાતી (Gujarati)</option>
+                    <option value="Kannada">🌐 ಕನ್ನಡ (Kannada)</option>
+                    <option value="Malayalam">🌐 മലയാളം (Malayalam)</option>
+                    <option value="Punjabi">🌐 ਪੰਜਾਬੀ (Punjabi)</option>
+                    <option value="Odia">🌐 ଓଡ଼ିଆ (Odia)</option>
+                    <option value="Assamese">🌐 অসমীয়া (Assamese)</option>
+                    <option value="Urdu">🌐 اردو (Urdu)</option>
+                    <option value="Auto">🌐 Auto Detect</option>
                 </select>
 
                 <!-- THEME TOGGLE SWITCH -->
@@ -979,6 +991,7 @@
 <!-- TOAST BANNER -->
 <div class="toast-banner" id="toast-banner"></div>
 
+<script src="i18n.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -805,6 +805,23 @@ def chat_endpoint(req: ChatApiRequest):
         return ChatApiResponse(**res)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Chat processing failed: {exc}")
+
+
+@app.post("/api/chat/stream")
+def chat_stream_endpoint(req: ChatApiRequest):
+    """Streaming SSE endpoint for progressive text generation in Chat UI."""
+    try:
+        return StreamingResponse(
+            action_router_instance.stream_chat_message(
+                message=req.message,
+                conversation_id=req.conversation_id,
+                user_name=req.user_name or "User",
+            ),
+            media_type="text/event-stream"
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Chat streaming failed: {exc}")
+
 
 
 @app.get("/api/chat/history/{conversation_id}")

@@ -31,24 +31,41 @@ class DigitalTrustEngine:
         reasons: List[str] = []
         risk_score = 10
 
+        # Check if the user is asking an educational or informational question
+        educational_indicators = [
+            "what is", "explain", "how does", "how do", "kaise kaam", "kya hota", "kya hai",
+            "definition", "samjhao", "meaning of", "tell me about", "details of", "learn", "kaise"
+        ]
+        is_educational = any(k in text_lower for k in educational_indicators)
+
         # 1. Privacy & PII Scanner (Aadhaar, PAN, UPI ID, OTP, Password)
         privacy_res = scan_privacy_signals(text)
         detected_types = privacy_res.get("detected_types", [])
 
-        if any("OTP" in t for t in detected_types) or any(w in text_lower for w in ["otp", "one time password", "verification code"]):
+        if any("OTP" in t for t in detected_types):
             signals.append("OTP_EXPOSURE")
             reasons.append("Contains sensitive One-Time Password (OTP) or authentication code.")
             risk_score += 50
+        elif any(w in text_lower for w in ["otp", "one time password", "verification code"]):
+            if not is_educational or any(w in text_lower for w in ["share", "give", "send", "enter", "asking"]):
+                signals.append("OTP_EXPOSURE")
+                reasons.append("Contains sensitive One-Time Password (OTP) or authentication request.")
+                risk_score += 50
 
         if any("Aadhaar" in t or "PAN" in t for t in detected_types):
             signals.append("NATIONAL_ID_EXPOSURE")
             reasons.append("Contains government identity numbers (Aadhaar/PAN).")
             risk_score += 40
 
-        if any("UPI" in t for t in detected_types) or "upi" in text_lower:
+        if any("UPI" in t for t in detected_types):
             signals.append("UPI_ID_PRESENT")
-            reasons.append("Contains virtual payment address or UPI request.")
+            reasons.append("Contains virtual payment address.")
             risk_score += 30
+        elif "upi" in text_lower and not is_educational:
+            if any(w in text_lower for w in ["pin", "transfer", "pay", "send", "receive"]):
+                signals.append("UPI_ID_PRESENT")
+                reasons.append("Contains virtual payment address or UPI request.")
+                risk_score += 30
 
         # Passwords / Bank PIN keywords
         if any(w in text_lower for w in ["password", "passcode", "pin", "netbanking password", "cvv"]):
