@@ -1,29 +1,80 @@
 {
   "name": "VeristasOS — Your AI Saathi",
   "short_name": "VeristasOS",
-  "description": "Safety-first personal AI agent. Trust, Privacy & Digital Safety for India.",
+  "description": "Safety-first personal AI agent. Digital Trust, Privacy Shield & Scam Protection for India.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#121319",
   "theme_color": "#00f0ff",
-  "orientation": "portrait-primary",
-  "lang": "en",
-  "scope": "/",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "security", "education"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "categories": ["productivity", "utilities", "security"],
-  "screenshots": [],
-  "prefer_related_applications": false
+  "screenshots": [
+    {
+      "src": "/icons/screenshot-home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "VeristasOS Home Dashboard"
+    },
+    {
+      "src": "/icons/screenshot-chat.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "AI Saathi Chat"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "AI Saathi Chat",
+      "short_name": "Saathi",
+      "description": "Chat with your AI Saathi",
+      "url": "/?view=view-saathi",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Scam Shield",
+      "short_name": "Scam Check",
+      "description": "Check if a message is a scam",
+      "url": "/?view=view-scam-shield",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "params": {
+      "text": "message"
+    }
+  }
 }
