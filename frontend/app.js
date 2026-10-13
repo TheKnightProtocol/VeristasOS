@@ -154,7 +154,69 @@ function switchView(targetId) {
         const textSpan = activeNav.querySelector(".nav-text") || activeNav.querySelector("span:last-child");
         if (textSpan) titleEl.innerText = textSpan.innerText;
     }
+
+    // Sync mobile bottom nav active state
+    document.querySelectorAll(".mobile-nav-btn[data-target]").forEach(b => {
+        if (b.getAttribute("data-target") === targetId) {
+            b.classList.add("active");
+        } else {
+            b.classList.remove("active");
+        }
+    });
+
+    // Close mobile sidebar if open
+    closeMobileMenu();
 }
+
+// ========================================
+// MOBILE NAVIGATION FUNCTIONS
+// ========================================
+
+/** Toggle the mobile sidebar drawer open/closed. */
+function toggleMobileMenu() {
+    const sidebar = document.getElementById("sidebar-container");
+    const backdrop = document.getElementById("sidebar-backdrop");
+    if (!sidebar) return;
+    const isOpen = sidebar.classList.contains("mobile-open");
+    if (isOpen) {
+        closeMobileMenu();
+    } else {
+        sidebar.classList.add("mobile-open");
+        if (backdrop) backdrop.classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+}
+
+/** Close the mobile sidebar drawer. */
+function closeMobileMenu() {
+    const sidebar = document.getElementById("sidebar-container");
+    const backdrop = document.getElementById("sidebar-backdrop");
+    if (sidebar) sidebar.classList.remove("mobile-open");
+    if (backdrop) backdrop.classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+/**
+ * Switch view from mobile bottom navigation bar button.
+ * @param {HTMLElement} btnEl - The button element that was clicked
+ * @param {string} targetId - The view ID to navigate to
+ */
+function switchViewMobile(btnEl, targetId) {
+    // Switch main view
+    switchView(targetId);
+
+    // Update mobile bottom nav active state
+    document.querySelectorAll(".mobile-nav-btn").forEach(b => b.classList.remove("active"));
+    if (btnEl) btnEl.classList.add("active");
+
+    // Close sidebar if open
+    closeMobileMenu();
+
+    // Scroll content area to top
+    const view = document.getElementById(targetId);
+    if (view) view.scrollTop = 0;
+}
+
 
 // THEME & SIDEBAR COLLAPSE
 function initThemeAndSidebar() {
