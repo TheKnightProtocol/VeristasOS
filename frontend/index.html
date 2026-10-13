@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="VeristasOS — Your AI Saathi. Safety-first personal AI agent for digital trust, privacy protection, and permission-controlled autonomous actions.">
-    <meta name="theme-color" content="#0f1015">
+    <meta name="theme-color" content="#00f0ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VeristasOS">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
     <title>VeristasOS — Your AI Saathi</title>
 
     <style>
@@ -1410,5 +1416,15 @@
     </div>
 </nav>
 
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function() {
+      navigator.serviceWorker.register("/sw.js")
+        .then(function(reg) { console.log("VeristasOS SW registered:", reg.scope); })
+        .catch(function(err) { console.warn("SW registration failed:", err); });
+    });
+  }
+</script>
 </body>
 </html>

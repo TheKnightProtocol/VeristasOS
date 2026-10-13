@@ -255,6 +255,38 @@ def serve_style_css():
     raise HTTPException(status_code=404, detail="style.css not found")
 
 
+@app.get("/i18n.js", include_in_schema=False)
+def serve_i18n_js():
+    path = PROJECT_ROOT / "frontend" / "i18n.js"
+    if path.exists():
+        return FileResponse(path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="i18n.js not found")
+
+
+@app.get("/manifest.json", include_in_schema=False)
+def serve_manifest():
+    path = PROJECT_ROOT / "frontend" / "manifest.json"
+    if path.exists():
+        return FileResponse(path, media_type="application/manifest+json")
+    raise HTTPException(status_code=404, detail="manifest.json not found")
+
+
+@app.get("/sw.js", include_in_schema=False)
+def serve_sw():
+    path = PROJECT_ROOT / "frontend" / "sw.js"
+    if path.exists():
+        return FileResponse(path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="sw.js not found")
+
+
+@app.get("/icons/{filename}", include_in_schema=False)
+def serve_icon(filename: str):
+    icon_path = PROJECT_ROOT / "frontend" / "icons" / filename
+    if icon_path.exists():
+        return FileResponse(icon_path, media_type="image/png")
+    raise HTTPException(status_code=404, detail="Icon not found")
+
+
 
 @app.get("/health")
 def health():
