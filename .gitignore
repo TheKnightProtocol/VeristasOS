@@ -21,3 +21,6 @@ uploads/
 .idea/
 .tmp/
 scratch/
+apk-build/
+*.db
+*.sqlite
